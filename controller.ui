@@ -1,24 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>Controller</class>
- <widget class="QMainWindow" name="Controller" >
-  <property name="geometry" >
+ <widget class="QMainWindow" name="Controller">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>1366</width>
+    <height>800</height>
    </rect>
   </property>
-  <property name="windowTitle" >
-   <string>Controller</string>
+  <property name="windowTitle">
+   <string>Aaether Engine</string>
   </property>
-  <widget class="QMenuBar" name="menuBar" />
-  <widget class="QToolBar" name="mainToolBar" />
-  <widget class="QWidget" name="centralWidget" />
-  <widget class="QStatusBar" name="statusBar" />
+  <widget class="QWidget" name="centre"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1366</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuOpen">
+    <property name="title">
+     <string>Open</string>
+    </property>
+    <addaction name="actionConsole"/>
+    <addaction name="actionProject"/>
+   </widget>
+   <addaction name="menuOpen"/>
+  </widget>
+  <action name="actionConsole">
+   <property name="text">
+    <string>Console</string>
+   </property>
+  </action>
+  <action name="actionProject">
+   <property name="text">
+    <string>Project</string>
+   </property>
+  </action>
  </widget>
- <layoutDefault spacing="6" margin="11" />
- <pixmapfunction></pixmapfunction>
+ <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
 </ui>
