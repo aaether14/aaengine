@@ -16,8 +16,6 @@ Controller::Controller(QWidget *parent) :
 
 
 
-
-    GLController * gl_controller = new GLController(this);
     ScriptEngine * script_engine = new ScriptEngine(this);
     Console * console = new Console(this);
 

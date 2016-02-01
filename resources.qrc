@@ -1,1 +1,10 @@
-<RCC/>
+<RCC>
+    <qresource prefix="/icons">
+        <file>terminal.ico</file>
+        <file>project.ico</file>
+    </qresource>
+    <qresource prefix="/shaders">
+        <file>simple.vert</file>
+        <file>simple.frag</file>
+    </qresource>
+</RCC>

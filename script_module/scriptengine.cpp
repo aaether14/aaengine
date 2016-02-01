@@ -1,4 +1,4 @@
-#include <scriptengine.hpp>
+#include <script_module/scriptengine.hpp>
 
 
 
@@ -8,6 +8,12 @@ ScriptEngine::ScriptEngine(QObject *parent) : QJSEngine(parent)
 
 
     setObjectName("ScriptEngine");
+
+
+
+    globalObject().setProperty("console", newQObject(new JSConsole(this)));
+
+
 
 
 }
@@ -25,8 +31,6 @@ void ScriptEngine::RunScriptFromString(QString script_code)
                 << "Uncaught exception at line"
                 << result.property("lineNumber").toInt()
                 << ":" << result.toString();
-    else
-        qDebug() << result.toString();
 
 
 

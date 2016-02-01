@@ -6,6 +6,7 @@
 #include <QJSEngine>
 #include <QString>
 #include <QDebug>
+#include <script_module/jsconsole.hpp>
 
 
 

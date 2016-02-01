@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui opengl qml
+QT += core gui opengl qml
 
 
 
@@ -20,14 +20,20 @@ TEMPLATE = app
 SOURCES += main.cpp\
         controller.cpp \
     glcontroller.cpp \
-    console.cpp \
-    scriptengine.cpp
+    console/console.cpp \
+    script_module/scriptengine.cpp \
+    script_module/jsconsole.cpp \
+    console/logger.cpp \
+    fbx_manager/fbxmanager.cpp
 
 
 HEADERS  += controller.hpp \
     glcontroller.hpp \
-    console.hpp \
-    scriptengine.hpp
+    console/console.hpp \
+    script_module/scriptengine.hpp \
+    script_module/jsconsole.hpp \
+    console/logger.hpp \
+    fbx_manager/fbxmanager.hpp
 
 
 
@@ -37,3 +43,23 @@ FORMS    += controller.ui \
 
 
 CONFIG += c++11
+
+
+
+RESOURCES += \
+    resources.qrc
+
+
+
+LIBS += -lfbxsdk
+
+
+
+
+
+
+
+
+
+
+
