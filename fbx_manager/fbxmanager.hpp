@@ -5,8 +5,11 @@
 
 #include <QObject>
 #include <QDebug>
+#include <QOpenGLVertexArrayObject>
+#include <QOpenGLBuffer>
+#include <QOpenGLShaderProgram>
+#include <QOpenGLFunctions>
 #include <fbxsdk.h>
-#include <GL/gl.h>
 
 
 
@@ -16,7 +19,16 @@ class FBXManager : public QObject
 
 
     Q_OBJECT
-    FbxScene* mScene;
+
+
+    FbxManager * manager;
+    QOpenGLVertexArrayObject vao;
+    QOpenGLBuffer vbo;
+    QOpenGLBuffer ibo;
+
+
+    int number_of_indices;
+
 
 
 public:
@@ -24,7 +36,16 @@ public:
 
 
     explicit FBXManager(QObject *parent = 0);
-    void LoadFromFBX(const char * filename);
+    ~FBXManager();
+
+
+
+    void LoadFromFBX(const char * file_name, QOpenGLShaderProgram & shader);
+    void Draw(QOpenGLFunctions * f);
+    /**
+    FBX manager
+    */
+    inline FbxManager * GetManager(){return manager; }
 
 
 

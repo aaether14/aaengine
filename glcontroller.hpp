@@ -6,8 +6,6 @@
 
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
-#include <QOpenGLVertexArrayObject>
-#include <QOpenGLBuffer>
 #include <QOpenGLShaderProgram>
 #include <QMatrix4x4>
 #include <QTimer>
@@ -18,18 +16,17 @@
 
 
 
+
 class GLController : public QOpenGLWidget, public QOpenGLFunctions
 {
 
 
     Q_OBJECT
-    QOpenGLVertexArrayObject vao;
-    QOpenGLBuffer vbo;
-    QOpenGLBuffer ibo;
+
+
+
     QOpenGLShaderProgram shader;
     QMatrix4x4 mvp;
-
-
     QTime * elapsed_timer;
 
 

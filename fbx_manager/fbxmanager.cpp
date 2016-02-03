@@ -3,11 +3,17 @@
 
 
 
-FBXManager::FBXManager(QObject *parent) : QObject(parent)
+FBXManager::FBXManager(QObject *parent) : QObject(parent),
+    ibo(QOpenGLBuffer::IndexBuffer), vbo(QOpenGLBuffer::VertexBuffer)
 {
 
 
     setObjectName("FBXManager");
+
+
+    manager = FbxManager::Create();
+    FbxIOSettings* io_settings = FbxIOSettings::Create(manager, IOSROOT);
+    manager->SetIOSettings(io_settings);
 
 
 
@@ -17,31 +23,44 @@ FBXManager::FBXManager(QObject *parent) : QObject(parent)
 
 
 
-void FBXManager::LoadFromFBX(const char* fileName)
+FBXManager::~FBXManager()
+{
+
+    manager->Destroy();
+
+}
+
+
+
+
+
+
+void FBXManager::LoadFromFBX(const char* file_name, QOpenGLShaderProgram & shader)
 {
 
 
-    FbxManager* manager = FbxManager::Create();
-    FbxIOSettings* ioSettings = FbxIOSettings::Create(manager, IOSROOT);
-    manager->SetIOSettings(ioSettings);
-    FbxImporter* importer = FbxImporter::Create(manager, "");
-    bool initialised = importer->Initialize(fileName, -1, manager->GetIOSettings());
+
+
+
+    FbxImporter* importer = FbxImporter::Create(GetManager(), "");
+    bool initialised = importer->Initialize(file_name, -1, GetManager()->GetIOSettings());
     if(!initialised)
     {
-        qDebug() << "Failed importer";
+        qDebug() << "Failed importer: " << file_name;
         return;
     }
 
 
-    mScene = FbxScene::Create(manager, "default_scene");
-    importer->Import(mScene);
+
+    FbxScene * scene = FbxScene::Create(GetManager(), "default_scene");
+    importer->Import(scene);
     importer->Destroy();
 
 
 
 
 
-    FbxNode * rootNode = mScene->GetRootNode();
+    FbxNode * rootNode = scene->GetRootNode();
 
 
 
@@ -50,18 +69,65 @@ void FBXManager::LoadFromFBX(const char* fileName)
 
 
 
-          FbxNode * current_node = rootNode->GetChild(i);
-          if(current_node->GetNodeAttribute() == NULL)
-             continue;
+        FbxNode * current_node = rootNode->GetChild(i);
+        if(!current_node->GetNodeAttribute())
+            continue;
 
-          FbxNodeAttribute::EType AttributeType = current_node->GetNodeAttribute()->GetAttributeType();
+        FbxNodeAttribute::EType AttributeType = current_node->GetNodeAttribute()->GetAttributeType();
 
-          if(AttributeType != FbxNodeAttribute::eMesh)
-             continue;
+        if(AttributeType != FbxNodeAttribute::eMesh)
+            continue;
 
 
 
-          FbxMesh * mesh = current_node->GetMesh();
+
+
+        FbxMesh * mesh = current_node->GetMesh();
+        QVector<unsigned int> indices;
+
+
+        for (int i = 0; i < mesh->GetPolygonCount(); i++)
+        {
+
+            indices << (unsigned int)(mesh->GetPolygonVertex(i, 0));
+            indices << (unsigned int)(mesh->GetPolygonVertex(i, 1));
+            indices << (unsigned int)(mesh->GetPolygonVertex(i, 2));
+
+
+        }
+        number_of_indices = mesh->GetPolygonCount() * 3;
+
+
+
+
+        vao.create();
+        vao.bind();
+
+
+
+        shader.bind();
+        vbo.create();
+        vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
+        vbo.bind();
+        vbo.allocate(mesh->GetControlPoints(), sizeof(FbxVector4) * mesh->GetControlPointsCount());
+
+
+        shader.setAttributeBuffer("vertex", GL_DOUBLE, 0, 4);
+        shader.enableAttributeArray("vertex");
+
+
+
+        ibo.create();
+        ibo.setUsagePattern(QOpenGLBuffer::StaticDraw);
+        ibo.bind();
+        ibo.allocate(&indices[0], sizeof(unsigned int) * number_of_indices);
+
+
+
+
+
+        vao.release();
+        shader.release();
 
 
 
@@ -74,6 +140,17 @@ void FBXManager::LoadFromFBX(const char* fileName)
 
 
 
+
+}
+
+
+
+void FBXManager::Draw(QOpenGLFunctions *f)
+{
+
+    vao.bind();
+    f->glDrawElements(GL_TRIANGLES, number_of_indices, GL_UNSIGNED_INT, 0);
+    vao.release();
 
 }
 
