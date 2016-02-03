@@ -60,10 +60,8 @@ void FBXManager::LoadFromFBX(const char* file_name, QOpenGLShaderProgram & shade
 
 
 
+
     FbxNode * rootNode = scene->GetRootNode();
-
-
-
     for (int i = 0; i < rootNode->GetChildCount(); i++)
     {
 
@@ -83,9 +81,12 @@ void FBXManager::LoadFromFBX(const char* file_name, QOpenGLShaderProgram & shade
 
 
         FbxMesh * mesh = current_node->GetMesh();
+
+
+
+
+
         QVector<unsigned int> indices;
-
-
         for (int i = 0; i < mesh->GetPolygonCount(); i++)
         {
 
@@ -95,7 +96,22 @@ void FBXManager::LoadFromFBX(const char* file_name, QOpenGLShaderProgram & shade
 
 
         }
-        number_of_indices = mesh->GetPolygonCount() * 3;
+        tri_count = indices.size();
+
+
+
+
+
+
+        QVector<float> vertices;
+        for (int i = 0; i < mesh->GetControlPointsCount(); i++)
+        {
+            vertices << (float)(mesh->GetControlPointAt(i).mData[0]);
+            vertices << (float)(mesh->GetControlPointAt(i).mData[1]);
+            vertices << (float)(mesh->GetControlPointAt(i).mData[2]);
+        }
+
+
 
 
 
@@ -109,10 +125,10 @@ void FBXManager::LoadFromFBX(const char* file_name, QOpenGLShaderProgram & shade
         vbo.create();
         vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
         vbo.bind();
-        vbo.allocate(mesh->GetControlPoints(), sizeof(FbxVector4) * mesh->GetControlPointsCount());
+        vbo.allocate(&vertices[0], sizeof(float) * vertices.size());
 
 
-        shader.setAttributeBuffer("vertex", GL_DOUBLE, 0, 4);
+        shader.setAttributeBuffer("vertex", GL_FLOAT, 0, 3);
         shader.enableAttributeArray("vertex");
 
 
@@ -120,7 +136,7 @@ void FBXManager::LoadFromFBX(const char* file_name, QOpenGLShaderProgram & shade
         ibo.create();
         ibo.setUsagePattern(QOpenGLBuffer::StaticDraw);
         ibo.bind();
-        ibo.allocate(&indices[0], sizeof(unsigned int) * number_of_indices);
+        ibo.allocate(&indices[0], sizeof(unsigned int) * indices.size());
 
 
 
@@ -131,6 +147,9 @@ void FBXManager::LoadFromFBX(const char* file_name, QOpenGLShaderProgram & shade
 
 
 
+
+        indices.clear();
+        vertices.clear();
 
 
 
@@ -149,7 +168,7 @@ void FBXManager::Draw(QOpenGLFunctions *f)
 {
 
     vao.bind();
-    f->glDrawElements(GL_TRIANGLES, number_of_indices, GL_UNSIGNED_INT, 0);
+    f->glDrawElements(GL_TRIANGLES, tri_count, GL_UNSIGNED_INT, 0);
     vao.release();
 
 }

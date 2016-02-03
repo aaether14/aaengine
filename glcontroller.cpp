@@ -91,10 +91,11 @@ void GLController::paintGL()
 
 
     mvp.setToIdentity();
-    mvp.perspective(60.0f, 1.33f, 0.1f, 100.0f);
-    mvp.lookAt(QVector3D(0.0, 0.0, -10.0),
+    mvp.perspective(60.0f, 1.33f, 0.1f, 300.0f);
+    mvp.lookAt(QVector3D(0.0, 0.0, -100.0),
                QVector3D(0.0, 0.0, 0.0),
                QVector3D(0.0, 1.0, 0.0));
+    mvp.scale(0.3);
     mvp.rotate(elapsed_timer->elapsed() / 4.0, QVector3D(0, 1, 0));
     shader.setUniformValue("MVP", mvp);
 

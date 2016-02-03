@@ -27,7 +27,7 @@ class FBXManager : public QObject
     QOpenGLBuffer ibo;
 
 
-    int number_of_indices;
+    int tri_count;
 
 
 

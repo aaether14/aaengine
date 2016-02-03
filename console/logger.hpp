@@ -28,8 +28,7 @@ private:
 
 
     Logger(){}
-    Logger(Logger const&){}
-    Logger& operator=(Logger const&){}
+    Q_DISABLE_COPY(Logger)
 
 
 
