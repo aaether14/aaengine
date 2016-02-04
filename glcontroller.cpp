@@ -36,6 +36,7 @@ GLController::~GLController()
 {
 
 
+
     delete elapsed_timer;
 
 
@@ -54,7 +55,7 @@ void GLController::initializeGL()
 {
 
     initializeOpenGLFunctions();
-    glClearColor(1.0, 1.0, 1.0, 1.0);
+    glClearColor(0.3, 0.3, 0.3, 1.0);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
@@ -68,7 +69,7 @@ void GLController::initializeGL()
 
 
 
-    findChild<FBXManager*>("FBXManager")->LoadFromFBX("humanoid.fbx", shader);
+    findChild<FBXManager*>("FBXManager")->LoadFromFBX("dragon.fbx", shader);
 
 
 
@@ -90,14 +91,21 @@ void GLController::paintGL()
 
 
 
-    mvp.setToIdentity();
-    mvp.perspective(60.0f, 1.33f, 0.1f, 300.0f);
-    mvp.lookAt(QVector3D(0.0, 0.0, -100.0),
+    QMatrix4x4 vp;
+    vp.setToIdentity();
+    vp.perspective(60.0f, 1.33f, 0.1f, 300.0f);
+    vp.lookAt(QVector3D(0.0, 0.0, -100.0),
                QVector3D(0.0, 0.0, 0.0),
                QVector3D(0.0, 1.0, 0.0));
-    mvp.scale(0.3);
-    mvp.rotate(elapsed_timer->elapsed() / 4.0, QVector3D(0, 1, 0));
-    shader.setUniformValue("MVP", mvp);
+
+
+    QMatrix4x4 m;
+    m.scale(1.0);
+    m.rotate(-120, QVector3D(1, 0, 0));
+
+
+    shader.setUniformValue("MVP", vp * m);
+    shader.setUniformValue("M", m);
 
 
 

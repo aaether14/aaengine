@@ -26,7 +26,6 @@ class GLController : public QOpenGLWidget, public QOpenGLFunctions
 
 
     QOpenGLShaderProgram shader;
-    QMatrix4x4 mvp;
     QTime * elapsed_timer;
 
 

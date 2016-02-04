@@ -5,11 +5,8 @@
 
 #include <QObject>
 #include <QDebug>
-#include <QOpenGLVertexArrayObject>
-#include <QOpenGLBuffer>
-#include <QOpenGLShaderProgram>
-#include <QOpenGLFunctions>
-#include <fbxsdk.h>
+#include <QSharedPointer>
+#include <fbx_manager/meshentry.hpp>
 
 
 
@@ -18,16 +15,10 @@ class FBXManager : public QObject
 {
 
 
+
     Q_OBJECT
-
-
     FbxManager * manager;
-    QOpenGLVertexArrayObject vao;
-    QOpenGLBuffer vbo;
-    QOpenGLBuffer ibo;
-
-
-    int tri_count;
+    QVector<QSharedPointer<MeshEntry> > mesh_entries;
 
 
 
