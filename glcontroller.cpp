@@ -41,6 +41,7 @@ GLController::~GLController()
 
 
     makeCurrent();
+    delete mesh;
     doneCurrent();
 
 
@@ -54,8 +55,9 @@ GLController::~GLController()
 void GLController::initializeGL()
 {
 
+
     initializeOpenGLFunctions();
-    glClearColor(0.3, 0.3, 0.3, 1.0);
+    glClearColor(0.8, 0.85, 0.9, 1.0);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
@@ -69,7 +71,8 @@ void GLController::initializeGL()
 
 
 
-    findChild<FBXManager*>("FBXManager")->LoadFromFBX("dragon.fbx", shader);
+    mesh = new Mesh();
+    mesh->LoadFromFBX(findChild<FBXManager*>("FBXManager"), shader, "Street/street.fbx");
 
 
 
@@ -86,9 +89,8 @@ void GLController::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
+
     shader.bind();
-
-
 
 
     QMatrix4x4 vp;
@@ -100,7 +102,7 @@ void GLController::paintGL()
 
 
     QMatrix4x4 m;
-    m.scale(1.0);
+    m.scale(3.0);
     m.rotate(-120, QVector3D(1, 0, 0));
 
 
@@ -111,7 +113,7 @@ void GLController::paintGL()
 
 
 
-    findChild<FBXManager*>("FBXManager")->Draw(this);
+    mesh->Draw(this);
     shader.release();
 
 

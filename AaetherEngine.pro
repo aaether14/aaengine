@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     script_module/jsconsole.cpp \
     console/logger.cpp \
     fbx_manager/fbxmanager.cpp \
-    fbx_manager/meshentry.cpp
+    fbx_manager/meshentry.cpp \
+    fbx_manager/mesh.cpp
 
 
 HEADERS  += controller.hpp \
@@ -35,7 +36,8 @@ HEADERS  += controller.hpp \
     script_module/jsconsole.hpp \
     console/logger.hpp \
     fbx_manager/fbxmanager.hpp \
-    fbx_manager/meshentry.hpp
+    fbx_manager/meshentry.hpp \
+    fbx_manager/mesh.hpp
 
 
 
@@ -50,7 +52,6 @@ CONFIG += c++11
 
 RESOURCES += \
     resources.qrc
-
 
 
 LIBS += -lfbxsdk

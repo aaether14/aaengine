@@ -11,8 +11,7 @@
 #include <QTimer>
 #include <QTime>
 #include <QDebug>
-#include <fbx_manager/fbxmanager.hpp>
-
+#include <fbx_manager/mesh.hpp>
 
 
 
@@ -26,6 +25,7 @@ class GLController : public QOpenGLWidget, public QOpenGLFunctions
 
 
     QOpenGLShaderProgram shader;
+    Mesh * mesh;
     QTime * elapsed_timer;
 
 

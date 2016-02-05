@@ -24,6 +24,11 @@ MeshEntry::~MeshEntry()
 {
 
 
+    ibo.destroy();
+    vertices_vbo.destroy();
+    normals_vbo.destroy();
+    uvs_vbo.destroy();
+    vao.destroy();
 
 
 }
@@ -32,7 +37,7 @@ MeshEntry::~MeshEntry()
 
 
 
-void MeshEntry::LoadMesh(FbxMesh * mesh, QOpenGLShaderProgram & shader)
+void MeshEntry::LoadMesh(FbxMesh * mesh, QOpenGLShaderProgram & shader, QString directory, QMap<QString, QOpenGLTexture *> &texture_cache)
 {
 
 
@@ -43,11 +48,12 @@ void MeshEntry::LoadMesh(FbxMesh * mesh, QOpenGLShaderProgram & shader)
     shader.bind();
 
 
+
     LoadVertices(mesh, shader);
     LoadNormals(mesh, shader);
-    LoadMaterials(mesh, shader);
     LoadUVs(mesh, shader);
     LoadIndices(mesh);
+    LoadMaterials(mesh, shader, directory, texture_cache);
 
 
 
@@ -63,13 +69,28 @@ void MeshEntry::LoadMesh(FbxMesh * mesh, QOpenGLShaderProgram & shader)
 
 
 
-void MeshEntry::Draw(QOpenGLFunctions * f)
+void MeshEntry::Draw(QOpenGLFunctions * f, QMap<QString, QOpenGLTexture *> &texture_cache)
 {
 
 
     vao.bind();
-    material_texture->bind();
+
+
+
+    if (textures.count("diffuse"))
+        texture_cache[textures["diffuse"]]->bind();
+
+
+
     f->glDrawElements(GL_TRIANGLES, tri_count, GL_UNSIGNED_INT, 0);
+
+
+
+    if (textures.count("diffuse"))
+        texture_cache[textures["diffuse"]]->release();
+
+
+
     vao.release();
 
 
@@ -124,6 +145,7 @@ void MeshEntry::LoadNormals(FbxMesh * mesh, QOpenGLShaderProgram & shader)
     if(mesh->GetElementNormalCount() < 1)
     {
         qDebug() << "Invalid normals!";
+        return;
     }
 
 
@@ -137,8 +159,7 @@ void MeshEntry::LoadNormals(FbxMesh * mesh, QOpenGLShaderProgram & shader)
     }
     else
     {
-
-
+        qDebug() << "Invalid normal format!";
     }
 
 
@@ -183,9 +204,8 @@ void MeshEntry::LoadNormals(FbxMesh * mesh, QOpenGLShaderProgram & shader)
 
 
 
-void MeshEntry::LoadMaterials(FbxMesh *mesh, QOpenGLShaderProgram &shader)
+void MeshEntry::LoadMaterials(FbxMesh *mesh, QOpenGLShaderProgram &shader, QString directory, QMap<QString, QOpenGLTexture *> &texture_cache)
 {
-
 
 
 
@@ -199,26 +219,30 @@ void MeshEntry::LoadMaterials(FbxMesh *mesh, QOpenGLShaderProgram &shader)
         {
 
 
+
             FbxProperty prop = material->FindProperty(FbxSurfaceMaterial::sDiffuse);
-            for (int j = 0; j < prop.GetSrcObjectCount<FbxFileTexture>(); j++)
+            if (prop.GetSrcObjectCount<FbxFileTexture>() > 0)
             {
+                FbxFileTexture* texture = FbxCast<FbxFileTexture>(prop.GetSrcObject<FbxFileTexture>(0));
+                QString texture_index = ComputeTextureFilename(texture->GetFileName(), directory);
 
 
-                FbxFileTexture* texture = FbxCast<FbxFileTexture>(prop.GetSrcObject<FbxFileTexture>(j));
-                qDebug() << texture->GetFileName();
-                QString texture_filename = QString(texture->GetFileName());
-                texture_filename = texture_filename.mid(texture_filename.lastIndexOf("\\") + 1, texture_filename.length());
+                if (QFileInfo(texture_index).exists())
+                {
+                    textures["diffuse"] = texture_index;
+                    if (!texture_cache.count(texture_index))
+                    {
+
+                        QOpenGLTexture * diffuse_texture = new QOpenGLTexture(QImage(texture_index).mirrored());
+                        texture_cache[texture_index] = diffuse_texture;
+                        shader.setUniformValue("material_texture", 0);
+
+                    }
+                }
 
 
-                material_texture = new QOpenGLTexture(QImage(texture_filename).mirrored());
-                shader.setUniformValue("material_texture", 0);
-
-
-
-                break;
 
             }
-
 
         }
 
@@ -240,6 +264,7 @@ void MeshEntry::LoadUVs(FbxMesh *mesh, QOpenGLShaderProgram &shader)
     if (mesh->GetElementUVCount() < 1)
     {
         qDebug() << "Invalid UVs!";
+        return;
     }
 
 
@@ -252,8 +277,7 @@ void MeshEntry::LoadUVs(FbxMesh *mesh, QOpenGLShaderProgram &shader)
     }
     else
     {
-
-
+        qDebug() << "Invalid UV format!";
     }
 
 
@@ -321,6 +345,26 @@ void MeshEntry::LoadIndices(FbxMesh *mesh)
     ibo.bind();
     ibo.allocate(&indices[0], sizeof(unsigned int) * indices.size());
 
+
+
+
+
+}
+
+
+
+QString MeshEntry::ComputeTextureFilename(QString file_name, QString directory)
+{
+
+
+    file_name.replace("\\", "/");
+    file_name = file_name.mid(file_name.lastIndexOf("/") + 1, file_name.length());
+    if (directory.length() > 0)
+        file_name = directory + "/" + file_name;
+
+
+
+    return file_name;
 
 
 

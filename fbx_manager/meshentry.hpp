@@ -10,6 +10,8 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLTexture>
 #include <QImage>
+#include <QFileInfo>
+#include <QMap>
 #include <QVector>
 #include <fbxsdk.h>
 
@@ -27,18 +29,23 @@ class MeshEntry
     QOpenGLBuffer vertices_vbo;
     QOpenGLBuffer normals_vbo;
     QOpenGLBuffer uvs_vbo;
-    QOpenGLTexture *material_texture;
 
 
+
+    QMap<QString, QString> textures;
     int tri_count;
 
 
 
     void LoadVertices(FbxMesh * mesh, QOpenGLShaderProgram & shader);
     void LoadNormals(FbxMesh * mesh, QOpenGLShaderProgram & shader);
-    void LoadMaterials(FbxMesh * mesh, QOpenGLShaderProgram & shader);
+    void LoadMaterials(FbxMesh * mesh, QOpenGLShaderProgram & shader, QString directory, QMap<QString, QOpenGLTexture *> &texture_cache);
     void LoadUVs(FbxMesh *mesh, QOpenGLShaderProgram &shader);
     void LoadIndices(FbxMesh * mesh);
+
+
+
+    QString ComputeTextureFilename(QString file_name, QString directory);
 
 
 
@@ -50,8 +57,8 @@ public:
 
 
 
-    void LoadMesh(FbxMesh * mesh, QOpenGLShaderProgram & shader);
-    void Draw(QOpenGLFunctions * f);
+    void LoadMesh(FbxMesh * mesh, QOpenGLShaderProgram & shader, QString directory, QMap<QString, QOpenGLTexture *> &texture_cache);
+    void Draw(QOpenGLFunctions * f, QMap<QString, QOpenGLTexture *> &texture_cache);
 
 
 

@@ -5,8 +5,8 @@
 
 #include <QObject>
 #include <QDebug>
-#include <QSharedPointer>
-#include <fbx_manager/meshentry.hpp>
+#include <fbxsdk.h>
+
 
 
 
@@ -18,7 +18,7 @@ class FBXManager : public QObject
 
     Q_OBJECT
     FbxManager * manager;
-    QVector<QSharedPointer<MeshEntry> > mesh_entries;
+
 
 
 
@@ -28,11 +28,6 @@ public:
 
     explicit FBXManager(QObject *parent = 0);
     ~FBXManager();
-
-
-
-    void LoadFromFBX(const char * file_name, QOpenGLShaderProgram & shader);
-    void Draw(QOpenGLFunctions * f);
     /**
     FBX manager
     */

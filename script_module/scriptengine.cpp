@@ -8,11 +8,7 @@ ScriptEngine::ScriptEngine(QObject *parent) : QJSEngine(parent)
 
 
     setObjectName("ScriptEngine");
-
-
-
     globalObject().setProperty("console", newQObject(new JSConsole(this)));
-
 
 
 
