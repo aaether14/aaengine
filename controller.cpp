@@ -17,6 +17,13 @@ Controller::Controller(QWidget *parent) :
 
 
     ScriptEngine * script_engine = new ScriptEngine(this);
+
+
+    script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<FPS*>("gFPS"));
+    script_engine->AddQMLScript("qrc:/qml/default_camera.qml", findChild<QObject*>("GL")->findChild<QTimer*>("gTimer"));
+
+
+
     Console * console = new Console(this);
 
 

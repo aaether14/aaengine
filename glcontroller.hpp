@@ -9,9 +9,9 @@
 #include <QOpenGLShaderProgram>
 #include <QMatrix4x4>
 #include <QTimer>
-#include <QTime>
 #include <QDebug>
 #include <fbx_manager/mesh.hpp>
+#include <fps.hpp>
 
 
 
@@ -26,7 +26,7 @@ class GLController : public QOpenGLWidget, public QOpenGLFunctions
 
     QOpenGLShaderProgram shader;
     Mesh * mesh;
-    QTime * elapsed_timer;
+
 
 
 

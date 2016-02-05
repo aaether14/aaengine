@@ -3,16 +3,22 @@
 
 
 
-#include <QJSEngine>
-#include <QString>
+
+#include <QQmlEngine>
+#include <QQmlComponent>
+#include <QQmlContext>
+#include <QMatrix4x4>
+#include <QTimer>
 #include <QDebug>
-#include <script_module/jsconsole.hpp>
 
 
 
 
-class ScriptEngine : public QJSEngine
+
+class ScriptEngine : public QQmlEngine
 {
+
+
     Q_OBJECT
 
 
@@ -20,11 +26,14 @@ class ScriptEngine : public QJSEngine
 public:
     explicit ScriptEngine(QObject *parent = 0);
 
+
 signals:
 
 
 public slots:
     void RunScriptFromString(QString script_code);
+    void AddQMLScript(QString path, QTimer * timer);
+    void RegisterQObject(QObject * obj);
 
 
 

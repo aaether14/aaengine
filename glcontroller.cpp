@@ -8,21 +8,18 @@ GLController::GLController(QWidget *parent)
 {
 
 
-
     QTimer * timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &GLController::Update);
+    timer->setObjectName("gTimer");
     timer->start(0.0);
+
+
+    FPS * fps = new FPS(this);
+    connect(timer, &QTimer::timeout, fps, &FPS::Update);
+    connect(timer, &QTimer::timeout, this, &GLController::Update);
 
 
 
     FBXManager * fbx_manager = new FBXManager(this);
-
-
-
-
-    elapsed_timer = new QTime();
-    elapsed_timer->start();
-
 
 
 
@@ -35,9 +32,6 @@ GLController::GLController(QWidget *parent)
 GLController::~GLController()
 {
 
-
-
-    delete elapsed_timer;
 
 
     makeCurrent();
@@ -72,7 +66,7 @@ void GLController::initializeGL()
 
 
     mesh = new Mesh();
-    mesh->LoadFromFBX(findChild<FBXManager*>("FBXManager"), shader, "Street/street.fbx");
+    mesh->LoadFromFBX(findChild<FBXManager*>("FBXManager"), shader, "Bear/bear.fbx");
 
 
 
@@ -93,12 +87,9 @@ void GLController::paintGL()
     shader.bind();
 
 
-    QMatrix4x4 vp;
-    vp.setToIdentity();
-    vp.perspective(60.0f, 1.33f, 0.1f, 300.0f);
-    vp.lookAt(QVector3D(0.0, 0.0, -100.0),
-               QVector3D(0.0, 0.0, 0.0),
-               QVector3D(0.0, 1.0, 0.0));
+
+
+    QMatrix4x4 vp = qvariant_cast<QMatrix4x4>(parent()->parent()->findChild<QObject*>("ScriptEngine")->findChild<QObject*>("Default_camera")->property("vp"));
 
 
     QMatrix4x4 m;

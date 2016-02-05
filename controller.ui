@@ -14,7 +14,7 @@
    <string>Aaether Engine</string>
   </property>
   <widget class="QWidget" name="centre">
-   <widget class="GLController" name="openGLWidget">
+   <widget class="GLController" name="GL">
     <property name="geometry">
      <rect>
       <x>40</x>

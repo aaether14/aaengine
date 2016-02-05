@@ -22,22 +22,22 @@ SOURCES += main.cpp\
     glcontroller.cpp \
     console/console.cpp \
     script_module/scriptengine.cpp \
-    script_module/jsconsole.cpp \
     console/logger.cpp \
     fbx_manager/fbxmanager.cpp \
     fbx_manager/meshentry.cpp \
-    fbx_manager/mesh.cpp
+    fbx_manager/mesh.cpp \
+    fps.cpp
 
 
 HEADERS  += controller.hpp \
     glcontroller.hpp \
     console/console.hpp \
     script_module/scriptengine.hpp \
-    script_module/jsconsole.hpp \
     console/logger.hpp \
     fbx_manager/fbxmanager.hpp \
     fbx_manager/meshentry.hpp \
-    fbx_manager/mesh.hpp
+    fbx_manager/mesh.hpp \
+    fps.hpp
 
 
 
@@ -55,6 +55,8 @@ RESOURCES += \
 
 
 LIBS += -lfbxsdk
+
+DISTFILES +=
 
 
 
