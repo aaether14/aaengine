@@ -4,7 +4,7 @@
 
 
 #include <QMainWindow>
-#include <glcontroller.hpp>
+#include <core/glcontroller.hpp>
 #include <console/console.hpp>
 #include <script_module/scriptengine.hpp>
 

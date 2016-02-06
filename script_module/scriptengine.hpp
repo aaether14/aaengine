@@ -8,7 +8,7 @@
 #include <QQmlComponent>
 #include <QQmlContext>
 #include <QMatrix4x4>
-#include <QTimer>
+#include <core/glcontroller.hpp>
 #include <QDebug>
 
 

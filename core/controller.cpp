@@ -1,4 +1,4 @@
-#include <controller.hpp>
+#include <core/controller.hpp>
 #include "ui_controller.h"
 
 
@@ -20,6 +20,7 @@ Controller::Controller(QWidget *parent) :
 
 
     script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<FPS*>("gFPS"));
+    script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<InputRegister*>("gInput"));
     script_engine->AddQMLScript("qrc:/qml/default_camera.qml", findChild<QObject*>("GL")->findChild<QTimer*>("gTimer"));
 
 
@@ -48,7 +49,7 @@ void Controller::on_actionConsole_triggered()
 
 
     if (findChild<Console*>("Console"))
-    findChild<Console*>("Console")->show();
+        findChild<Console*>("Console")->show();
 
 
 

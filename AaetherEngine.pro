@@ -1,3 +1,4 @@
+
 #-------------------------------------------------
 #
 # Project created by QtCreator 2016-01-29T16:11:49
@@ -17,27 +18,31 @@ TEMPLATE = app
 
 
 
+
 SOURCES += main.cpp\
-        controller.cpp \
-    glcontroller.cpp \
+        core/controller.cpp \
+    core/glcontroller.cpp \
     console/console.cpp \
     script_module/scriptengine.cpp \
     console/logger.cpp \
     fbx_manager/fbxmanager.cpp \
     fbx_manager/meshentry.cpp \
     fbx_manager/mesh.cpp \
-    fps.cpp
+    core/fps.cpp \
+    core/inputregister.cpp
 
 
-HEADERS  += controller.hpp \
-    glcontroller.hpp \
+
+HEADERS  += core/controller.hpp \
+    core/glcontroller.hpp \
     console/console.hpp \
     script_module/scriptengine.hpp \
     console/logger.hpp \
     fbx_manager/fbxmanager.hpp \
     fbx_manager/meshentry.hpp \
     fbx_manager/mesh.hpp \
-    fps.hpp
+    core/fps.hpp \
+    core/inputregister.hpp
 
 
 
@@ -56,7 +61,9 @@ RESOURCES += \
 
 LIBS += -lfbxsdk
 
-DISTFILES +=
+
+
+
 
 
 

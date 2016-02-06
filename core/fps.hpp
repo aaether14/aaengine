@@ -19,6 +19,7 @@ class FPS : public QObject
     QTime * elapsed_timer;
     int frame_counter;
     int fps;
+    float r_delta;
 
 
 

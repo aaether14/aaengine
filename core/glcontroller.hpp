@@ -7,11 +7,17 @@
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram>
+
+
 #include <QMatrix4x4>
 #include <QTimer>
 #include <QDebug>
+
+
+
 #include <fbx_manager/mesh.hpp>
-#include <fps.hpp>
+#include <core/fps.hpp>
+#include <core/inputregister.hpp>
 
 
 
@@ -43,7 +49,17 @@ public:
 
 
 
+    void keyPressEvent(QKeyEvent * e);
+    void keyReleaseEvent(QKeyEvent * e);
+    void mousePressEvent(QMouseEvent * e);
+    void mouseReleaseEvent(QMouseEvent * e);
+    void mouseMoveEvent(QMouseEvent * e);
+
+
+
 signals:
+
+
 
 private slots:
     void Update();

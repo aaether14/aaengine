@@ -1,4 +1,4 @@
-#include <glcontroller.hpp>
+#include <core/glcontroller.hpp>
 
 
 
@@ -6,6 +6,7 @@
 GLController::GLController(QWidget *parent)
     : QOpenGLWidget(parent)
 {
+
 
 
     QTimer * timer = new QTimer(this);
@@ -19,7 +20,12 @@ GLController::GLController(QWidget *parent)
 
 
 
+    InputRegister * input = new InputRegister(this);
+
+
+
     FBXManager * fbx_manager = new FBXManager(this);
+    setFocusPolicy(Qt::StrongFocus);
 
 
 
@@ -66,7 +72,7 @@ void GLController::initializeGL()
 
 
     mesh = new Mesh();
-    mesh->LoadFromFBX(findChild<FBXManager*>("FBXManager"), shader, "Bear/bear.fbx");
+    mesh->LoadFromFBX(findChild<FBXManager*>("FBXManager"), shader, "Street/street.fbx");
 
 
 
@@ -89,12 +95,11 @@ void GLController::paintGL()
 
 
 
-    QMatrix4x4 vp = qvariant_cast<QMatrix4x4>(parent()->parent()->findChild<QObject*>("ScriptEngine")->findChild<QObject*>("Default_camera")->property("vp"));
+    QMatrix4x4 vp = qvariant_cast<QMatrix4x4>(parent()->parent()->findChild<QObject*>("ScriptEngine")->findChild<QObject*>("Default_camera")->property("out_viewProj"));
 
 
     QMatrix4x4 m;
-    m.scale(3.0);
-    m.rotate(-120, QVector3D(1, 0, 0));
+    m.setToIdentity();
 
 
     shader.setUniformValue("MVP", vp * m);
@@ -125,11 +130,75 @@ void GLController::resizeGL(int w, int h)
 
 
 
+void GLController::keyPressEvent(QKeyEvent *e)
+{
+
+
+    if (findChild<InputRegister*>("gInput"))
+        findChild<InputRegister*>("gInput")->RegisterKeyPress(e);
+
+
+}
+
+
+
+void GLController::keyReleaseEvent(QKeyEvent *e)
+{
+
+    if (findChild<InputRegister*>("gInput"))
+        findChild<InputRegister*>("gInput")->RegisterKeyRelease(e);
+
+}
+
+
+
+
+void GLController::mousePressEvent(QMouseEvent *e)
+{
+
+
+    if (findChild<InputRegister*>("gInput"))
+        findChild<InputRegister*>("gInput")->RegisterMousePress(e);
+
+
+}
+
+
+
+
+void GLController::mouseReleaseEvent(QMouseEvent *e)
+{
+
+
+    if (findChild<InputRegister*>("gInput"))
+        findChild<InputRegister*>("gInput")->RegisterMouseRelease(e);
+
+
+
+}
+
+
+
+void GLController::mouseMoveEvent(QMouseEvent *e)
+{
+
+    if (findChild<InputRegister*>("gInput"))
+        findChild<InputRegister*>("gInput")->RegisterMouseMovement(e);
+
+
+
+}
+
+
+
+
+
 void GLController::Update()
 {
 
 
     update();
+
 
 
 }
