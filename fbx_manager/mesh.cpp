@@ -14,7 +14,6 @@ void Mesh::RecursiveLoad(FbxNode *node, QOpenGLShaderProgram &shader)
 
 
 
-
     if(!node->GetNodeAttribute())
         return;
     FbxNodeAttribute::EType AttributeType = node->GetNodeAttribute()->GetAttributeType();
@@ -36,10 +35,10 @@ void Mesh::RecursiveLoad(FbxNode *node, QOpenGLShaderProgram &shader)
 
 
 
+
     MeshEntry * new_mesh_entry = new MeshEntry();
     new_mesh_entry->LoadMesh(mesh, shader, directory, texture_cache);
     mesh_entries.push_back(QSharedPointer<MeshEntry>(new_mesh_entry));
-
 
 
 
@@ -99,22 +98,26 @@ void Mesh::LoadFromFBX(FBXManager *fbx_manager, QOpenGLShaderProgram &shader, co
 
 
 
-
-
     FbxAxisSystem SceneAxisSystem = scene->GetGlobalSettings().GetAxisSystem();
-    if (SceneAxisSystem != FbxAxisSystem::OpenGL)
-    {
-        FbxAxisSystem::OpenGL.ConvertScene(scene);
-    }
+     if (SceneAxisSystem != FbxAxisSystem::OpenGL)
+     {
+         FbxAxisSystem::OpenGL.ConvertScene(scene);
+     }
 
 
 
-    FbxSystemUnit SceneSystemUnit = scene->GetGlobalSettings().GetSystemUnit();
-    if( SceneSystemUnit.GetScaleFactor() != 1.0 )
-    {
-        FbxSystemUnit::cm.ConvertScene(scene);
-    }
+     FbxSystemUnit SceneSystemUnit = scene->GetGlobalSettings().GetSystemUnit();
+     if( SceneSystemUnit.GetScaleFactor() != 1.0 )
+     {
+         FbxSystemUnit::cm.ConvertScene(scene);
+     }
 
+
+
+
+
+    FbxGeometryConverter geometry_converter(fbx_manager->GetManager());
+    geometry_converter.Triangulate(scene, true);
 
 
 
@@ -158,12 +161,12 @@ void Mesh::LoadFromFBX(FBXManager *fbx_manager, QOpenGLShaderProgram &shader, co
 
 }
 
-void Mesh::Draw(QOpenGLFunctions *f)
+void Mesh::Draw(QOpenGLFunctions *f, QOpenGLShaderProgram &shader)
 {
 
 
     for (auto it : mesh_entries)
-        it->Draw(f, texture_cache);
+        it->Draw(f, texture_cache, shader);
 
 
 

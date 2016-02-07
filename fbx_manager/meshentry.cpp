@@ -54,6 +54,7 @@ void MeshEntry::LoadMesh(FbxMesh * mesh, QOpenGLShaderProgram & shader, QString 
     LoadUVs(mesh, shader);
     LoadIndices(mesh);
     LoadMaterials(mesh, shader, directory, texture_cache);
+    LoadTransform(mesh);
 
 
 
@@ -63,14 +64,19 @@ void MeshEntry::LoadMesh(FbxMesh * mesh, QOpenGLShaderProgram & shader, QString 
 
 
 
-
 }
 
 
 
 
-void MeshEntry::Draw(QOpenGLFunctions * f, QMap<QString, QOpenGLTexture *> &texture_cache)
+void MeshEntry::Draw(QOpenGLFunctions * f, QMap<QString, QOpenGLTexture *> &texture_cache, QOpenGLShaderProgram &shader)
 {
+
+
+
+    shader.setUniformValue("M", local_transform);
+
+
 
 
     vao.bind();
@@ -78,7 +84,15 @@ void MeshEntry::Draw(QOpenGLFunctions * f, QMap<QString, QOpenGLTexture *> &text
 
 
     if (textures.count("diffuse"))
+    {
         texture_cache[textures["diffuse"]]->bind();
+        shader.setUniformValue("use_diffuse_texture", true);
+    }
+    else
+    {
+        shader.setUniformValue("diffuse_color", colors["diffuse"]);
+        shader.setUniformValue("use_diffuse_texture", false);
+    }
 
 
 
@@ -212,46 +226,22 @@ void MeshEntry::LoadMaterials(FbxMesh *mesh, QOpenGLShaderProgram &shader, QStri
     for (int i = 0; i < mesh->GetNode()->GetSrcObjectCount<FbxSurfaceMaterial>(); i++)
     {
 
-
-
         FbxSurfaceMaterial *material = mesh->GetNode()->GetSrcObject<FbxSurfaceMaterial>(i);
         if (material)
         {
 
-
-
-            FbxProperty prop = material->FindProperty(FbxSurfaceMaterial::sDiffuse);
-            if (prop.GetSrcObjectCount<FbxFileTexture>() > 0)
-            {
-                FbxFileTexture* texture = FbxCast<FbxFileTexture>(prop.GetSrcObject<FbxFileTexture>(0));
-                QString texture_index = ComputeTextureFilename(texture->GetFileName(), directory);
-
-
-                if (QFileInfo(texture_index).exists())
-                {
-                    textures["diffuse"] = texture_index;
-                    if (!texture_cache.count(texture_index))
-                    {
-
-                        QOpenGLTexture * diffuse_texture = new QOpenGLTexture(QImage(texture_index).mirrored());
-                        texture_cache[texture_index] = diffuse_texture;
-                        shader.setUniformValue("material_texture", 0);
-
-                    }
-                }
-
-
-
-            }
+            LoadDiffuseMaterial(material, shader, directory, texture_cache);
 
         }
-
-
 
     }
 
 
+
+
+
 }
+
 
 
 
@@ -353,6 +343,37 @@ void MeshEntry::LoadIndices(FbxMesh *mesh)
 
 
 
+void MeshEntry::LoadTransform(FbxMesh *mesh)
+{
+
+
+    FbxAMatrix transform = mesh->GetNode()->GetParent()->EvaluateLocalTransform(0)
+            * mesh->GetNode()->EvaluateLocalTransform(0);
+
+
+
+    QVector3D base_scale = QVector3D(transform.GetS().mData[0],
+            transform.GetS().mData[1],
+            transform.GetS().mData[2]);
+    QMatrix4x4 base_scale_matrix;
+    base_scale_matrix.scale(QVector3D(1.0, 1.0, 1.0) / base_scale);
+
+
+
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            local_transform(i, j) = transform.Transpose().Get(i, j);
+
+
+    local_transform = base_scale_matrix * local_transform;
+
+
+
+
+}
+
+
+
 QString MeshEntry::ComputeTextureFilename(QString file_name, QString directory)
 {
 
@@ -365,6 +386,53 @@ QString MeshEntry::ComputeTextureFilename(QString file_name, QString directory)
 
 
     return file_name;
+
+
+
+}
+
+
+
+void MeshEntry::LoadDiffuseMaterial(FbxSurfaceMaterial *material, QOpenGLShaderProgram &shader, QString directory, QMap<QString, QOpenGLTexture *> &texture_cache)
+{
+
+
+    FbxProperty diffuse_prop = material->FindProperty(FbxSurfaceMaterial::sDiffuse);
+    if (diffuse_prop.GetSrcObjectCount<FbxFileTexture>() > 0)
+    {
+        FbxFileTexture* texture = FbxCast<FbxFileTexture>(diffuse_prop.GetSrcObject<FbxFileTexture>(0));
+        QString texture_index = ComputeTextureFilename(texture->GetFileName(), directory);
+
+
+        if (QFileInfo(texture_index).exists())
+        {
+            textures["diffuse"] = texture_index;
+            if (!texture_cache.count(texture_index))
+            {
+
+                QOpenGLTexture * diffuse_texture = new QOpenGLTexture(QImage(texture_index).mirrored());
+                texture_cache[texture_index] = diffuse_texture;
+                shader.setUniformValue("diffuse_texture", 0);
+
+            }
+        }
+        else
+        {
+            qDebug() << "Can't find texture: " << texture_index << " in the .fbx folder!";
+        }
+
+
+    }
+
+
+
+    colors["diffuse"] = QVector3D(diffuse_prop.Get<FbxDouble3>().mData[0],
+            diffuse_prop.Get<FbxDouble3>().mData[1],
+            diffuse_prop.Get<FbxDouble3>().mData[2]);
+
+
+
+
 
 
 

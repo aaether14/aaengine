@@ -17,15 +17,19 @@ QtObject
 
 
     property vector3d direction: Qt.vector3d(0, 0, -1)
-    property vector2d angles: Qt.vector2d(0, 0)
+    property vector2d angles: Qt.vector2d(Math.PI, 0)
 
 
 
 
+    property real base_movement_speed: 50.0
     property real movement_speed: 50.0
+    property real speed_modifier: 4.0
+
+
+
+
     property real rotation_speed: Math.PI
-
-
     property real mouse_speed: 2.5
     property vector2d last_mouse_position: Qt.vector2d(0, 0)
 
@@ -37,10 +41,10 @@ QtObject
         projectionType: CameraLens.PerspectiveProjection
         fieldOfView: 60
         aspectRatio: 1.33
-        nearPlane : 0.01
-        farPlane : 300.0
+        nearPlane : 0.1
+        farPlane : 1000.0
 
-        position: Qt.vector3d(0.0, 0.0, 100)
+        position: Qt.vector3d(0.0, 5.0, 10)
         upVector: Qt.vector3d(0.0, 1.0, 0.0)
         viewCenter: Qt.vector3d(0.0, 0.0, 0.0)
 
@@ -93,6 +97,11 @@ QtObject
     {
 
 
+        if (gInput.getKey(288))
+            movement_speed = base_movement_speed * speed_modifier;
+        else
+            movement_speed = base_movement_speed;
+
 
 
         if(gInput.getKey(Qt.Key_W))
@@ -123,7 +132,7 @@ QtObject
 
 
             var delta_mouse_position = (gInput.getMousePosition().minus(last_mouse_position)).times(gFPS.delta() * mouse_speed);
-            angles = angles.plus(delta_mouse_position);
+            angles = angles.minus(delta_mouse_position);
             last_mouse_position = gInput.getMousePosition();
 
 

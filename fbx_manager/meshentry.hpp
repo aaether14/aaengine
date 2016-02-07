@@ -13,6 +13,7 @@
 #include <QFileInfo>
 #include <QMap>
 #include <QVector>
+#include <QMatrix4x4>
 #include <fbxsdk.h>
 
 
@@ -33,6 +34,11 @@ class MeshEntry
 
 
     QMap<QString, QString> textures;
+    QMap<QString, QVector3D> colors;
+
+
+
+    QMatrix4x4 local_transform;
     int tri_count;
 
 
@@ -42,10 +48,12 @@ class MeshEntry
     void LoadMaterials(FbxMesh * mesh, QOpenGLShaderProgram & shader, QString directory, QMap<QString, QOpenGLTexture *> &texture_cache);
     void LoadUVs(FbxMesh *mesh, QOpenGLShaderProgram &shader);
     void LoadIndices(FbxMesh * mesh);
+    void LoadTransform(FbxMesh * mesh);
 
 
 
     QString ComputeTextureFilename(QString file_name, QString directory);
+    void LoadDiffuseMaterial(FbxSurfaceMaterial * material, QOpenGLShaderProgram & shader, QString directory, QMap<QString, QOpenGLTexture *> &texture_cache);
 
 
 
@@ -58,7 +66,7 @@ public:
 
 
     void LoadMesh(FbxMesh * mesh, QOpenGLShaderProgram & shader, QString directory, QMap<QString, QOpenGLTexture *> &texture_cache);
-    void Draw(QOpenGLFunctions * f, QMap<QString, QOpenGLTexture *> &texture_cache);
+    void Draw(QOpenGLFunctions * f, QMap<QString, QOpenGLTexture *> &texture_cache, QOpenGLShaderProgram & shader);
 
 
 

@@ -65,15 +65,15 @@ void GLController::initializeGL()
 
 
 
-    shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/simple.vert");
-    shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/simple.frag");
+    shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/fbx_render.vert");
+    shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fbx_render.frag");
     shader.link();
 
 
 
 
     mesh = new Mesh();
-    mesh->LoadFromFBX(findChild<FBXManager*>("FBXManager"), shader, "Dragon/dragon.fbx");
+    mesh->LoadFromFBX(findChild<FBXManager*>("FBXManager"), shader, "Night/club.fbx");
 
 
 
@@ -97,20 +97,11 @@ void GLController::paintGL()
 
 
     QMatrix4x4 vp = qvariant_cast<QMatrix4x4>(parent()->parent()->findChild<QObject*>("ScriptEngine")->findChild<QObject*>("Default_camera")->property("out_viewProj"));
-
-
-    QMatrix4x4 m;
-    m.setToIdentity();
-
-
-    shader.setUniformValue("MVP", vp * m);
-    shader.setUniformValue("M", m);
+    shader.setUniformValue("VP", vp);
 
 
 
-
-
-    mesh->Draw(this);
+    mesh->Draw(this, shader);
     shader.release();
 
 

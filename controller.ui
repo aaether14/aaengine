@@ -17,10 +17,10 @@
    <widget class="GLController" name="GL">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>70</y>
-      <width>640</width>
-      <height>480</height>
+      <x>50</x>
+      <y>40</y>
+      <width>800</width>
+      <height>600</height>
      </rect>
     </property>
    </widget>
@@ -80,7 +80,7 @@
   <customwidget>
    <class>GLController</class>
    <extends>QOpenGLWidget</extends>
-   <header>glcontroller.hpp</header>
+   <header location="global">core/glcontroller.hpp</header>
   </customwidget>
  </customwidgets>
  <resources>

@@ -1,11 +1,11 @@
-#version 330
+#version 430
 
 in vec4 vertex;
 in vec3 normal;
 in vec2 uv;
 
 
-uniform mat4 MVP;
+uniform mat4 VP;
 uniform mat4 M;
 
 
@@ -21,7 +21,7 @@ void main( void )
 
  M_space_normal = normalize(vec3(M * vec4(normal, 0.0)));
  interpolated_uv = uv;
- gl_Position = MVP * vertex;
+ gl_Position = VP * M * vertex;
 
 
 

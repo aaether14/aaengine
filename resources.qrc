@@ -4,8 +4,8 @@
         <file>project.ico</file>
     </qresource>
     <qresource prefix="/shaders">
-        <file>simple.vert</file>
-        <file>simple.frag</file>
+        <file>fbx_render.frag</file>
+        <file>fbx_render.vert</file>
     </qresource>
     <qresource prefix="/base_qml">
         <file>default_camera.qml</file>

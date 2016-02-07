@@ -38,7 +38,7 @@ public:
 
 
     void LoadFromFBX(FBXManager * fbx_manager, QOpenGLShaderProgram & shader, const char * file_name);
-    void Draw(QOpenGLFunctions * f);
+    void Draw(QOpenGLFunctions * f, QOpenGLShaderProgram & shader);
 
 
 
