@@ -116,13 +116,6 @@ QVector2D InputRegister::getMousePosition()
 
 
 
-void InputRegister::setMousePosition(QVector2D position)
-{
-
-    mouse_position = position;
-
-}
-
 
 
 InputRegister::~InputRegister()

@@ -1,4 +1,4 @@
-#include <core/controller.hpp>
+#include <core/main_controller.hpp>
 #include <QApplication>
 
 

@@ -7,7 +7,7 @@
         <file>simple.vert</file>
         <file>simple.frag</file>
     </qresource>
-    <qresource prefix="/qml">
+    <qresource prefix="/base_qml">
         <file>default_camera.qml</file>
     </qresource>
 </RCC>

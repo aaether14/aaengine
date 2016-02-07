@@ -26,6 +26,7 @@ GLController::GLController(QWidget *parent)
 
     FBXManager * fbx_manager = new FBXManager(this);
     setFocusPolicy(Qt::StrongFocus);
+    setMouseTracking(true);
 
 
 
@@ -72,7 +73,7 @@ void GLController::initializeGL()
 
 
     mesh = new Mesh();
-    mesh->LoadFromFBX(findChild<FBXManager*>("FBXManager"), shader, "Street/street.fbx");
+    mesh->LoadFromFBX(findChild<FBXManager*>("FBXManager"), shader, "Dragon/dragon.fbx");
 
 
 

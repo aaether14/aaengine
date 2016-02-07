@@ -20,7 +20,6 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        core/controller.cpp \
     core/glcontroller.cpp \
     console/console.cpp \
     script_module/scriptengine.cpp \
@@ -29,11 +28,12 @@ SOURCES += main.cpp\
     fbx_manager/meshentry.cpp \
     fbx_manager/mesh.cpp \
     core/fps.cpp \
-    core/inputregister.cpp
+    core/inputregister.cpp \
+    core/main_controller.cpp
 
 
 
-HEADERS  += core/controller.hpp \
+HEADERS  += \
     core/glcontroller.hpp \
     console/console.hpp \
     script_module/scriptengine.hpp \
@@ -42,7 +42,8 @@ HEADERS  += core/controller.hpp \
     fbx_manager/meshentry.hpp \
     fbx_manager/mesh.hpp \
     core/fps.hpp \
-    core/inputregister.hpp
+    core/inputregister.hpp \
+    core/main_controller.hpp
 
 
 

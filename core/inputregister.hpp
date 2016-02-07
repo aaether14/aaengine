@@ -43,7 +43,6 @@ public:
     Q_INVOKABLE bool getKey(int key);
     Q_INVOKABLE bool getButton(int button);
     Q_INVOKABLE QVector2D getMousePosition();
-    Q_INVOKABLE void setMousePosition(QVector2D position);
 
 
 

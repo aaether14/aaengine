@@ -17,8 +17,7 @@ QtObject
 
 
     property vector3d direction: Qt.vector3d(0, 0, -1)
-    property real  vertical_angle: Math.PI / 24
-    property real horizontal_angle: Math.PI
+    property vector2d angles: Qt.vector2d(0, 0)
 
 
 
@@ -27,10 +26,8 @@ QtObject
     property real rotation_speed: Math.PI
 
 
-
-    property real mouse_speed: 0.04
+    property real mouse_speed: 2.5
     property vector2d last_mouse_position: Qt.vector2d(0, 0)
-
 
 
 
@@ -74,15 +71,15 @@ QtObject
     function updateDirection()
     {
 
-        direction = Qt.vector3d(Math.cos(vertical_angle) * Math.sin(horizontal_angle),
-                                Math.sin(vertical_angle),
-                                Math.cos(vertical_angle) * Math.cos(horizontal_angle));
+        direction = Qt.vector3d(Math.cos(angles.y) * Math.sin(angles.x),
+                                Math.sin(angles.y),
+                                Math.cos(angles.y) * Math.cos(angles.x)).normalized();
 
 
 
-        var right = Qt.vector3d(Math.sin(horizontal_angle - Math.PI / 2.0),
+        var right = Qt.vector3d(Math.sin(angles.x - Math.PI/2.0),
                                 0,
-                                Math.cos(horizontal_angle - Math.PI / 2.0));
+                                Math.cos(angles.x - Math.PI/2.0));
 
 
         camera.upVector = right.crossProduct(direction);
@@ -106,9 +103,9 @@ QtObject
 
 
         if(gInput.getKey(Qt.Key_A))
-            horizontal_angle = horizontal_angle + gFPS.delta() * rotation_speed;
+            angles.x = angles.x + gFPS.delta() * rotation_speed;
         if(gInput.getKey(Qt.Key_D))
-            horizontal_angle = horizontal_angle - gFPS.delta() * rotation_speed;
+            angles.x = angles.x - gFPS.delta() * rotation_speed;
 
 
 
@@ -119,16 +116,16 @@ QtObject
     function processMouseInput()
     {
 
+
         if (gInput.getButton(Qt.RightButton))
         {
 
 
-            var delta_mouse_position = (last_mouse_position.minus(gInput.getMousePosition())).times(mouse_speed * gFPS.delta());
-            gInput.setMousePosition(last_mouse_position);
 
+            var delta_mouse_position = (gInput.getMousePosition().minus(last_mouse_position)).times(gFPS.delta() * mouse_speed);
+            angles = angles.plus(delta_mouse_position);
+            last_mouse_position = gInput.getMousePosition();
 
-            horizontal_angle = horizontal_angle + delta_mouse_position.x;
-            vertical_angle = vertical_angle + delta_mouse_position.y;
 
         }
         else
