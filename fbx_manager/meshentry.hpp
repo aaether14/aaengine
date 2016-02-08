@@ -30,6 +30,7 @@ class MeshEntry
     QOpenGLBuffer vertices_vbo;
     QOpenGLBuffer normals_vbo;
     QOpenGLBuffer uvs_vbo;
+    QOpenGLBuffer material_indices_vbo;
 
 
 
@@ -39,21 +40,26 @@ class MeshEntry
 
 
     QMatrix4x4 local_transform;
+    QMatrix4x4 * global_transform_ptr;
     int tri_count;
 
 
 
     void LoadVertices(FbxMesh * mesh, QOpenGLShaderProgram & shader);
     void LoadNormals(FbxMesh * mesh, QOpenGLShaderProgram & shader);
-    void LoadMaterials(FbxMesh * mesh, QOpenGLShaderProgram & shader, QString directory, QMap<QString, QOpenGLTexture *> &texture_cache);
+    void LoadMaterials(FbxMesh * mesh, QOpenGLShaderProgram & shader, QString fbx_file_name,
+                       QMap<QString, QOpenGLTexture *> &texture_cache);
+    void LoadMaterialIndices(FbxMesh * mesh, QOpenGLShaderProgram & shader);
     void LoadUVs(FbxMesh *mesh, QOpenGLShaderProgram &shader);
     void LoadIndices(FbxMesh * mesh);
     void LoadTransform(FbxMesh * mesh);
 
 
 
-    QString ComputeTextureFilename(QString file_name, QString directory);
-    void LoadDiffuseMaterial(FbxSurfaceMaterial * material, QOpenGLShaderProgram & shader, QString directory, QMap<QString, QOpenGLTexture *> &texture_cache);
+    QString ComputeTextureFilename(QString texture_name, QString fbx_file_name);
+    void LoadDiffuseMaterial(FbxSurfaceMaterial * material,
+                             QOpenGLShaderProgram & shader, QString fbx_file_name,
+                             QMap<QString, QOpenGLTexture *> &texture_cache);
 
 
 
@@ -65,7 +71,9 @@ public:
 
 
 
-    void LoadMesh(FbxMesh * mesh, QOpenGLShaderProgram & shader, QString directory, QMap<QString, QOpenGLTexture *> &texture_cache);
+    void LoadMesh(FbxMesh * mesh, QOpenGLShaderProgram & shader,
+                  QString fbx_file_name, QMatrix4x4 *global_transform,
+                  QMap<QString, QOpenGLTexture *> &texture_cache);
     void Draw(QOpenGLFunctions * f, QMap<QString, QOpenGLTexture *> &texture_cache, QOpenGLShaderProgram & shader);
 
 

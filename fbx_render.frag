@@ -1,11 +1,14 @@
 #version 430
 
+
+
 layout(location = 0, index = 0) out vec4 fragColor;
 
 
 
 in vec3 M_space_normal;
 in vec2 interpolated_uv;
+flat in int frag_material_index;
 
 
 
@@ -21,8 +24,8 @@ uniform vec3 diffuse_color;
 vec4 ComputeMaterialColor()
 {
 
-    float light_factor = max(0.0, dot(vec3(0, 1, 0), M_space_normal)) * 1.0 + 0.5;
 
+    float light_factor = max(0.0, dot(vec3(0, 1, 0), M_space_normal)) * 1.0 + 0.4;
 
 
     vec4 color;

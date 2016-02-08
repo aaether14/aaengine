@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     fbx_manager/mesh.cpp \
     core/fps.cpp \
     core/inputregister.cpp \
-    core/main_controller.cpp
+    core/main_controller.cpp \
+    fbx_manager/material.cpp
 
 
 
@@ -43,7 +44,8 @@ HEADERS  += \
     fbx_manager/mesh.hpp \
     core/fps.hpp \
     core/inputregister.hpp \
-    core/main_controller.hpp
+    core/main_controller.hpp \
+    fbx_manager/material.hpp
 
 
 

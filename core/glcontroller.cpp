@@ -73,7 +73,7 @@ void GLController::initializeGL()
 
 
     mesh = new Mesh();
-    mesh->LoadFromFBX(findChild<FBXManager*>("FBXManager"), shader, "Night/club.fbx");
+    mesh->LoadFromFBX(findChild<FBXManager*>("FBXManager"), shader, "map/nuke.fbx");
 
 
 
@@ -99,6 +99,11 @@ void GLController::paintGL()
     QMatrix4x4 vp = qvariant_cast<QMatrix4x4>(parent()->parent()->findChild<QObject*>("ScriptEngine")->findChild<QObject*>("Default_camera")->property("out_viewProj"));
     shader.setUniformValue("VP", vp);
 
+
+
+    QMatrix4x4 m;
+    m.scale(50.0);
+    mesh->SetGlobalTransform(m);
 
 
     mesh->Draw(this, shader);

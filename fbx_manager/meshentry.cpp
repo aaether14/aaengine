@@ -8,7 +8,9 @@
 MeshEntry::MeshEntry() : ibo(QOpenGLBuffer::IndexBuffer),
     vertices_vbo(QOpenGLBuffer::VertexBuffer),
     normals_vbo(QOpenGLBuffer::VertexBuffer),
-    uvs_vbo(QOpenGLBuffer::VertexBuffer)
+    uvs_vbo(QOpenGLBuffer::VertexBuffer),
+    material_indices_vbo(QOpenGLBuffer::VertexBuffer),
+    global_transform_ptr(NULL)
 {
 
 
@@ -28,6 +30,7 @@ MeshEntry::~MeshEntry()
     vertices_vbo.destroy();
     normals_vbo.destroy();
     uvs_vbo.destroy();
+    material_indices_vbo.destroy();
     vao.destroy();
 
 
@@ -37,7 +40,9 @@ MeshEntry::~MeshEntry()
 
 
 
-void MeshEntry::LoadMesh(FbxMesh * mesh, QOpenGLShaderProgram & shader, QString directory, QMap<QString, QOpenGLTexture *> &texture_cache)
+void MeshEntry::LoadMesh(FbxMesh * mesh, QOpenGLShaderProgram & shader,
+                         QString fbx_file_name, QMatrix4x4 *global_transform,
+                         QMap<QString, QOpenGLTexture *> &texture_cache)
 {
 
 
@@ -53,14 +58,15 @@ void MeshEntry::LoadMesh(FbxMesh * mesh, QOpenGLShaderProgram & shader, QString 
     LoadNormals(mesh, shader);
     LoadUVs(mesh, shader);
     LoadIndices(mesh);
-    LoadMaterials(mesh, shader, directory, texture_cache);
+    LoadMaterialIndices(mesh, shader);
+    LoadMaterials(mesh, shader, fbx_file_name, texture_cache);
     LoadTransform(mesh);
+    global_transform_ptr = global_transform;
 
 
 
     vao.release();
     shader.release();
-
 
 
 
@@ -74,7 +80,7 @@ void MeshEntry::Draw(QOpenGLFunctions * f, QMap<QString, QOpenGLTexture *> &text
 
 
 
-    shader.setUniformValue("M", local_transform);
+    shader.setUniformValue("M", *global_transform_ptr * local_transform);
 
 
 
@@ -218,7 +224,9 @@ void MeshEntry::LoadNormals(FbxMesh * mesh, QOpenGLShaderProgram & shader)
 
 
 
-void MeshEntry::LoadMaterials(FbxMesh *mesh, QOpenGLShaderProgram &shader, QString directory, QMap<QString, QOpenGLTexture *> &texture_cache)
+void MeshEntry::LoadMaterials(FbxMesh *mesh, QOpenGLShaderProgram &shader,
+                              QString fbx_file_name,
+                              QMap<QString, QOpenGLTexture *> &texture_cache)
 {
 
 
@@ -230,12 +238,49 @@ void MeshEntry::LoadMaterials(FbxMesh *mesh, QOpenGLShaderProgram &shader, QStri
         if (material)
         {
 
-            LoadDiffuseMaterial(material, shader, directory, texture_cache);
+            LoadDiffuseMaterial(material, shader, fbx_file_name, texture_cache);
 
         }
 
     }
 
+
+
+}
+
+
+
+
+void MeshEntry::LoadMaterialIndices(FbxMesh *mesh, QOpenGLShaderProgram &shader)
+{
+
+
+
+    QVector<int> material_indices;
+    FbxLayerElementArrayTemplate<int> * material_index_array;
+    mesh->GetMaterialIndices(&material_index_array);
+
+
+
+
+    for (int i = 0; i < material_index_array->GetCount(); i++)
+    {
+        material_indices << material_index_array->GetAt(i);
+    }
+
+
+    material_indices_vbo.create();
+    material_indices_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
+    material_indices_vbo.bind();
+    material_indices_vbo.allocate(&material_indices[0], sizeof(int) * material_indices.size());
+
+
+
+    shader.setAttributeBuffer("material_index", GL_INT, 0, 1);
+    shader.enableAttributeArray("material_index");
+
+
+    material_indices.clear();
 
 
 
@@ -347,16 +392,10 @@ void MeshEntry::LoadTransform(FbxMesh *mesh)
 {
 
 
+
     FbxAMatrix transform = mesh->GetNode()->GetParent()->EvaluateLocalTransform(0)
             * mesh->GetNode()->EvaluateLocalTransform(0);
 
-
-
-    QVector3D base_scale = QVector3D(transform.GetS().mData[0],
-            transform.GetS().mData[1],
-            transform.GetS().mData[2]);
-    QMatrix4x4 base_scale_matrix;
-    base_scale_matrix.scale(QVector3D(1.0, 1.0, 1.0) / base_scale);
 
 
 
@@ -365,27 +404,43 @@ void MeshEntry::LoadTransform(FbxMesh *mesh)
             local_transform(i, j) = transform.Transpose().Get(i, j);
 
 
-    local_transform = base_scale_matrix * local_transform;
-
-
 
 
 }
 
 
 
-QString MeshEntry::ComputeTextureFilename(QString file_name, QString directory)
+QString MeshEntry::ComputeTextureFilename(QString texture_name, QString fbx_file_name)
 {
 
 
-    file_name.replace("\\", "/");
-    file_name = file_name.mid(file_name.lastIndexOf("/") + 1, file_name.length());
+    QString texture_file_name;
+    texture_name.replace("\\", "/");
+    texture_name = texture_name.mid(texture_name.lastIndexOf("/") + 1, texture_name.length());
+
+
+
+
+    QString directory;
+    if (QString(fbx_file_name).lastIndexOf("/") > 0)
+        directory = QString(fbx_file_name).mid(0, QString(fbx_file_name).lastIndexOf("/"));
     if (directory.length() > 0)
-        file_name = directory + "/" + file_name;
+        texture_file_name = directory + "/" + texture_name;
 
 
 
-    return file_name;
+
+
+    if (QFileInfo(texture_file_name).exists())
+        return texture_file_name;
+    else
+    {
+        texture_file_name = directory + "/" + QFileInfo(fbx_file_name).baseName() + ".fbm/" + texture_name;
+        if (QFileInfo(texture_file_name).exists())
+            return texture_file_name;
+        else
+            return "";
+    }
 
 
 
@@ -393,7 +448,10 @@ QString MeshEntry::ComputeTextureFilename(QString file_name, QString directory)
 
 
 
-void MeshEntry::LoadDiffuseMaterial(FbxSurfaceMaterial *material, QOpenGLShaderProgram &shader, QString directory, QMap<QString, QOpenGLTexture *> &texture_cache)
+void MeshEntry::LoadDiffuseMaterial(FbxSurfaceMaterial *material,
+
+                                    QOpenGLShaderProgram &shader, QString fbx_file_name,
+                                    QMap<QString, QOpenGLTexture *> &texture_cache)
 {
 
 
@@ -401,7 +459,7 @@ void MeshEntry::LoadDiffuseMaterial(FbxSurfaceMaterial *material, QOpenGLShaderP
     if (diffuse_prop.GetSrcObjectCount<FbxFileTexture>() > 0)
     {
         FbxFileTexture* texture = FbxCast<FbxFileTexture>(diffuse_prop.GetSrcObject<FbxFileTexture>(0));
-        QString texture_index = ComputeTextureFilename(texture->GetFileName(), directory);
+        QString texture_index = ComputeTextureFilename(texture->GetFileName(), fbx_file_name);
 
 
         if (QFileInfo(texture_index).exists())
@@ -418,7 +476,7 @@ void MeshEntry::LoadDiffuseMaterial(FbxSurfaceMaterial *material, QOpenGLShaderP
         }
         else
         {
-            qDebug() << "Can't find texture: " << texture_index << " in the .fbx folder!";
+            qDebug() << "Can't find texture: " << texture->GetFileName() << " in the default or the .fbm folder!";
         }
 
 

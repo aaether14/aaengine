@@ -3,13 +3,13 @@
 
 
 
-void Mesh::RecursiveLoad(FbxNode *node, QOpenGLShaderProgram &shader)
+void Mesh::RecursiveLoad(FbxNode *node, QOpenGLShaderProgram &shader, QString fbx_file_name)
 {
 
 
 
     for (int i = 0; i < node->GetChildCount(); i++)
-        RecursiveLoad(node->GetChild(i), shader);
+        RecursiveLoad(node->GetChild(i), shader, fbx_file_name);
 
 
 
@@ -37,9 +37,21 @@ void Mesh::RecursiveLoad(FbxNode *node, QOpenGLShaderProgram &shader)
 
 
     MeshEntry * new_mesh_entry = new MeshEntry();
-    new_mesh_entry->LoadMesh(mesh, shader, directory, texture_cache);
+    new_mesh_entry->LoadMesh(mesh, shader, fbx_file_name, &global_transform, texture_cache);
     mesh_entries.push_back(QSharedPointer<MeshEntry>(new_mesh_entry));
 
+
+
+
+
+
+}
+
+
+
+
+void Mesh::LoadTextures(FbxScene *scene)
+{
 
 
 
@@ -63,8 +75,8 @@ Mesh::~Mesh()
 {
 
 
-    qDeleteAll(texture_cache);
-    texture_cache.clear();
+
+    delete texture_array;
     mesh_entries.clear();
 
 
@@ -98,6 +110,11 @@ void Mesh::LoadFromFBX(FBXManager *fbx_manager, QOpenGLShaderProgram &shader, co
 
 
 
+
+    LoadTextures(scene);
+
+
+
     FbxAxisSystem SceneAxisSystem = scene->GetGlobalSettings().GetAxisSystem();
      if (SceneAxisSystem != FbxAxisSystem::OpenGL)
      {
@@ -121,15 +138,8 @@ void Mesh::LoadFromFBX(FBXManager *fbx_manager, QOpenGLShaderProgram &shader, co
 
 
 
-
-    if (QString(file_name).lastIndexOf("/") > 0)
-        directory = QString(file_name).mid(0, QString(file_name).lastIndexOf("/"));
-
-
-
-
     FbxNode * root_node = scene->GetRootNode();
-    RecursiveLoad(root_node, shader);
+    RecursiveLoad(root_node, shader, file_name);
 
 
 

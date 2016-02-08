@@ -22,7 +22,7 @@ QtObject
 
 
 
-    property real base_movement_speed: 50.0
+    property real base_movement_speed: 150.0
     property real movement_speed: 50.0
     property real speed_modifier: 4.0
 
@@ -42,7 +42,7 @@ QtObject
         fieldOfView: 60
         aspectRatio: 1.33
         nearPlane : 0.1
-        farPlane : 1000.0
+        farPlane : 5000.0
 
         position: Qt.vector3d(0.0, 5.0, 10)
         upVector: Qt.vector3d(0.0, 1.0, 0.0)
