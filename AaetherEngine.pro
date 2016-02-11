@@ -62,6 +62,7 @@ RESOURCES += \
     resources.qrc
 
 
+
 LIBS += -lfbxsdk
 
 

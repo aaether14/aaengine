@@ -22,7 +22,7 @@ QtObject
 
 
 
-    property real base_movement_speed: 150.0
+    property real base_movement_speed: 50.0
     property real movement_speed: 50.0
     property real speed_modifier: 4.0
 

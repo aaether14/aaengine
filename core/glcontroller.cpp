@@ -57,11 +57,10 @@ void GLController::initializeGL()
 {
 
 
-    initializeOpenGLFunctions();
-    glClearColor(0.8, 0.85, 0.9, 1.0);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-
+    QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
+    f->glClearColor(0.8, 0.85, 0.9, 1.0);
+    f->glEnable(GL_DEPTH_TEST);
+    f->glEnable(GL_CULL_FACE);
 
 
 
@@ -73,7 +72,7 @@ void GLController::initializeGL()
 
 
     mesh = new Mesh();
-    mesh->LoadFromFBX(findChild<FBXManager*>("FBXManager"), shader, "map/nuke.fbx");
+    mesh->LoadFromFBX(findChild<FBXManager*>("FBXManager"), shader, "Dragon/dragon.fbx");
 
 
 
@@ -86,27 +85,24 @@ void GLController::initializeGL()
 void GLController::paintGL()
 {
 
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
+    f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
 
     shader.bind();
-
-
-
-
     QMatrix4x4 vp = qvariant_cast<QMatrix4x4>(parent()->parent()->findChild<QObject*>("ScriptEngine")->findChild<QObject*>("Default_camera")->property("out_viewProj"));
     shader.setUniformValue("VP", vp);
 
 
 
     QMatrix4x4 m;
-    m.scale(50.0);
+    m.scale(1.0);
     mesh->SetGlobalTransform(m);
 
 
-    mesh->Draw(this, shader);
+
+    mesh->Draw(shader);
     shader.release();
 
 

@@ -5,7 +5,8 @@
 
 
 #include <QOpenGLWidget>
-#include <QOpenGLFunctions>
+#include <QOpenGLContext>
+#include <QOpenGLFunctions_4_3_Core>
 #include <QOpenGLShaderProgram>
 
 
@@ -22,7 +23,7 @@
 
 
 
-class GLController : public QOpenGLWidget, public QOpenGLFunctions
+class GLController : public QOpenGLWidget
 {
 
 

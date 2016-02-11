@@ -1,4 +1,4 @@
-#version 430
+#version 430 core
 
 
 
@@ -8,12 +8,11 @@ layout(location = 0, index = 0) out vec4 fragColor;
 
 in vec3 M_space_normal;
 in vec2 interpolated_uv;
-flat in int frag_material_index;
 
 
 
 
-uniform sampler2D diffuse_texture;
+uniform sampler2DArray textures;
 uniform bool use_diffuse_texture;
 uniform vec3 diffuse_color;
 
@@ -30,9 +29,9 @@ vec4 ComputeMaterialColor()
 
     vec4 color;
     if (use_diffuse_texture)
-        color = texture2D(diffuse_texture, interpolated_uv);
+        color = texture(textures, vec3(interpolated_uv, 0));
     else
-        color = vec4(diffuse_color, 1.0);
+        color = vec4(1.0);
 
 
     return color * light_factor;
