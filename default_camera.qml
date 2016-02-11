@@ -155,7 +155,6 @@ QtObject
         processMouseInput();
         updateVP();
 
-
     }
 
 

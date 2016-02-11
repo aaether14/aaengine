@@ -6,7 +6,8 @@
 void Mesh::RecursiveLoad(FbxNode * node,
                          QOpenGLShaderProgram &shader,
                          QVector<unsigned int> & master_indices,
-                         QVector<float> & master_vertices)
+                         QVector<float> & master_vertices,
+                         QVector<float> &master_normals)
 {
 
 
@@ -15,7 +16,8 @@ void Mesh::RecursiveLoad(FbxNode * node,
         RecursiveLoad(node->GetChild(i),
                       shader,
                       master_indices,
-                      master_vertices);
+                      master_vertices,
+                      master_normals);
 
 
 
@@ -49,6 +51,7 @@ void Mesh::RecursiveLoad(FbxNode * node,
     new_mesh_entry->LoadMesh(mesh,
                              master_indices,
                              master_vertices,
+                             master_normals,
                              current_control_point_offset,
                              current_polygon_offset);
 
@@ -83,6 +86,7 @@ void Mesh::LoadTextures(FbxScene *scene, QOpenGLShaderProgram &shader, QString f
 Mesh::Mesh() : should_save_scene_after_load(false),
     master_ibo(QOpenGLBuffer::IndexBuffer),
     master_vbo(QOpenGLBuffer::VertexBuffer),
+    master_normals_vbo(QOpenGLBuffer::VertexBuffer),
     current_control_point_offset(0),
     current_polygon_offset(0)
 {
@@ -99,6 +103,7 @@ Mesh::~Mesh()
     master_vao.destroy();
     master_ibo.destroy();
     master_vbo.destroy();
+    master_normals_vbo.destroy();
     mesh_entries.clear();
 
 
@@ -172,12 +177,40 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 {
 
 
+
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
-
-
-    shader.setUniformValue("M", global_transform);
     master_vao.bind();
-    f->glDrawElements(GL_TRIANGLES, current_polygon_offset, GL_UNSIGNED_INT, 0);
+
+
+    QVector<GLsizei> count;
+    QVector<GLvoid*> indices;
+    QVector<QMatrix4x4> models;
+
+
+
+    for (auto it : mesh_entries)
+    {
+        count << it->GetCount();
+        indices << it->GetIndex();
+        models << global_transform * mesh_entries[0]->GetLocalTransform();
+    }
+
+
+
+    GLuint ssbo;
+    f->glGenBuffers(1, &ssbo);
+    f->glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+    f->glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(float) * 16 * mesh_entries.size(), &models[0], GL_STATIC_DRAW);
+    f->glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
+
+
+
+
+    f->glMultiDrawElements(GL_TRIANGLES, &count[0], GL_UNSIGNED_INT, &indices[0], mesh_entries.size());
+    f->glDeleteBuffers(1, &ssbo);
+
+
+
     master_vao.release();
 
 
@@ -268,13 +301,15 @@ void Mesh::LoadBufferObjects(FbxNode *root, QOpenGLShaderProgram &shader)
 
     QVector<unsigned int> master_indices;
     QVector<float> master_vertices;
+    QVector<float> master_normals;
 
 
 
     RecursiveLoad(root,
                   shader,
                   master_indices,
-                  master_vertices);
+                  master_vertices,
+                  master_normals);
 
 
     //creating vertex array object
@@ -307,9 +342,24 @@ void Mesh::LoadBufferObjects(FbxNode *root, QOpenGLShaderProgram &shader)
 
 
 
+
+    //loading normals and binding shader attribute
+
+    master_normals_vbo.create();
+    master_normals_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
+    master_normals_vbo.bind();
+    master_normals_vbo.allocate(&master_normals[0], sizeof(float) * master_normals.size());
+
+
+    shader.setAttributeArray("normal", GL_FLOAT, 0, 3);
+    shader.enableAttributeArray("normal");
+
+
+
     master_vao.release();
     master_indices.clear();
     master_vertices.clear();
+    master_normals.clear();
 
 
 

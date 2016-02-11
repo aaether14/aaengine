@@ -30,14 +30,16 @@ MeshEntry::~MeshEntry()
 void MeshEntry::LoadMesh(FbxMesh * mesh,
                          QVector<unsigned int> &master_indices,
                          QVector<float> &master_vertices,
+                         QVector<float> &master_normals,
                          int & current_control_point_offset,
                          int & current_polygon_offset)
 {
 
 
 
+    LoadIndices(mesh, master_indices, current_polygon_offset, current_control_point_offset);
     LoadVertices(mesh, master_vertices, current_control_point_offset);
-    LoadIndices(mesh, master_indices, current_polygon_offset);
+    LoadNormals(mesh, master_normals);
     LoadTransform(mesh);
 
 
@@ -67,7 +69,7 @@ void MeshEntry::LoadVertices(FbxMesh * mesh,
 
 
 
-    current_control_point_offset += mesh->GetControlPointsCount() * 3;
+    current_control_point_offset += mesh->GetControlPointsCount();
 
 
 
@@ -76,60 +78,46 @@ void MeshEntry::LoadVertices(FbxMesh * mesh,
 
 
 
-void MeshEntry::LoadNormals(FbxMesh * mesh)
+void MeshEntry::LoadNormals(FbxMesh * mesh,
+                            QVector<float> &master_normals)
 {
 
 
-    //    if(mesh->GetElementNormalCount() < 1)
-    //    {
-    //        qDebug() << "Invalid normals!";
-    //        return;
-    //    }
+
+    if(mesh->GetElementNormalCount() < 1)
+    {
+        qDebug() << "Invalid normals!";
+        return;
+    }
 
 
 
 
-    //    FbxGeometryElementNormal* vertex_normal = mesh->GetElementNormal(0);
-    //    if (vertex_normal->GetMappingMode() == FbxGeometryElement::eByControlPoint)
-    //    {
+    FbxGeometryElementNormal* vertex_normal = mesh->GetElementNormal(0);
+    if (vertex_normal->GetMappingMode() == FbxGeometryElement::eByControlPoint)
+    {
 
 
-    //    }
-    //    else
-    //    {
-    //        qDebug() << "Invalid normal format!";
-    //    }
-
-
-
-
-    //    QVector<float> normals;
-    //    for (int i = 0; i < mesh->GetControlPointsCount(); i++)
-    //    {
-
-
-    //        normals << (float)(vertex_normal->GetDirectArray().GetAt(i).mData[0]);
-    //        normals << (float)(vertex_normal->GetDirectArray().GetAt(i).mData[1]);
-    //        normals << (float)(vertex_normal->GetDirectArray().GetAt(i).mData[2]);
+    }
+    else
+    {
+        qDebug() << "Invalid normal format!";
+    }
 
 
 
-    //    }
 
 
-    //    normals_vbo.create();
-    //    normals_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
-    //    normals_vbo.bind();
-    //    normals_vbo.allocate(&normals[0], sizeof(float) * normals.size());
+    for (int i = 0; i < mesh->GetControlPointsCount(); i++)
+    {
 
 
+        master_normals << (float)(vertex_normal->GetDirectArray().GetAt(i).mData[0]);
+        master_normals << (float)(vertex_normal->GetDirectArray().GetAt(i).mData[1]);
+        master_normals << (float)(vertex_normal->GetDirectArray().GetAt(i).mData[2]);
 
-    //    shader.setAttributeBuffer("normal", GL_FLOAT, 0, 3);
-    //    shader.enableAttributeArray("normal");
 
-
-
-    //    normals.clear();
+    }
 
 
 
@@ -234,7 +222,10 @@ void MeshEntry::LoadUVs(FbxMesh *mesh)
 
 
 
-void MeshEntry::LoadIndices(FbxMesh *mesh, QVector<unsigned int> &master_indices, int &current_polygon_offset)
+void MeshEntry::LoadIndices(FbxMesh *mesh,
+                            QVector<unsigned int> &master_indices,
+                            int &current_polygon_offset,
+                            int &current_control_point_offset)
 {
 
 
@@ -243,15 +234,19 @@ void MeshEntry::LoadIndices(FbxMesh *mesh, QVector<unsigned int> &master_indices
     for (int i = 0; i < mesh->GetPolygonCount(); i++)
     {
 
-        master_indices << (unsigned int)(mesh->GetPolygonVertex(i, 0));
-        master_indices << (unsigned int)(mesh->GetPolygonVertex(i, 1));
-        master_indices << (unsigned int)(mesh->GetPolygonVertex(i, 2));
+        master_indices << (unsigned int)(mesh->GetPolygonVertex(i, 0) + current_control_point_offset);
+        master_indices << (unsigned int)(mesh->GetPolygonVertex(i, 1) + current_control_point_offset);
+        master_indices << (unsigned int)(mesh->GetPolygonVertex(i, 2) + current_control_point_offset);
+
+
 
     }
 
 
 
-    current_polygon_offset += mesh->GetPolygonCount() * 3;
+    index = (GLvoid * )(sizeof(unsigned int) * current_polygon_offset);
+    count = mesh->GetPolygonVertexCount();
+    current_polygon_offset += count;
 
 
 

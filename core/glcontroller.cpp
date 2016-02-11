@@ -72,7 +72,7 @@ void GLController::initializeGL()
 
 
     mesh = new Mesh();
-    mesh->LoadFromFBX(findChild<FBXManager*>("FBXManager"), shader, "Dragon/dragon.fbx");
+    mesh->LoadFromFBX(findChild<FBXManager*>("FBXManager"), shader, "Street/street.fbx");
 
 
 
@@ -84,6 +84,9 @@ void GLController::initializeGL()
 
 void GLController::paintGL()
 {
+
+
+
 
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
     f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -97,7 +100,7 @@ void GLController::paintGL()
 
 
     QMatrix4x4 m;
-    m.scale(1.0);
+    m.scale(0.01);
     mesh->SetGlobalTransform(m);
 
 

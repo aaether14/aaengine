@@ -46,7 +46,8 @@ class Mesh
     void RecursiveLoad(FbxNode * node,
                        QOpenGLShaderProgram &shader,
                        QVector<unsigned int> & master_indices,
-                       QVector<float> & master_vertices);
+                       QVector<float> & master_vertices,
+                       QVector<float> & master_normals);
 
 
 
@@ -63,6 +64,8 @@ class Mesh
     QOpenGLVertexArrayObject master_vao;
     QOpenGLBuffer master_ibo;
     QOpenGLBuffer master_vbo;
+    QOpenGLBuffer master_normals_vbo;
+
 
 
     int current_polygon_offset;
