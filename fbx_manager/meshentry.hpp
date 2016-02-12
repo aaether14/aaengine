@@ -21,8 +21,9 @@ class MeshEntry
 
 
     QMatrix4x4 local_transform;
-    GLsizei count;
-    GLvoid * index;
+    GLuint count;
+    GLuint index;
+    GLuint base_vertex;
 
 
 
@@ -75,8 +76,9 @@ public:
 
 
 
-    inline GLsizei GetCount(){return count; }
-    inline GLvoid * GetIndex(){return index; }
+    inline GLuint GetCount(){return count; }
+    inline GLuint GetIndex(){return index; }
+    inline GLuint GetBaseVertex(){return base_vertex; }
     inline QMatrix4x4 GetLocalTransform(){return local_transform; }
 
 

@@ -32,7 +32,31 @@ class Mesh
 {
 
 
+    typedef struct float16 { float m[16]; } float16;
+    float16 toFloat16(const float* arr){float16 v; memcpy(&v, arr, sizeof(float16)); return v;}
+
+
+
+
+    struct DrawElementsCommand
+    {
+      GLuint vertexCount;
+      GLuint instanceCount;
+      GLuint firstIndex;
+      GLuint baseVertex;
+      GLuint baseInstance;
+    };
+
+
+
+
+
     QVector<QSharedPointer<MeshEntry> > mesh_entries;
+    GLuint ssbo;
+    GLuint indirect_buffer;
+
+
+
     QString ComputeTextureFilename(QString texture_name, QString fbx_file_name);
 
 

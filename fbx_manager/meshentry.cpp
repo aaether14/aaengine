@@ -234,9 +234,9 @@ void MeshEntry::LoadIndices(FbxMesh *mesh,
     for (int i = 0; i < mesh->GetPolygonCount(); i++)
     {
 
-        master_indices << (unsigned int)(mesh->GetPolygonVertex(i, 0) + current_control_point_offset);
-        master_indices << (unsigned int)(mesh->GetPolygonVertex(i, 1) + current_control_point_offset);
-        master_indices << (unsigned int)(mesh->GetPolygonVertex(i, 2) + current_control_point_offset);
+        master_indices << (unsigned int)(mesh->GetPolygonVertex(i, 0));
+        master_indices << (unsigned int)(mesh->GetPolygonVertex(i, 1));
+        master_indices << (unsigned int)(mesh->GetPolygonVertex(i, 2));
 
 
 
@@ -244,7 +244,8 @@ void MeshEntry::LoadIndices(FbxMesh *mesh,
 
 
 
-    index = (GLvoid * )(sizeof(unsigned int) * current_polygon_offset);
+    base_vertex = current_control_point_offset;
+    index = current_polygon_offset;
     count = mesh->GetPolygonVertexCount();
     current_polygon_offset += count;
 

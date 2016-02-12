@@ -4,10 +4,12 @@
 
 layout(std430, binding = 0) buffer per_object
 {
-  mat4 matrix[];
+  mat4 model_matrix[];
 };
 
 
+
+layout (location = 2) in uint drawid;
 
 
 
@@ -31,9 +33,9 @@ void main( void )
 {
 
 
-    M_space_normal = normalize(vec3(matrix[0] * vec4(normal, 0.0)));
+    M_space_normal = normalize(vec3(model_matrix[drawid] * vec4(normal, 0.0)));
     interpolated_uv = uv;
-    gl_Position = VP * matrix[0] * vertex;
+    gl_Position = VP * model_matrix[drawid] * vertex;
 
 
 

@@ -88,8 +88,15 @@ Mesh::Mesh() : should_save_scene_after_load(false),
     master_vbo(QOpenGLBuffer::VertexBuffer),
     master_normals_vbo(QOpenGLBuffer::VertexBuffer),
     current_control_point_offset(0),
-    current_polygon_offset(0)
+    current_polygon_offset(0),
+    ssbo(0),
+    indirect_buffer(0)
 {
+
+
+
+
+
 
 }
 
@@ -105,6 +112,14 @@ Mesh::~Mesh()
     master_vbo.destroy();
     master_normals_vbo.destroy();
     mesh_entries.clear();
+
+
+
+
+    QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
+    f->glDeleteBuffers(1, &indirect_buffer);
+    f->glDeleteBuffers(1, &ssbo);
+
 
 
 }
@@ -182,36 +197,61 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
     master_vao.bind();
 
 
-    QVector<GLsizei> count;
-    QVector<GLvoid*> indices;
-    QVector<QMatrix4x4> models;
+
+
+    QVector<float16> model_matrix;
+    QVector<DrawElementsCommand> draw_commands;
 
 
 
-    for (auto it : mesh_entries)
+    for (int i = 0; i < mesh_entries.size(); i++)
     {
-        count << it->GetCount();
-        indices << it->GetIndex();
-        models << global_transform * mesh_entries[0]->GetLocalTransform();
+        DrawElementsCommand c;
+        c.baseInstance = i;
+        c.instanceCount = 1;
+        c.baseVertex = mesh_entries[i]->GetBaseVertex();
+        c.firstIndex = mesh_entries[i]->GetIndex();
+        c.vertexCount = mesh_entries[i]->GetCount();
+
+
+        draw_commands << c;
+        model_matrix << toFloat16((global_transform * mesh_entries[i]->GetLocalTransform()).constData());
+
+
+
     }
 
 
 
-    GLuint ssbo;
-    f->glGenBuffers(1, &ssbo);
     f->glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
-    f->glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(float) * 16 * mesh_entries.size(), &models[0], GL_STATIC_DRAW);
+    f->glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(float16) * mesh_entries.size(), &model_matrix[0], GL_STATIC_DRAW);
     f->glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
 
 
 
 
-    f->glMultiDrawElements(GL_TRIANGLES, &count[0], GL_UNSIGNED_INT, &indices[0], mesh_entries.size());
-    f->glDeleteBuffers(1, &ssbo);
+    f->glBindBuffer( GL_DRAW_INDIRECT_BUFFER, indirect_buffer);
+    f->glBufferData( GL_DRAW_INDIRECT_BUFFER, sizeof(DrawElementsCommand) * draw_commands.size(), &draw_commands[0], GL_STATIC_DRAW );
 
 
 
+
+    f->glBindBuffer(GL_ARRAY_BUFFER, indirect_buffer);
+    f->glEnableVertexAttribArray(2);
+    f->glVertexAttribIPointer(2, 1, GL_UNSIGNED_INT, sizeof(DrawElementsCommand), (GLvoid*)(4 * sizeof(GLuint)));
+    f->glVertexAttribDivisor(2, 1);
+
+
+
+
+
+
+    f->glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, draw_commands.size(), 0);
+    model_matrix.clear();
+    draw_commands.clear();
     master_vao.release();
+
+
 
 
 
@@ -275,6 +315,7 @@ void Mesh::NormalizeScene(FbxScene *scene, FbxManager *fbx_manager)
 
 
 
+
     FbxSystemUnit SceneSystemUnit = scene->GetGlobalSettings().GetSystemUnit();
     if( SceneSystemUnit.GetScaleFactor() != 1.0 )
     {
@@ -296,6 +337,16 @@ void Mesh::NormalizeScene(FbxScene *scene, FbxManager *fbx_manager)
 
 void Mesh::LoadBufferObjects(FbxNode *root, QOpenGLShaderProgram &shader)
 {
+
+
+
+
+
+    QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
+    f->glGenBuffers(1, &ssbo);
+    f->glGenBuffers(1, &indirect_buffer);
+
+
 
 
 
