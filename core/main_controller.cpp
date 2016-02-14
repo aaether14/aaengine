@@ -26,6 +26,7 @@ Controller::Controller(QWidget *parent) :
 
 
     Console * console = new Console(this);
+    About * about = new About(this);
 
 
 
@@ -54,3 +55,19 @@ void Controller::on_actionConsole_triggered()
 
 
 }
+
+
+
+
+void Controller::on_actionAbout_triggered()
+{
+
+    if (findChild<About*>("About"))
+        findChild<About*>("About")->show();
+
+}
+
+
+
+
+

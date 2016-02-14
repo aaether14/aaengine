@@ -7,8 +7,10 @@ void Mesh::RecursiveLoad(FbxNode * node,
                          QOpenGLShaderProgram &shader,
                          QVector<unsigned int> & master_indices,
                          QVector<float> & master_vertices,
-                         QVector<float> &master_normals)
+                         QVector<float> &master_normals,
+                         QVector<float> &master_uvs)
 {
+
 
 
 
@@ -17,8 +19,8 @@ void Mesh::RecursiveLoad(FbxNode * node,
                       shader,
                       master_indices,
                       master_vertices,
-                      master_normals);
-
+                      master_normals,
+                      master_uvs);
 
 
 
@@ -52,14 +54,14 @@ void Mesh::RecursiveLoad(FbxNode * node,
                              master_indices,
                              master_vertices,
                              master_normals,
+                             master_uvs,
                              current_control_point_offset,
                              current_polygon_offset);
 
 
 
+
     mesh_entries.push_back(QSharedPointer<MeshEntry>(new_mesh_entry));
-
-
 
 
 
@@ -69,10 +71,68 @@ void Mesh::RecursiveLoad(FbxNode * node,
 
 
 
-void Mesh::LoadTextures(FbxScene *scene, QOpenGLShaderProgram &shader, QString fbx_file_name)
+void Mesh::LoadMaterials(FbxScene *scene, QOpenGLShaderProgram &shader, QString fbx_file_name)
 {
 
 
+
+
+
+    for (int i = 0; i < scene->GetMaterialCount(); i++)
+    {
+
+
+        FbxSurfaceMaterial * material = scene->GetMaterial(i);
+        if (material)
+        {
+
+
+            if (!materials.count(material->GetName()))
+            {
+
+
+                FbxProperty diffuse_prop = material->FindProperty(FbxSurfaceMaterial::sDiffuse);
+
+
+                QVector3D diffuse_color(diffuse_prop.Get<FbxDouble3>().mData[0],
+                        diffuse_prop.Get<FbxDouble3>().mData[1],
+                        diffuse_prop.Get<FbxDouble3>().mData[2]);
+
+
+                Material new_mat;
+                new_mat.diffuse_color = diffuse_color;
+
+
+
+                if(diffuse_prop.GetSrcObjectCount<FbxFileTexture>() > 0)
+                {
+                    FbxFileTexture * texture = diffuse_prop.GetSrcObject<FbxFileTexture>();
+                    if (texture)
+                    {
+                        QString texture_index = ComputeTextureFilename(texture->GetFileName(), fbx_file_name);
+                        if (QFileInfo(texture_index).exists())
+                        {
+                            if (!textures.count(texture_index))
+                            {
+                                textures[texture_index] = new QOpenGLTexture(QImage(texture_index).mirrored());
+                            }
+                            new_mat.difuse_texture_name = texture_index;
+                            new_mat.use_diffuse_texture = true;
+                        }
+
+                    }
+                }
+
+
+                materials[material->GetName()] = new_mat;
+
+
+            }
+
+        }
+
+
+    }
 
 
 
@@ -87,6 +147,7 @@ Mesh::Mesh() : should_save_scene_after_load(false),
     master_ibo(QOpenGLBuffer::IndexBuffer),
     master_vbo(QOpenGLBuffer::VertexBuffer),
     master_normals_vbo(QOpenGLBuffer::VertexBuffer),
+    master_uvs_vbo(QOpenGLBuffer::VertexBuffer),
     current_control_point_offset(0),
     current_polygon_offset(0),
     ssbo(0),
@@ -111,6 +172,7 @@ Mesh::~Mesh()
     master_ibo.destroy();
     master_vbo.destroy();
     master_normals_vbo.destroy();
+    master_uvs_vbo.destroy();
     mesh_entries.clear();
 
 
@@ -119,6 +181,11 @@ Mesh::~Mesh()
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
     f->glDeleteBuffers(1, &indirect_buffer);
     f->glDeleteBuffers(1, &ssbo);
+
+
+
+    qDeleteAll(textures);
+    materials.clear();
 
 
 
@@ -135,6 +202,7 @@ void Mesh::LoadFromFBX(FBXManager *fbx_manager, QOpenGLShaderProgram &shader, co
 
     FbxImporter* importer = FbxImporter::Create(fbx_manager->GetManager(), "default_importer");
     bool importer_status = importer->Initialize(file_name, -1, fbx_manager->GetManager()->GetIOSettings());
+
 
 
     if(!importer_status)
@@ -155,8 +223,8 @@ void Mesh::LoadFromFBX(FBXManager *fbx_manager, QOpenGLShaderProgram &shader, co
 
 
     NormalizeScene(scene, fbx_manager->GetManager());
-    FbxNode * root_node = scene->GetRootNode();
-    LoadBufferObjects(root_node, shader);
+    LoadMaterials(scene, shader, file_name);
+    LoadBufferObjects(scene->GetRootNode(), shader);
 
 
 
@@ -192,10 +260,12 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 {
 
 
+    shader.setUniformValue("diffuse_texture", 0);
+
+
 
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
     master_vao.bind();
-
 
 
 
@@ -204,51 +274,79 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
-    for (int i = 0; i < mesh_entries.size(); i++)
+
+
+    for (auto it : materials.keys())
     {
-        DrawElementsCommand c;
-        c.baseInstance = i;
-        c.instanceCount = 1;
-        c.baseVertex = mesh_entries[i]->GetBaseVertex();
-        c.firstIndex = mesh_entries[i]->GetIndex();
-        c.vertexCount = mesh_entries[i]->GetCount();
 
 
-        draw_commands << c;
-        model_matrix << toFloat16((global_transform * mesh_entries[i]->GetLocalTransform()).constData());
 
+        for(int i = 0; i < mesh_entries.size(); i++)
+        {
+
+
+            if (mesh_entries[i]->DoesMaterialExist(it))
+            {
+
+                DrawElementsCommand c;
+                c = mesh_entries[i]->GetDrawCommand(it);
+                c.baseInstance = draw_commands.size();
+                draw_commands << c;
+
+
+
+                model_matrix << toFloat16((global_transform * mesh_entries[i]->GetLocalTransform()).constData());
+
+
+
+            }
+
+
+
+        }
+
+
+
+
+        f->glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+        f->glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(float16) * model_matrix.size(), &model_matrix[0], GL_DYNAMIC_DRAW);
+        f->glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
+
+
+
+
+        f->glBindBuffer( GL_DRAW_INDIRECT_BUFFER, indirect_buffer);
+        f->glBufferData( GL_DRAW_INDIRECT_BUFFER, sizeof(DrawElementsCommand) * draw_commands.size(), &draw_commands[0], GL_DYNAMIC_DRAW );
+
+
+
+        f->glBindBuffer(GL_ARRAY_BUFFER, indirect_buffer);
+        f->glEnableVertexAttribArray(2);
+        f->glVertexAttribIPointer(2, 1, GL_UNSIGNED_INT, sizeof(DrawElementsCommand), (GLvoid*)(4 * sizeof(GLuint)));
+        f->glVertexAttribDivisor(2, 1);
+
+
+
+        materials[it].SendToShader(shader);
+        if (materials[it].use_diffuse_texture)
+        textures[materials[it].difuse_texture_name]->bind();
+
+
+        f->glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, draw_commands.size(), 0);
+        model_matrix.clear();
+        draw_commands.clear();
+
+
+
+        if (materials[it].use_diffuse_texture)
+        textures[materials[it].difuse_texture_name]->release();
 
 
     }
 
 
 
-    f->glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
-    f->glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(float16) * mesh_entries.size(), &model_matrix[0], GL_STATIC_DRAW);
-    f->glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
 
-
-
-
-    f->glBindBuffer( GL_DRAW_INDIRECT_BUFFER, indirect_buffer);
-    f->glBufferData( GL_DRAW_INDIRECT_BUFFER, sizeof(DrawElementsCommand) * draw_commands.size(), &draw_commands[0], GL_STATIC_DRAW );
-
-
-
-
-    f->glBindBuffer(GL_ARRAY_BUFFER, indirect_buffer);
-    f->glEnableVertexAttribArray(2);
-    f->glVertexAttribIPointer(2, 1, GL_UNSIGNED_INT, sizeof(DrawElementsCommand), (GLvoid*)(4 * sizeof(GLuint)));
-    f->glVertexAttribDivisor(2, 1);
-
-
-
-
-
-
-    f->glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, draw_commands.size(), 0);
-    model_matrix.clear();
-    draw_commands.clear();
     master_vao.release();
 
 
@@ -353,6 +451,7 @@ void Mesh::LoadBufferObjects(FbxNode *root, QOpenGLShaderProgram &shader)
     QVector<unsigned int> master_indices;
     QVector<float> master_vertices;
     QVector<float> master_normals;
+    QVector<float> master_uvs;
 
 
 
@@ -360,7 +459,8 @@ void Mesh::LoadBufferObjects(FbxNode *root, QOpenGLShaderProgram &shader)
                   shader,
                   master_indices,
                   master_vertices,
-                  master_normals);
+                  master_normals,
+                  master_uvs);
 
 
     //creating vertex array object
@@ -407,10 +507,22 @@ void Mesh::LoadBufferObjects(FbxNode *root, QOpenGLShaderProgram &shader)
 
 
 
+    master_uvs_vbo.create();
+    master_uvs_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
+    master_uvs_vbo.bind();
+    master_uvs_vbo.allocate(&master_uvs[0], sizeof(float) * master_uvs.size());
+
+
+    shader.setAttributeArray("uv", GL_FLOAT, 0, 2);
+    shader.enableAttributeArray("uv");
+
+
+
     master_vao.release();
     master_indices.clear();
     master_vertices.clear();
     master_normals.clear();
+    master_uvs.clear();
 
 
 

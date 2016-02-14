@@ -22,7 +22,7 @@ QtObject
 
 
 
-    property real base_movement_speed: 50.0
+    property real base_movement_speed: 150.0
     property real movement_speed: 50.0
     property real speed_modifier: 4.0
 
@@ -30,7 +30,7 @@ QtObject
 
 
     property real rotation_speed: Math.PI
-    property real mouse_speed: 2.5
+    property real mouse_speed: 1.0
     property vector2d last_mouse_position: Qt.vector2d(0, 0)
 
 
@@ -41,7 +41,7 @@ QtObject
         projectionType: CameraLens.PerspectiveProjection
         fieldOfView: 60
         aspectRatio: 1.33
-        nearPlane : 0.1
+        nearPlane : 1.0
         farPlane : 5000.0
 
         position: Qt.vector3d(0.0, 5.0, 10)

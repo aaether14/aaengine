@@ -38,22 +38,12 @@ class Mesh
 
 
 
-    struct DrawElementsCommand
-    {
-      GLuint vertexCount;
-      GLuint instanceCount;
-      GLuint firstIndex;
-      GLuint baseVertex;
-      GLuint baseInstance;
-    };
-
-
-
-
-
     QVector<QSharedPointer<MeshEntry> > mesh_entries;
+    QMap<QString, Material> materials;
+    QMap<QString, QOpenGLTexture*> textures;
     GLuint ssbo;
     GLuint indirect_buffer;
+
 
 
 
@@ -71,11 +61,12 @@ class Mesh
                        QOpenGLShaderProgram &shader,
                        QVector<unsigned int> & master_indices,
                        QVector<float> & master_vertices,
-                       QVector<float> & master_normals);
+                       QVector<float> & master_normals,
+                       QVector<float> & master_uvs);
 
 
 
-    void LoadTextures(FbxScene * scene, QOpenGLShaderProgram & shader, QString fbx_file_name);
+    void LoadMaterials(FbxScene * scene, QOpenGLShaderProgram & shader, QString fbx_file_name);
 
 
 
@@ -89,6 +80,7 @@ class Mesh
     QOpenGLBuffer master_ibo;
     QOpenGLBuffer master_vbo;
     QOpenGLBuffer master_normals_vbo;
+    QOpenGLBuffer master_uvs_vbo;
 
 
 

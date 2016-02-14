@@ -32,6 +32,7 @@ public:
 
 
 signals:
+    void updatedFps(int);
 
 
 public slots:

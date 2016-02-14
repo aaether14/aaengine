@@ -6,9 +6,11 @@
 
 
 #include <QOpenGLFunctions_4_3_Core>
+#include <QMap>
 #include <QVector>
 #include <QMatrix4x4>
 #include <fbxsdk.h>
+#include <fbx_manager/material.hpp>
 
 
 
@@ -21,9 +23,12 @@ class MeshEntry
 
 
     QMatrix4x4 local_transform;
-    GLuint count;
-    GLuint index;
-    GLuint base_vertex;
+    QMap<QString, DrawElementsCommand> commands;
+
+
+
+
+    void MapMaterialsToTheirNames(FbxMesh * mesh);
 
 
 
@@ -36,11 +41,8 @@ class MeshEntry
                      QVector<float> & master_normals);
 
 
-    void LoadMaterials(FbxMesh * mesh);
+    void LoadUVs(FbxMesh *mesh, QVector<float> & master_uvs);
 
-
-
-    void LoadUVs(FbxMesh *mesh);
 
 
     void LoadIndices(FbxMesh * mesh,
@@ -50,11 +52,6 @@ class MeshEntry
 
 
     void LoadTransform(FbxMesh * mesh);
-
-
-
-
-    void LoadDiffuseMaterial(FbxSurfaceMaterial * material);
 
 
 
@@ -70,15 +67,18 @@ public:
                   QVector<unsigned int> &master_indices,
                   QVector<float> &master_vertices,
                   QVector<float> &master_normals,
+                  QVector<float> &master_uvs,
                   int & current_control_point_offset,
                   int & current_polygon_offset);
 
 
 
 
-    inline GLuint GetCount(){return count; }
-    inline GLuint GetIndex(){return index; }
-    inline GLuint GetBaseVertex(){return base_vertex; }
+
+    inline DrawElementsCommand GetDrawCommand(QString material_name){return commands[material_name]; }
+    inline bool DoesMaterialExist(QString material_name){return commands.count(material_name) > 0;}
+
+
     inline QMatrix4x4 GetLocalTransform(){return local_transform; }
 
 

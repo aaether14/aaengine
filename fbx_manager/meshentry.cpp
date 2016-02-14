@@ -30,16 +30,18 @@ MeshEntry::~MeshEntry()
 void MeshEntry::LoadMesh(FbxMesh * mesh,
                          QVector<unsigned int> &master_indices,
                          QVector<float> &master_vertices,
-                         QVector<float> &master_normals,
+                         QVector<float> &master_normals, QVector<float> &master_uvs,
                          int & current_control_point_offset,
                          int & current_polygon_offset)
 {
 
 
 
+
     LoadIndices(mesh, master_indices, current_polygon_offset, current_control_point_offset);
     LoadVertices(mesh, master_vertices, current_control_point_offset);
     LoadNormals(mesh, master_normals);
+    LoadUVs(mesh, master_uvs);
     LoadTransform(mesh);
 
 
@@ -86,8 +88,14 @@ void MeshEntry::LoadNormals(FbxMesh * mesh,
 
     if(mesh->GetElementNormalCount() < 1)
     {
+
+        for (int i = 0; i < mesh->GetControlPointsCount(); i++)
+            master_normals << 0.0 << 0.0 << 0.0;
+
+
         qDebug() << "Invalid normals!";
         return;
+
     }
 
 
@@ -107,7 +115,6 @@ void MeshEntry::LoadNormals(FbxMesh * mesh,
 
 
 
-
     for (int i = 0; i < mesh->GetControlPointsCount(); i++)
     {
 
@@ -121,35 +128,6 @@ void MeshEntry::LoadNormals(FbxMesh * mesh,
 
 
 
-
-
-
-}
-
-
-
-
-
-void MeshEntry::LoadMaterials(FbxMesh *mesh)
-{
-
-
-
-    //    for (int i = 0; i < mesh->GetNode()->GetSrcObjectCount<FbxSurfaceMaterial>(); i++)
-    //    {
-
-    //        FbxSurfaceMaterial *material = mesh->GetNode()->GetSrcObject<FbxSurfaceMaterial>(i);
-    //        if (material)
-    //        {
-
-    //            LoadDiffuseMaterial(material, shader);
-
-    //        }
-
-    //    }
-
-
-
 }
 
 
@@ -159,58 +137,50 @@ void MeshEntry::LoadMaterials(FbxMesh *mesh)
 
 
 
-void MeshEntry::LoadUVs(FbxMesh *mesh)
+
+
+
+void MeshEntry::LoadUVs(FbxMesh *mesh, QVector<float> &master_uvs)
 {
 
 
-    //    if (mesh->GetElementUVCount() < 1)
-    //    {
-    //        qDebug() << "Invalid UVs!";
-    //        return;
-    //    }
+        if (mesh->GetElementUVCount() < 1)
+        {
+
+            for (int i = 0; i < mesh->GetControlPointsCount(); i++)
+                master_uvs << 0.0 << 0.0;
+
+
+            qDebug() << "Invalid UVs!";
+            return;
+
+        }
 
 
 
-    //    FbxGeometryElementUV* vertex_uv = mesh->GetElementUV(0);
-    //    if (vertex_uv->GetMappingMode() == FbxGeometryElement::eByControlPoint)
-    //    {
+        FbxGeometryElementUV* vertex_uv = mesh->GetElementUV(0);
+        if (vertex_uv->GetMappingMode() == FbxGeometryElement::eByControlPoint)
+        {
 
 
-    //    }
-    //    else
-    //    {
-    //        qDebug() << "Invalid UV format!";
-    //    }
-
-
-
-    //    QVector<float> uvs;
-    //    for (int i = 0; i < mesh->GetControlPointsCount(); i++)
-    //    {
-
-
-    //        uvs << (float)(vertex_uv->GetDirectArray().GetAt(i).mData[0]);
-    //        uvs << (float)(vertex_uv->GetDirectArray().GetAt(i).mData[1]);
-
-
-    //    }
-
-
-    //    uvs_vbo.create();
-    //    uvs_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
-    //    uvs_vbo.bind();
-    //    uvs_vbo.allocate(&uvs[0], sizeof(float) * uvs.size());
+        }
+        else
+        {
+            qDebug() << "Invalid UV format!";
+        }
 
 
 
-    //    shader.setAttributeBuffer("uv", GL_FLOAT, 0, 2);
-    //    shader.enableAttributeArray("uv");
+        QVector<float> uvs;
+        for (int i = 0; i < mesh->GetControlPointsCount(); i++)
+        {
 
 
+            master_uvs << (float)(vertex_uv->GetDirectArray().GetAt(i).mData[0]);
+            master_uvs << (float)(vertex_uv->GetDirectArray().GetAt(i).mData[1]);
 
-    //    uvs.clear();
 
-
+        }
 
 
 
@@ -231,25 +201,42 @@ void MeshEntry::LoadIndices(FbxMesh *mesh,
 
 
 
+
+    QMap<int, QVector<unsigned int> > material_mapped_indices;
+    FbxLayerElementArrayTemplate<int> *material_indices;
+    mesh->GetMaterialIndices(&material_indices);
+
+
+
+
     for (int i = 0; i < mesh->GetPolygonCount(); i++)
     {
-
-        master_indices << (unsigned int)(mesh->GetPolygonVertex(i, 0));
-        master_indices << (unsigned int)(mesh->GetPolygonVertex(i, 1));
-        master_indices << (unsigned int)(mesh->GetPolygonVertex(i, 2));
-
-
-
+        material_mapped_indices[material_indices->GetAt(i)] << (unsigned int)(mesh->GetPolygonVertex(i, 0));
+        material_mapped_indices[material_indices->GetAt(i)] << (unsigned int)(mesh->GetPolygonVertex(i, 1));
+        material_mapped_indices[material_indices->GetAt(i)] << (unsigned int)(mesh->GetPolygonVertex(i, 2));
     }
 
 
 
-    base_vertex = current_control_point_offset;
-    index = current_polygon_offset;
-    count = mesh->GetPolygonVertexCount();
-    current_polygon_offset += count;
+
+    for (auto it : material_mapped_indices.keys())
+    {
 
 
+        master_indices << material_mapped_indices[it];
+
+
+        DrawElementsCommand c;
+        c.baseInstance = 0;
+        c.instanceCount = 1;
+        c.baseVertex = current_control_point_offset;
+        c.firstIndex = current_polygon_offset;
+        c.vertexCount = material_mapped_indices[it].size();
+        commands[QString(mesh->GetNode()->GetMaterial(it)->GetName())] = c;
+        current_polygon_offset += c.vertexCount;
+
+
+    }
 
 
 
@@ -275,21 +262,5 @@ void MeshEntry::LoadTransform(FbxMesh *mesh)
 
 
 }
-
-
-
-
-
-void MeshEntry::LoadDiffuseMaterial(FbxSurfaceMaterial *material)
-{
-
-
-    FbxProperty diffuse_prop = material->FindProperty(FbxSurfaceMaterial::sDiffuse);
-
-
-
-
-}
-
 
 

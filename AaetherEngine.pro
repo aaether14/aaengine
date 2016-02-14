@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     core/fps.cpp \
     core/inputregister.cpp \
     core/main_controller.cpp \
-    fbx_manager/material.cpp
+    fbx_manager/material.cpp \
+    about/about.cpp
 
 
 
@@ -45,13 +46,15 @@ HEADERS  += \
     core/fps.hpp \
     core/inputregister.hpp \
     core/main_controller.hpp \
-    fbx_manager/material.hpp
+    fbx_manager/material.hpp \
+    about/about.hpp
 
 
 
 
-FORMS    += controller.ui \
-    console.ui
+FORMS    += core/controller.ui \
+    console/console.ui \
+    about/about.ui
 
 
 CONFIG += c++11
