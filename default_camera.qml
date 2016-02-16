@@ -30,7 +30,7 @@ QtObject
 
 
     property real rotation_speed: Math.PI
-    property real mouse_speed: 1.0
+    property real mouse_speed: 2.5
     property vector2d last_mouse_position: Qt.vector2d(0, 0)
 
 

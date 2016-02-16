@@ -72,7 +72,7 @@ void GLController::initializeGL()
 
 
     mesh = new Mesh();
-    mesh->LoadFromFBX(findChild<FBXManager*>("FBXManager"), shader, "map/nuke.fbx");
+    mesh->LoadFromFBX(findChild<FBXManager*>("FBXManager"), shader, "Street/street.fbx");
 
 
 
@@ -100,7 +100,7 @@ void GLController::paintGL()
 
 
     QMatrix4x4 m;
-    m.scale(50.0);
+    m.scale(0.1);
     mesh->SetGlobalTransform(m);
 
 

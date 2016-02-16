@@ -6,10 +6,10 @@
 
 
 #include <QDebug>
-#include <QSharedPointer>
 #include <QOpenGLTexture>
 #include <QImage>
 #include <QFileInfo>
+
 
 
 
@@ -18,6 +18,7 @@
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
 #include <QOpenGLShaderProgram>
+
 
 
 
@@ -32,17 +33,24 @@ class Mesh
 {
 
 
+
     typedef struct float16 { float m[16]; } float16;
     float16 toFloat16(const float* arr){float16 v; memcpy(&v, arr, sizeof(float16)); return v;}
 
 
 
 
-    QVector<QSharedPointer<MeshEntry> > mesh_entries;
-    QMap<QString, Material> materials;
-    QMap<QString, QOpenGLTexture*> textures;
+    QVector<MeshEntry*> mesh_entries;
+    QHash<QString, QOpenGLTexture*> textures;
+    QHash<QString, Material> materials;
+    QHash<QString, QVector<DrawElementsCommand> > commands_cache;
+    QHash<QString, QVector<unsigned int> > per_object_index_cache;
+
+
+
     GLuint ssbo;
     GLuint indirect_buffer;
+    GLuint per_object_buffer;
 
 
 
@@ -54,7 +62,10 @@ class Mesh
     void NormalizeScene(FbxScene * scene, FbxManager * fbx_manager);
 
 
+
     void LoadBufferObjects(FbxNode * root, QOpenGLShaderProgram & shader);
+
+
 
 
     void RecursiveLoad(FbxNode * node,
@@ -66,7 +77,19 @@ class Mesh
 
 
 
+
     void LoadMaterials(FbxScene * scene, QOpenGLShaderProgram & shader, QString fbx_file_name);
+
+
+
+
+
+    void CacheDrawCommands(QVector<MeshEntry *> &mesh_entries,
+                           QVector<DrawElementsCommand> & draw_commands,
+                           QVector<unsigned int> &per_object_index,
+                           QString key);
+
+
 
 
 
@@ -84,8 +107,14 @@ class Mesh
 
 
 
+
     int current_polygon_offset;
     int current_control_point_offset;
+
+
+
+
+    bool is_loaded;
 
 
 
@@ -95,14 +124,19 @@ public:
 
 
 
+
     Mesh();
     ~Mesh();
 
 
 
     void LoadFromFBX(FBXManager * fbx_manager, QOpenGLShaderProgram & shader, const char * file_name);
-    void Draw(QOpenGLShaderProgram & shader);
+
+
+
     inline void SetGlobalTransform(QMatrix4x4 transform) {global_transform = transform; }
+    void Draw(QOpenGLShaderProgram & shader);
+
 
 
 

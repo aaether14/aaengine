@@ -61,7 +61,7 @@ void Mesh::RecursiveLoad(FbxNode * node,
 
 
 
-    mesh_entries.push_back(QSharedPointer<MeshEntry>(new_mesh_entry));
+    mesh_entries << new_mesh_entry;
 
 
 
@@ -87,16 +87,18 @@ void Mesh::LoadMaterials(FbxScene *scene, QOpenGLShaderProgram &shader, QString 
         {
 
 
-            if (!materials.count(material->GetName()))
+            if (!materials.contains(material->GetName()))
             {
 
 
                 FbxProperty diffuse_prop = material->FindProperty(FbxSurfaceMaterial::sDiffuse);
 
 
+
                 QVector3D diffuse_color(diffuse_prop.Get<FbxDouble3>().mData[0],
                         diffuse_prop.Get<FbxDouble3>().mData[1],
                         diffuse_prop.Get<FbxDouble3>().mData[2]);
+
 
 
                 Material new_mat;
@@ -112,7 +114,7 @@ void Mesh::LoadMaterials(FbxScene *scene, QOpenGLShaderProgram &shader, QString 
                         QString texture_index = ComputeTextureFilename(texture->GetFileName(), fbx_file_name);
                         if (QFileInfo(texture_index).exists())
                         {
-                            if (!textures.count(texture_index))
+                            if (!textures.contains(texture_index))
                             {
                                 textures[texture_index] = new QOpenGLTexture(QImage(texture_index).mirrored());
                             }
@@ -143,7 +145,43 @@ void Mesh::LoadMaterials(FbxScene *scene, QOpenGLShaderProgram &shader, QString 
 
 
 
+void Mesh::CacheDrawCommands(QVector<MeshEntry *> &mesh_entries,
+                             QVector<DrawElementsCommand> &draw_commands,
+                             QVector<unsigned int> &per_object_index,
+                             QString key)
+{
+
+
+
+    for(int i = 0; i < mesh_entries.size(); i++)
+    {
+
+        if (mesh_entries[i]->DoesMaterialExist(key))
+        {
+
+            DrawElementsCommand c;
+            c = mesh_entries[i]->GetDrawCommand(key);
+            c.baseInstance = draw_commands.size();
+            draw_commands << c;
+
+
+            per_object_index << i;
+
+
+        }
+
+    }
+
+
+
+}
+
+
+
+
+
 Mesh::Mesh() : should_save_scene_after_load(false),
+    is_loaded(false),
     master_ibo(QOpenGLBuffer::IndexBuffer),
     master_vbo(QOpenGLBuffer::VertexBuffer),
     master_normals_vbo(QOpenGLBuffer::VertexBuffer),
@@ -151,7 +189,8 @@ Mesh::Mesh() : should_save_scene_after_load(false),
     current_control_point_offset(0),
     current_polygon_offset(0),
     ssbo(0),
-    indirect_buffer(0)
+    indirect_buffer(0),
+    per_object_buffer(0)
 {
 
 
@@ -179,12 +218,20 @@ Mesh::~Mesh()
 
 
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
-    f->glDeleteBuffers(1, &indirect_buffer);
-    f->glDeleteBuffers(1, &ssbo);
+    if (indirect_buffer)
+        f->glDeleteBuffers(1, &indirect_buffer);
+    if (ssbo)
+        f->glDeleteBuffers(1, &ssbo);
+    if(per_object_buffer)
+        f->glDeleteBuffers(1, &per_object_buffer);
 
 
 
     qDeleteAll(textures);
+    qDeleteAll(mesh_entries);
+
+
+
     materials.clear();
 
 
@@ -253,14 +300,32 @@ void Mesh::LoadFromFBX(FBXManager *fbx_manager, QOpenGLShaderProgram &shader, co
 
 
 
+    is_loaded = true;
+
+
+
 
 }
+
+
+
+
+
+
 
 void Mesh::Draw(QOpenGLShaderProgram &shader)
 {
 
 
+
+    if (!is_loaded)
+        return;
+
+
+
+
     shader.setUniformValue("diffuse_texture", 0);
+
 
 
 
@@ -269,8 +334,29 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
+
+    QVector <unsigned int> per_object_index;
     QVector<float16> model_matrix;
     QVector<DrawElementsCommand> draw_commands;
+
+
+
+
+    {
+
+        for(int i = 0; i < mesh_entries.size(); i++)
+            model_matrix << toFloat16((global_transform * mesh_entries[i]->GetLocalTransform()).constData());
+
+
+
+        f->glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+        f->glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(float16) * model_matrix.size(), &model_matrix[0], GL_DYNAMIC_DRAW);
+        f->glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
+
+
+    }
+
+
 
 
 
@@ -281,36 +367,11 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
-        for(int i = 0; i < mesh_entries.size(); i++)
-        {
 
-
-            if (mesh_entries[i]->DoesMaterialExist(it))
-            {
-
-                DrawElementsCommand c;
-                c = mesh_entries[i]->GetDrawCommand(it);
-                c.baseInstance = draw_commands.size();
-                draw_commands << c;
-
-
-
-                model_matrix << toFloat16((global_transform * mesh_entries[i]->GetLocalTransform()).constData());
-
-
-
-            }
-
-
-
-        }
-
-
-
-
-        f->glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
-        f->glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(float16) * model_matrix.size(), &model_matrix[0], GL_DYNAMIC_DRAW);
-        f->glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
+        CacheDrawCommands(mesh_entries,
+                          draw_commands,
+                          per_object_index,
+                          it);
 
 
 
@@ -320,26 +381,34 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
-        f->glBindBuffer(GL_ARRAY_BUFFER, indirect_buffer);
+        f->glBindBuffer(GL_ARRAY_BUFFER, per_object_buffer);
+        f->glBufferData(GL_ARRAY_BUFFER, sizeof(unsigned int) * per_object_index.size(), &per_object_index[0], GL_DYNAMIC_DRAW);
         f->glEnableVertexAttribArray(2);
-        f->glVertexAttribIPointer(2, 1, GL_UNSIGNED_INT, sizeof(DrawElementsCommand), (GLvoid*)(4 * sizeof(GLuint)));
+        f->glVertexAttribIPointer(2, 1, GL_UNSIGNED_INT, sizeof(unsigned int), 0);
         f->glVertexAttribDivisor(2, 1);
 
 
 
-        materials[it].SendToShader(shader);
-        if (materials[it].use_diffuse_texture)
-        textures[materials[it].difuse_texture_name]->bind();
+        {
 
 
-        f->glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, draw_commands.size(), 0);
-        model_matrix.clear();
-        draw_commands.clear();
+            materials[it].SendToShader(shader);
+            if (materials[it].use_diffuse_texture)
+                textures[materials[it].difuse_texture_name]->bind();
+
+
+            f->glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, draw_commands.size(), 0);
+            model_matrix.clear();
+            draw_commands.clear();
+            per_object_index.clear();
 
 
 
-        if (materials[it].use_diffuse_texture)
-        textures[materials[it].difuse_texture_name]->release();
+            if (materials[it].use_diffuse_texture)
+                textures[materials[it].difuse_texture_name]->release();
+
+
+        }
 
 
     }
@@ -443,6 +512,7 @@ void Mesh::LoadBufferObjects(FbxNode *root, QOpenGLShaderProgram &shader)
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
     f->glGenBuffers(1, &ssbo);
     f->glGenBuffers(1, &indirect_buffer);
+    f->glGenBuffers(1, &per_object_buffer);
 
 
 
@@ -523,6 +593,29 @@ void Mesh::LoadBufferObjects(FbxNode *root, QOpenGLShaderProgram &shader)
     master_vertices.clear();
     master_normals.clear();
     master_uvs.clear();
+
+
+
+
+
+    for (auto it : materials.keys())
+    {
+
+        QVector<DrawElementsCommand> commands;
+        QVector<unsigned int> per_object_index;
+
+
+
+        CacheDrawCommands(mesh_entries,
+                          commands,
+                          per_object_index,
+                          it);
+
+
+        commands_cache[it] = commands;
+        per_object_index_cache[it] = per_object_index;
+
+    }
 
 
 

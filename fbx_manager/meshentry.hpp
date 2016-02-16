@@ -6,7 +6,7 @@
 
 
 #include <QOpenGLFunctions_4_3_Core>
-#include <QMap>
+#include <QHash>
 #include <QVector>
 #include <QMatrix4x4>
 #include <fbxsdk.h>
@@ -23,7 +23,7 @@ class MeshEntry
 
 
     QMatrix4x4 local_transform;
-    QMap<QString, DrawElementsCommand> commands;
+    QHash<QString, DrawElementsCommand> commands;
 
 
 
@@ -75,8 +75,8 @@ public:
 
 
 
-    inline DrawElementsCommand GetDrawCommand(QString material_name){return commands[material_name]; }
-    inline bool DoesMaterialExist(QString material_name){return commands.count(material_name) > 0;}
+    inline DrawElementsCommand GetDrawCommand(QString material_name){return commands.value(material_name); }
+    inline bool DoesMaterialExist(QString material_name){return commands.contains(material_name); }
 
 
     inline QMatrix4x4 GetLocalTransform(){return local_transform; }

@@ -202,7 +202,7 @@ void MeshEntry::LoadIndices(FbxMesh *mesh,
 
 
 
-    QMap<int, QVector<unsigned int> > material_mapped_indices;
+    QHash<int, QVector<unsigned int> > material_mapped_indices;
     FbxLayerElementArrayTemplate<int> *material_indices;
     mesh->GetMaterialIndices(&material_indices);
 
