@@ -31,7 +31,10 @@ SOURCES += main.cpp\
     core/inputregister.cpp \
     core/main_controller.cpp \
     fbx_manager/material.cpp \
-    about/about.cpp
+    about/about.cpp \
+    renderer/baserenderer.cpp \
+    renderer/pipeline.cpp \
+    renderer/fbxrenderer.cpp
 
 
 
@@ -47,7 +50,10 @@ HEADERS  += \
     core/inputregister.hpp \
     core/main_controller.hpp \
     fbx_manager/material.hpp \
-    about/about.hpp
+    about/about.hpp \
+    renderer/baserenderer.hpp \
+    renderer/pipeline.hpp \
+    renderer/fbxrenderer.hpp
 
 
 

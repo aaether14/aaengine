@@ -7,7 +7,7 @@
 #include <QOpenGLWidget>
 #include <QOpenGLContext>
 #include <QOpenGLFunctions_4_3_Core>
-#include <QOpenGLShaderProgram>
+
 
 
 #include <QMatrix4x4>
@@ -16,9 +16,10 @@
 
 
 
-#include <fbx_manager/mesh.hpp>
+
 #include <core/fps.hpp>
 #include <core/inputregister.hpp>
+#include <renderer/pipeline.hpp>
 
 
 

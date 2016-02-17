@@ -14,6 +14,7 @@ GLController::GLController(QWidget *parent)
     timer->start(0.0);
 
 
+
     FPS * fps = new FPS(this);
     connect(timer, &QTimer::timeout, fps, &FPS::Update);
     connect(timer, &QTimer::timeout, this, &GLController::Update);
