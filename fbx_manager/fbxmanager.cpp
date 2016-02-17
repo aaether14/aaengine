@@ -45,3 +45,21 @@ FBXManager::~FBXManager()
 
 
 
+void FBXManager::LoadMesh(Mesh *mesh, QString file_name)
+{
+
+
+    if(mesh)
+        mesh->LoadFromFBX(GetManager(), file_name);
+
+
+}
+
+
+
+
+
+
+
+
+

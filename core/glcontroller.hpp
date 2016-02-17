@@ -17,6 +17,7 @@
 
 
 
+#include <fbx_manager/fbxmanager.hpp>
 #include <core/fps.hpp>
 #include <core/inputregister.hpp>
 #include <renderer/pipeline.hpp>

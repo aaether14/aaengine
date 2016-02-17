@@ -73,7 +73,7 @@ void GLController::initializeGL()
 
 
     mesh = new Mesh();
-    mesh->LoadFromFBX(findChild<FBXManager*>("FBXManager"), shader, "Street/street.fbx");
+    findChild<FBXManager*>("FBXManager")->LoadMesh(mesh, "Street/street.fbx");
 
 
 

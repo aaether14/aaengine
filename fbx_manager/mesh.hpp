@@ -13,16 +13,12 @@
 
 
 
-#include <QOpenGLContext>
 #include <QOpenGLFunctions_4_3_Core>
-#include <QOpenGLVertexArrayObject>
-#include <QOpenGLBuffer>
 #include <QOpenGLShaderProgram>
 
 
 
 
-#include <fbx_manager/fbxmanager.hpp>
 #include <fbx_manager/meshentry.hpp>
 
 
@@ -48,9 +44,19 @@ class Mesh
 
 
 
+    GLuint vao;
+
+
     GLuint ssbo;
     GLuint indirect_buffer;
     GLuint per_object_buffer;
+
+
+
+    GLuint master_vbo;
+    GLuint master_ibo;
+    GLuint master_normals_vbo;
+    GLuint master_uvs_vbo;
 
 
 
@@ -63,13 +69,12 @@ class Mesh
 
 
 
-    void LoadBufferObjects(FbxNode * root, QOpenGLShaderProgram & shader);
+    void LoadBufferObjects(FbxNode * root);
 
 
 
 
     void RecursiveLoad(FbxNode * node,
-                       QOpenGLShaderProgram &shader,
                        QVector<unsigned int> & master_indices,
                        QVector<float> & master_vertices,
                        QVector<float> & master_normals,
@@ -78,7 +83,7 @@ class Mesh
 
 
 
-    void LoadMaterials(FbxScene * scene, QOpenGLShaderProgram & shader, QString fbx_file_name);
+    void LoadMaterials(FbxScene * scene, QString fbx_file_name);
 
 
 
@@ -99,15 +104,6 @@ class Mesh
 
 
 
-    QOpenGLVertexArrayObject master_vao;
-    QOpenGLBuffer master_ibo;
-    QOpenGLBuffer master_vbo;
-    QOpenGLBuffer master_normals_vbo;
-    QOpenGLBuffer master_uvs_vbo;
-
-
-
-
     int current_polygon_offset;
     int current_control_point_offset;
 
@@ -115,6 +111,21 @@ class Mesh
 
 
     bool is_loaded;
+
+
+
+
+
+    void DynamicDraw(QOpenGLShaderProgram & shader,
+                     QOpenGLFunctions_4_3_Core * f,
+                     QString material_name);
+
+
+
+
+    void CachedDraw(QOpenGLShaderProgram & shader,
+                    QOpenGLFunctions_4_3_Core * f,
+                    QString material_name);
 
 
 
@@ -130,7 +141,7 @@ public:
 
 
 
-    void LoadFromFBX(FBXManager * fbx_manager, QOpenGLShaderProgram & shader, const char * file_name);
+    void LoadFromFBX(FbxManager * fbx_manager, QString file_name);
 
 
 

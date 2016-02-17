@@ -144,43 +144,43 @@ void MeshEntry::LoadUVs(FbxMesh *mesh, QVector<float> &master_uvs)
 {
 
 
-        if (mesh->GetElementUVCount() < 1)
-        {
+    if (mesh->GetElementUVCount() < 1)
+    {
 
-            for (int i = 0; i < mesh->GetControlPointsCount(); i++)
-                master_uvs << 0.0 << 0.0;
-
-
-            qDebug() << "Invalid UVs!";
-            return;
-
-        }
-
-
-
-        FbxGeometryElementUV* vertex_uv = mesh->GetElementUV(0);
-        if (vertex_uv->GetMappingMode() == FbxGeometryElement::eByControlPoint)
-        {
-
-
-        }
-        else
-        {
-            qDebug() << "Invalid UV format!";
-        }
-
-
-
-        QVector<float> uvs;
         for (int i = 0; i < mesh->GetControlPointsCount(); i++)
-        {
+            master_uvs << 0.0 << 0.0;
 
 
-            master_uvs << (float)(vertex_uv->GetDirectArray().GetAt(i).mData[0]);
-            master_uvs << (float)(vertex_uv->GetDirectArray().GetAt(i).mData[1]);
+        qDebug() << "Invalid UVs!";
+        return;
+
+    }
 
 
-        }
+
+    FbxGeometryElementUV* vertex_uv = mesh->GetElementUV(0);
+    if (vertex_uv->GetMappingMode() == FbxGeometryElement::eByControlPoint)
+    {
+
+
+    }
+    else
+    {
+        qDebug() << "Invalid UV format!";
+    }
+
+
+
+    QVector<float> uvs;
+    for (int i = 0; i < mesh->GetControlPointsCount(); i++)
+    {
+
+
+        master_uvs << (float)(vertex_uv->GetDirectArray().GetAt(i).mData[0]);
+        master_uvs << (float)(vertex_uv->GetDirectArray().GetAt(i).mData[1]);
+
+
+    }
 
 
 

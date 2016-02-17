@@ -3,9 +3,11 @@
 
 
 
+
 #include <QObject>
 #include <QDebug>
 #include <fbxsdk.h>
+#include <fbx_manager/mesh.hpp>
 
 
 
@@ -28,10 +30,18 @@ public:
 
     explicit FBXManager(QObject *parent = 0);
     ~FBXManager();
-    /**
-    FBX manager
-    */
+
+
+
     inline FbxManager * GetManager(){return manager; }
+
+
+
+
+
+    void LoadMesh(Mesh * mesh, QString file_name);
+
+
 
 
 

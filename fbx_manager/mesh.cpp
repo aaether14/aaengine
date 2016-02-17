@@ -4,7 +4,6 @@
 
 
 void Mesh::RecursiveLoad(FbxNode * node,
-                         QOpenGLShaderProgram &shader,
                          QVector<unsigned int> & master_indices,
                          QVector<float> & master_vertices,
                          QVector<float> &master_normals,
@@ -16,7 +15,6 @@ void Mesh::RecursiveLoad(FbxNode * node,
 
     for (int i = 0; i < node->GetChildCount(); i++)
         RecursiveLoad(node->GetChild(i),
-                      shader,
                       master_indices,
                       master_vertices,
                       master_normals,
@@ -71,7 +69,7 @@ void Mesh::RecursiveLoad(FbxNode * node,
 
 
 
-void Mesh::LoadMaterials(FbxScene *scene, QOpenGLShaderProgram &shader, QString fbx_file_name)
+void Mesh::LoadMaterials(FbxScene *scene, QString fbx_file_name)
 {
 
 
@@ -180,12 +178,132 @@ void Mesh::CacheDrawCommands(QVector<MeshEntry *> &mesh_entries,
 
 
 
+void Mesh::DynamicDraw(QOpenGLShaderProgram & shader,
+                       QOpenGLFunctions_4_3_Core * f,
+                       QString material_name)
+{
+
+
+
+    QVector<unsigned int> per_object_index;
+    QVector<DrawElementsCommand> draw_commands;
+
+
+
+
+    CacheDrawCommands(mesh_entries,
+                      draw_commands,
+                      per_object_index,
+                      material_name);
+
+
+
+
+    f->glBindBuffer( GL_DRAW_INDIRECT_BUFFER, indirect_buffer);
+    f->glBufferData( GL_DRAW_INDIRECT_BUFFER, sizeof(DrawElementsCommand) * draw_commands.size(), &draw_commands[0], GL_DYNAMIC_DRAW );
+
+
+
+    f->glBindBuffer(GL_ARRAY_BUFFER, per_object_buffer);
+    f->glBufferData(GL_ARRAY_BUFFER, sizeof(unsigned int) * per_object_index.size(), &per_object_index[0], GL_DYNAMIC_DRAW);
+    f->glEnableVertexAttribArray(3);
+    f->glVertexAttribIPointer(3, 1, GL_UNSIGNED_INT, sizeof(unsigned int), 0);
+    f->glVertexAttribDivisor(3, 1);
+
+
+
+    {
+
+
+        materials[material_name].SendToShader(shader);
+        if (materials[material_name].use_diffuse_texture)
+            textures[materials[material_name].difuse_texture_name]->bind();
+
+
+        f->glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, draw_commands.size(), 0);
+        draw_commands.clear();
+        per_object_index.clear();
+
+
+
+        if (materials[material_name].use_diffuse_texture)
+            textures[materials[material_name].difuse_texture_name]->release();
+
+
+    }
+
+
+
+}
+
+
+
+
+
+void Mesh::CachedDraw(QOpenGLShaderProgram &shader,
+                      QOpenGLFunctions_4_3_Core *f,
+                      QString material_name)
+{
+
+
+
+
+    f->glBindBuffer( GL_DRAW_INDIRECT_BUFFER, indirect_buffer);
+    f->glBufferData( GL_DRAW_INDIRECT_BUFFER,
+                     sizeof(DrawElementsCommand) * commands_cache.value(material_name).size(),
+                     &commands_cache.value(material_name)[0],
+            GL_DYNAMIC_DRAW );
+
+
+
+    f->glBindBuffer(GL_ARRAY_BUFFER, per_object_buffer);
+    f->glBufferData(GL_ARRAY_BUFFER,
+                    sizeof(unsigned int) * per_object_index_cache.value(material_name).size(),
+                    &per_object_index_cache.value(material_name)[0],
+            GL_DYNAMIC_DRAW);
+
+
+    f->glEnableVertexAttribArray(3);
+    f->glVertexAttribIPointer(3, 1, GL_UNSIGNED_INT, sizeof(unsigned int), 0);
+    f->glVertexAttribDivisor(3, 1);
+
+
+
+    {
+
+
+        materials[material_name].SendToShader(shader);
+        if (materials[material_name].use_diffuse_texture)
+            textures[materials[material_name].difuse_texture_name]->bind();
+
+
+        f->glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, commands_cache.value(material_name).size(), 0);
+
+
+
+        if (materials[material_name].use_diffuse_texture)
+            textures[materials[material_name].difuse_texture_name]->release();
+
+
+    }
+
+
+
+
+}
+
+
+
+
+
+
 Mesh::Mesh() : should_save_scene_after_load(false),
     is_loaded(false),
-    master_ibo(QOpenGLBuffer::IndexBuffer),
-    master_vbo(QOpenGLBuffer::VertexBuffer),
-    master_normals_vbo(QOpenGLBuffer::VertexBuffer),
-    master_uvs_vbo(QOpenGLBuffer::VertexBuffer),
+    vao(0),
+    master_ibo(0),
+    master_vbo(0),
+    master_normals_vbo(0),
+    master_uvs_vbo(0),
     current_control_point_offset(0),
     current_polygon_offset(0),
     ssbo(0),
@@ -207,23 +325,32 @@ Mesh::~Mesh()
 {
 
 
-    master_vao.destroy();
-    master_ibo.destroy();
-    master_vbo.destroy();
-    master_normals_vbo.destroy();
-    master_uvs_vbo.destroy();
-    mesh_entries.clear();
-
 
 
 
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
+
+
+
+    if (vao)
+        f->glDeleteVertexArrays(1, &vao);
+
+
     if (indirect_buffer)
         f->glDeleteBuffers(1, &indirect_buffer);
     if (ssbo)
         f->glDeleteBuffers(1, &ssbo);
     if(per_object_buffer)
         f->glDeleteBuffers(1, &per_object_buffer);
+    if (master_vbo)
+        f->glDeleteBuffers(1, &master_vbo);
+    if (master_ibo)
+        f->glDeleteBuffers(1, &master_ibo);
+    if (master_normals_vbo)
+        f->glDeleteBuffers(1, &master_normals_vbo);
+    if (master_uvs_vbo)
+        f->glDeleteBuffers(1, &master_uvs_vbo);
+
 
 
 
@@ -241,14 +368,19 @@ Mesh::~Mesh()
 
 
 
-void Mesh::LoadFromFBX(FBXManager *fbx_manager, QOpenGLShaderProgram &shader, const char *file_name)
+void Mesh::LoadFromFBX(FbxManager *fbx_manager, QString file_name)
 {
 
 
 
 
-    FbxImporter* importer = FbxImporter::Create(fbx_manager->GetManager(), "default_importer");
-    bool importer_status = importer->Initialize(file_name, -1, fbx_manager->GetManager()->GetIOSettings());
+    FbxImporter* importer = FbxImporter::Create(fbx_manager, "default_importer");
+
+
+
+    bool importer_status = importer->Initialize(file_name.toStdString().c_str(),
+                                                -1,
+                                                fbx_manager->GetIOSettings());
 
 
 
@@ -261,7 +393,7 @@ void Mesh::LoadFromFBX(FBXManager *fbx_manager, QOpenGLShaderProgram &shader, co
 
 
 
-    FbxScene * scene = FbxScene::Create(fbx_manager->GetManager(), "default_scene");
+    FbxScene * scene = FbxScene::Create(fbx_manager, "default_scene");
     importer->Import(scene);
     importer->Destroy();
 
@@ -269,9 +401,9 @@ void Mesh::LoadFromFBX(FBXManager *fbx_manager, QOpenGLShaderProgram &shader, co
 
 
 
-    NormalizeScene(scene, fbx_manager->GetManager());
-    LoadMaterials(scene, shader, file_name);
-    LoadBufferObjects(scene->GetRootNode(), shader);
+    NormalizeScene(scene, fbx_manager);
+    LoadMaterials(scene, file_name);
+    LoadBufferObjects(scene->GetRootNode());
 
 
 
@@ -279,8 +411,12 @@ void Mesh::LoadFromFBX(FBXManager *fbx_manager, QOpenGLShaderProgram &shader, co
     if (should_save_scene_after_load)
     {
 
-        FbxExporter *exporter = FbxExporter::Create(fbx_manager->GetManager(), "Aaether Engine Exporter");
-        bool exporter_status = exporter->Initialize(file_name, -1, fbx_manager->GetManager()->GetIOSettings());
+        FbxExporter *exporter = FbxExporter::Create(fbx_manager, "Aaether Engine Exporter");
+
+
+        bool exporter_status = exporter->Initialize(file_name.toStdString().c_str(),
+                                                    -1,
+                                                    fbx_manager->GetIOSettings());
 
 
         if(!exporter_status)
@@ -301,6 +437,7 @@ void Mesh::LoadFromFBX(FBXManager *fbx_manager, QOpenGLShaderProgram &shader, co
 
 
     is_loaded = true;
+    scene->Destroy();
 
 
 
@@ -330,14 +467,12 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
-    master_vao.bind();
+    f->glBindVertexArray(vao);
 
 
 
 
-    QVector <unsigned int> per_object_index;
     QVector<float16> model_matrix;
-    QVector<DrawElementsCommand> draw_commands;
 
 
 
@@ -359,64 +494,21 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
+    model_matrix.clear();
+
+
+
 
 
 
     for (auto it : materials.keys())
-    {
+        DynamicDraw(shader, f, it);
 
 
 
 
-        CacheDrawCommands(mesh_entries,
-                          draw_commands,
-                          per_object_index,
-                          it);
 
-
-
-
-        f->glBindBuffer( GL_DRAW_INDIRECT_BUFFER, indirect_buffer);
-        f->glBufferData( GL_DRAW_INDIRECT_BUFFER, sizeof(DrawElementsCommand) * draw_commands.size(), &draw_commands[0], GL_DYNAMIC_DRAW );
-
-
-
-        f->glBindBuffer(GL_ARRAY_BUFFER, per_object_buffer);
-        f->glBufferData(GL_ARRAY_BUFFER, sizeof(unsigned int) * per_object_index.size(), &per_object_index[0], GL_DYNAMIC_DRAW);
-        f->glEnableVertexAttribArray(2);
-        f->glVertexAttribIPointer(2, 1, GL_UNSIGNED_INT, sizeof(unsigned int), 0);
-        f->glVertexAttribDivisor(2, 1);
-
-
-
-        {
-
-
-            materials[it].SendToShader(shader);
-            if (materials[it].use_diffuse_texture)
-                textures[materials[it].difuse_texture_name]->bind();
-
-
-            f->glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, draw_commands.size(), 0);
-            model_matrix.clear();
-            draw_commands.clear();
-            per_object_index.clear();
-
-
-
-            if (materials[it].use_diffuse_texture)
-                textures[materials[it].difuse_texture_name]->release();
-
-
-        }
-
-
-    }
-
-
-
-
-    master_vao.release();
+    f->glBindVertexArray(0);
 
 
 
@@ -432,6 +524,7 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 QString Mesh::ComputeTextureFilename(QString texture_name, QString fbx_file_name)
 {
+
 
 
     QString texture_file_name;
@@ -502,7 +595,7 @@ void Mesh::NormalizeScene(FbxScene *scene, FbxManager *fbx_manager)
 
 
 
-void Mesh::LoadBufferObjects(FbxNode *root, QOpenGLShaderProgram &shader)
+void Mesh::LoadBufferObjects(FbxNode *root)
 {
 
 
@@ -525,70 +618,65 @@ void Mesh::LoadBufferObjects(FbxNode *root, QOpenGLShaderProgram &shader)
 
 
 
+
     RecursiveLoad(root,
-                  shader,
                   master_indices,
                   master_vertices,
                   master_normals,
                   master_uvs);
 
 
+
+
     //creating vertex array object
 
 
-    master_vao.create();
-    master_vao.bind();
+
+
+    f->glGenVertexArrays(1, &vao);
+    f->glBindVertexArray(vao);
+
 
 
     //loading indices
 
 
-    master_ibo.create();
-    master_ibo.setUsagePattern(QOpenGLBuffer::StaticDraw);
-    master_ibo.bind();
-    master_ibo.allocate(&master_indices[0], sizeof(unsigned int) * master_indices.size());
 
-
-    //loading vertices and binding shader attribute
-
-
-    master_vbo.create();
-    master_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
-    master_vbo.bind();
-    master_vbo.allocate(&master_vertices[0], sizeof(float) * master_vertices.size());
-
-
-    shader.setAttributeBuffer("vertex", GL_FLOAT, 0, 3);
-    shader.enableAttributeArray("vertex");
+    f->glGenBuffers(1, &master_ibo);
+    f->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, master_ibo);
+    f->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * master_indices.size(), &master_indices[0], GL_STATIC_DRAW);
 
 
 
 
-    //loading normals and binding shader attribute
-
-    master_normals_vbo.create();
-    master_normals_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
-    master_normals_vbo.bind();
-    master_normals_vbo.allocate(&master_normals[0], sizeof(float) * master_normals.size());
-
-
-    shader.setAttributeArray("normal", GL_FLOAT, 0, 3);
-    shader.enableAttributeArray("normal");
+    f->glGenBuffers(1, &master_vbo);
+    f->glBindBuffer(GL_ARRAY_BUFFER, master_vbo);
+    f->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * master_vertices.size(), &master_vertices[0], GL_STATIC_DRAW);
+    f->glEnableVertexAttribArray(0);
+    f->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 
 
-    master_uvs_vbo.create();
-    master_uvs_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
-    master_uvs_vbo.bind();
-    master_uvs_vbo.allocate(&master_uvs[0], sizeof(float) * master_uvs.size());
-
-
-    shader.setAttributeArray("uv", GL_FLOAT, 0, 2);
-    shader.enableAttributeArray("uv");
+    f->glGenBuffers(1, &master_normals_vbo);
+    f->glBindBuffer(GL_ARRAY_BUFFER, master_normals_vbo);
+    f->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * master_normals.size(), &master_normals[0], GL_STATIC_DRAW);
+    f->glEnableVertexAttribArray(1);
+    f->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 
 
-    master_vao.release();
+
+    f->glGenBuffers(1, &master_uvs_vbo);
+    f->glBindBuffer(GL_ARRAY_BUFFER, master_uvs_vbo);
+    f->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * master_uvs.size(), &master_uvs[0], GL_STATIC_DRAW);
+    f->glEnableVertexAttribArray(2);
+    f->glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+
+
+
+
+    f->glBindVertexArray(0);
     master_indices.clear();
     master_vertices.clear();
     master_normals.clear();
