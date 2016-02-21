@@ -2,12 +2,15 @@
 
 
 
+
 layout(location = 0, index = 0) out vec4 fragColor;
+
 
 
 
 in vec3 M_space_normal;
 in vec2 interpolated_uv;
+
 
 
 
@@ -19,11 +22,30 @@ uniform bool use_diffuse_texture;
 
 
 
+vec4 ComputeLightColor()
+{
+
+
+    vec4 color = vec4(1.0);
+
+
+    float light_factor = max(0.0, dot(vec3(0, 1, 0), M_space_normal)) * 1.0 + 0.4;
+
+
+    return color * light_factor;
+
+
+}
+
+
+
+
+
 vec4 ComputeMaterialColor()
 {
 
 
-    float light_factor = max(0.0, dot(vec3(0, 1, 0), M_space_normal)) * 1.0 + 0.4;
+
     vec4 color;
 
 
@@ -39,7 +61,7 @@ vec4 ComputeMaterialColor()
     }
 
 
-    return color * light_factor;
+    return color;
 
 
 }
@@ -53,6 +75,6 @@ vec4 ComputeMaterialColor()
 void main( void )
 {
 
-    fragColor = ComputeMaterialColor();
+    fragColor = ComputeLightColor() * ComputeMaterialColor();
 
 }

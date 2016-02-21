@@ -47,6 +47,14 @@ void MeshEntry::LoadMesh(FbxMesh * mesh,
 
 
 
+    mesh->ComputeBBox();
+    BBMin = QVector3D(mesh->BBoxMin.Get().mData[0], mesh->BBoxMin.Get().mData[1], mesh->BBoxMin.Get().mData[2]);
+    BBMax = QVector3D(mesh->BBoxMax.Get().mData[0], mesh->BBoxMax.Get().mData[1], mesh->BBoxMax.Get().mData[2]);
+
+
+
+
+
 }
 
 

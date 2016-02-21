@@ -37,7 +37,11 @@ void main( void )
 
 
     M_space_normal = normalize(vec3(model_matrix[drawid] * vec4(normal, 0.0)));
+
+
     interpolated_uv = uv;
+
+
     gl_Position = VP * model_matrix[drawid] * vertex;
 
 

@@ -22,10 +22,10 @@ GLController::GLController(QWidget *parent)
 
 
     InputRegister * input = new InputRegister(this);
-
-
-
     FBXManager * fbx_manager = new FBXManager(this);
+
+
+
     setFocusPolicy(Qt::StrongFocus);
     setMouseTracking(true);
 
@@ -94,9 +94,15 @@ void GLController::paintGL()
 
 
 
+
+    QObject * camera = parent()->parent()->findChild<QObject*>("ScriptEngine")->findChild<QObject*>("Default_camera");
+    QMatrix4x4 vp = qvariant_cast<QMatrix4x4>(camera->property("out_viewProj"));
+
+
+
     shader.bind();
-    QMatrix4x4 vp = qvariant_cast<QMatrix4x4>(parent()->parent()->findChild<QObject*>("ScriptEngine")->findChild<QObject*>("Default_camera")->property("out_viewProj"));
     shader.setUniformValue("VP", vp);
+
 
 
 

@@ -13,7 +13,7 @@
 #include <QMatrix4x4>
 #include <QTimer>
 #include <QDebug>
-
+#include <QMetaProperty>
 
 
 

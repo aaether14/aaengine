@@ -17,11 +17,20 @@ Controller::Controller(QWidget *parent) :
 
 
     ScriptEngine * script_engine = new ScriptEngine(this);
-
-
+    script_engine->ConnectToTimer(findChild<QObject*>("GL")->findChild<QTimer*>("gTimer"));
     script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<FPS*>("gFPS"));
     script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<InputRegister*>("gInput"));
-    script_engine->AddQMLScript("qrc:/base_qml/default_camera.qml", findChild<QObject*>("GL")->findChild<QTimer*>("gTimer"));
+
+
+
+
+    if (QFileInfo("data/settings/settings.qml").exists())
+        script_engine->AddQMLScript("data/settings/settings.qml", NULL);
+    else
+        qDebug() << "Could not load settings!";
+
+
+
 
 
 

@@ -4,7 +4,6 @@ import Qt3D 2.0
 
 
 
-
 QtObject
 {
 
@@ -155,9 +154,8 @@ QtObject
         processMouseInput();
         updateVP();
 
+
     }
-
-
 
 
 

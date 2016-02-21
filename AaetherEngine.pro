@@ -63,6 +63,7 @@ FORMS    += core/controller.ui \
     about/about.ui
 
 
+
 CONFIG += c++11
 
 

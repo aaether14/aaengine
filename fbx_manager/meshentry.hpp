@@ -23,6 +23,10 @@ class MeshEntry
 
 
     QMatrix4x4 local_transform;
+    QVector3D BBMin, BBMax;
+
+
+
     QHash<QString, DrawElementsCommand> commands;
 
 

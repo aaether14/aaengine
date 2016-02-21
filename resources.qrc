@@ -9,5 +9,6 @@
     </qresource>
     <qresource prefix="/base_qml">
         <file>default_camera.qml</file>
+        <file>default_settings.qml</file>
     </qresource>
 </RCC>

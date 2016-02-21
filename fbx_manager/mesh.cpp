@@ -502,7 +502,7 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
     for (auto it : materials.keys())
-        DynamicDraw(shader, f, it);
+        CachedDraw(shader, f, it);
 
 
 

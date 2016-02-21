@@ -8,8 +8,8 @@
 #include <QQmlComponent>
 #include <QQmlContext>
 #include <QMatrix4x4>
-#include <core/glcontroller.hpp>
 #include <QDebug>
+#include <QTimer>
 
 
 
@@ -20,19 +20,40 @@ class ScriptEngine : public QQmlEngine
 
 
     Q_OBJECT
+    QTimer * timer;
+
 
 
 
 public:
+
+
     explicit ScriptEngine(QObject *parent = 0);
+
+
+    void ConnectToTimer(QTimer * new_timer);
+
+
+
+    Q_INVOKABLE void addQMLScript(QString path, bool has_update);
+
 
 
 signals:
 
 
 public slots:
+
+
     void RunScriptFromString(QString script_code);
-    void AddQMLScript(QString path, QTimer * timer);
+
+
+    void AddQMLScript(QString path, bool has_update);
+
+
+    void AddQMLSingleton(QString path, QString def, QString name);
+
+
     void RegisterQObject(QObject * obj);
 
 
