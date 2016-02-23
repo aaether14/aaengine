@@ -299,6 +299,7 @@ void Mesh::CachedDraw(QOpenGLShaderProgram &shader,
 
 Mesh::Mesh() : should_save_scene_after_load(false),
     is_loaded(false),
+    draw_method(Mesh::DYANIMC_DRAW),
     vao(0),
     master_ibo(0),
     master_vbo(0),
@@ -502,13 +503,16 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
     for (auto it : materials.keys())
-        CachedDraw(shader, f, it);
+        if (draw_method == Mesh::CACHED_DRAW)
+            CachedDraw(shader, f, it);
+        else if (draw_method == Mesh::DYANIMC_DRAW)
+            DynamicDraw(shader, f, it);
 
 
 
 
 
-    f->glBindVertexArray(0);
+            f->glBindVertexArray(0);
 
 
 

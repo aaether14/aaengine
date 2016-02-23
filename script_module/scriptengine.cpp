@@ -44,6 +44,18 @@ void ScriptEngine::addQMLScript(QString path, bool has_update)
 
 
 
+void ScriptEngine::forceUpdate(QObject *obj)
+{
+
+
+    connect(timer, SIGNAL(timeout()), obj, SLOT(onUpdate()));
+
+
+}
+
+
+
+
 void ScriptEngine::RunScriptFromString(QString script_code)
 {
 
@@ -67,7 +79,7 @@ void ScriptEngine::AddQMLScript(QString path, bool has_update)
     if(has_update)
     {
         if (timer)
-            connect(timer, SIGNAL(timeout()), obj, SLOT(onUpdate()));
+            forceUpdate(obj);
         else
             qDebug() << path << ": Could not set update procedure, no timer detected!";
     }

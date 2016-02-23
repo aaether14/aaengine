@@ -111,6 +111,17 @@ class Mesh
 
 
     bool is_loaded;
+    int draw_method;
+
+
+
+
+    enum
+    {
+        DYANIMC_DRAW,
+        CACHED_DRAW
+    };
+
 
 
 
@@ -145,7 +156,13 @@ public:
 
 
 
+
     inline void SetGlobalTransform(QMatrix4x4 transform) {global_transform = transform; }
+    inline void SetDrawMethod(int method){draw_method = method; }
+
+
+
+
     void Draw(QOpenGLShaderProgram & shader);
 
 

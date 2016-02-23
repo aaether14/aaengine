@@ -95,7 +95,7 @@ void GLController::paintGL()
 
 
 
-    QObject * camera = parent()->parent()->findChild<QObject*>("ScriptEngine")->findChild<QObject*>("Default_camera");
+    QObject * camera = parent()->parent()->findChild<QObject*>("ScriptEngine")->findChild<QObject*>("Settings");
     QMatrix4x4 vp = qvariant_cast<QMatrix4x4>(camera->property("out_viewProj"));
 
 

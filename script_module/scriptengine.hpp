@@ -39,6 +39,10 @@ public:
 
 
 
+    Q_INVOKABLE void forceUpdate(QObject * obj);
+
+
+
 signals:
 
 
