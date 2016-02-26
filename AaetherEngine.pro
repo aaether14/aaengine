@@ -34,7 +34,11 @@ SOURCES += main.cpp\
     about/about.cpp \
     renderer/baserenderer.cpp \
     renderer/pipeline.cpp \
-    renderer/fbxrenderer.cpp
+    renderer/fbxrenderer.cpp \
+    assets/baseasset.cpp \
+    assets/meshasset.cpp \
+    assets/baseassetloader.cpp \
+    assets/assetloader.cpp
 
 
 
@@ -53,7 +57,11 @@ HEADERS  += \
     about/about.hpp \
     renderer/baserenderer.hpp \
     renderer/pipeline.hpp \
-    renderer/fbxrenderer.hpp
+    renderer/fbxrenderer.hpp \
+    assets/baseasset.hpp \
+    assets/meshasset.hpp \
+    assets/baseassetloader.hpp \
+    assets/assetloader.hpp
 
 
 

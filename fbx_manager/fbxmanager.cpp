@@ -3,15 +3,16 @@
 
 
 
-FBXManager::FBXManager(QObject *parent) : QObject(parent)
+
+FBXManager::FBXManager()
 {
 
-
-    setObjectName("FBXManager");
 
 
 
     manager = FbxManager::Create();
+
+
 
 
     if (!manager)
@@ -45,12 +46,15 @@ FBXManager::~FBXManager()
 
 
 
-void FBXManager::LoadMesh(Mesh *mesh, QString file_name)
+
+
+void FBXManager::Load(QString file_name, BaseAsset *asset)
 {
 
 
-    if(mesh)
-        mesh->LoadFromFBX(GetManager(), file_name);
+    if(asset)
+        if(static_cast<MeshAsset*>(asset)->isLoaded())
+            static_cast<MeshAsset*>(asset)->GetMesh()->LoadFromFBX(GetManager(), file_name);
 
 
 }

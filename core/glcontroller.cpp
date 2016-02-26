@@ -9,20 +9,24 @@ GLController::GLController(QWidget *parent)
 
 
 
+
     QTimer * timer = new QTimer(this);
     timer->setObjectName("gTimer");
     timer->start(0.0);
 
 
 
+
     FPS * fps = new FPS(this);
+    InputRegister * input = new InputRegister(this);
+    AssetLoader * asset_loader = new AssetLoader(this);
+
+
+
+
     connect(timer, &QTimer::timeout, fps, &FPS::Update);
     connect(timer, &QTimer::timeout, this, &GLController::Update);
 
-
-
-    InputRegister * input = new InputRegister(this);
-    FBXManager * fbx_manager = new FBXManager(this);
 
 
 
@@ -43,7 +47,6 @@ GLController::~GLController()
 
 
     makeCurrent();
-    delete mesh;
     doneCurrent();
 
 
@@ -65,17 +68,8 @@ void GLController::initializeGL()
 
 
 
-    shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/fbx_render.vert");
-    shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fbx_render.frag");
-    shader.link();
 
-
-
-
-    mesh = new Mesh();
-    findChild<FBXManager*>("FBXManager")->LoadMesh(mesh, "Street/street.fbx");
-
-
+    Pipeline * pipeline = new Pipeline(this);
 
 
 
@@ -95,25 +89,14 @@ void GLController::paintGL()
 
 
 
-    QObject * camera = parent()->parent()->findChild<QObject*>("ScriptEngine")->findChild<QObject*>("Settings");
-    QMatrix4x4 vp = qvariant_cast<QMatrix4x4>(camera->property("out_viewProj"));
-
-
-
-    shader.bind();
-    shader.setUniformValue("VP", vp);
+    if (findChild<AssetLoader*>("AssetLoader"))
+        findChild<AssetLoader*>("AssetLoader")->LoadStack();
 
 
 
 
-    QMatrix4x4 m;
-    m.scale(0.1);
-    mesh->SetGlobalTransform(m);
-
-
-
-    mesh->Draw(shader);
-    shader.release();
+    if (findChild<Pipeline*>("Pipeline"))
+        findChild<Pipeline*>("Pipeline")->Render();
 
 
 

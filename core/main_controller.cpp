@@ -20,6 +20,7 @@ Controller::Controller(QWidget *parent) :
     script_engine->ConnectToTimer(findChild<QObject*>("GL")->findChild<QTimer*>("gTimer"));
     script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<FPS*>("gFPS"));
     script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<InputRegister*>("gInput"));
+    script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<AssetLoader*>("AssetLoader"));
 
 
 

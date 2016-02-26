@@ -7,6 +7,7 @@
 #include <QObject>
 #include <QHash>
 #include <QString>
+#include <QOpenGLWidget>
 #include <renderer/fbxrenderer.hpp>
 
 
@@ -29,8 +30,14 @@ class Pipeline : public QObject
 
 
 public:
+
+
     explicit Pipeline(QObject *parent = 0);
     ~Pipeline();
+
+
+
+    void Render();
 
 
 

@@ -21,6 +21,7 @@
 #include <core/fps.hpp>
 #include <core/inputregister.hpp>
 #include <renderer/pipeline.hpp>
+#include <assets/assetloader.hpp>
 
 
 
@@ -30,11 +31,6 @@ class GLController : public QOpenGLWidget
 
 
     Q_OBJECT
-
-
-
-    QOpenGLShaderProgram shader;
-    Mesh * mesh;
 
 
 

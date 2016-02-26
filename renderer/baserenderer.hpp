@@ -40,7 +40,8 @@ protected:
 
     virtual void AddShader(QString shader_name, QOpenGLShaderProgram *shader);
 
-    virtual QOpenGLShaderProgram *GetShader(QString shader_name);
+
+    virtual QOpenGLShaderProgram * GetShader(QString shader_name);
 
 
 };

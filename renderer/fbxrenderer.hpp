@@ -4,7 +4,8 @@
 
 
 #include <renderer/baserenderer.hpp>
-#include <fbx_manager/mesh.hpp>
+#include <assets/assetloader.hpp>
+#include <script_module/scriptengine.hpp>
 
 
 
@@ -17,7 +18,6 @@ public:
 
 
     FbxRenderer();
-
 
 
     void Render(QObject *parent);

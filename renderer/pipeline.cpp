@@ -18,10 +18,33 @@ Pipeline::Pipeline(QObject *parent) : QObject(parent)
 {
 
 
+    setObjectName("Pipeline");
+    AddRenderer("FbxRenderer", new FbxRenderer());
 
 
 
 }
+
+
+
+
+
+
+
+void Pipeline::Render()
+{
+
+
+    for (auto it : renderers)
+    {
+        //Get main controller
+        it->Render(parent()->parent()->parent());
+    }
+
+
+}
+
+
 
 
 
@@ -33,3 +56,6 @@ Pipeline::~Pipeline()
 
 
 }
+
+
+

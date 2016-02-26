@@ -4,21 +4,20 @@
 
 
 
-#include <QObject>
 #include <QDebug>
 #include <fbxsdk.h>
-#include <fbx_manager/mesh.hpp>
+#include <assets/baseassetloader.hpp>
+#include <assets/meshasset.hpp>
 
 
 
 
 
-class FBXManager : public QObject
+class FBXManager : public BaseAssetLoader
 {
 
 
 
-    Q_OBJECT
     FbxManager * manager;
 
 
@@ -28,7 +27,7 @@ public:
 
 
 
-    explicit FBXManager(QObject *parent = 0);
+    FBXManager();
     ~FBXManager();
 
 
@@ -36,21 +35,12 @@ public:
     inline FbxManager * GetManager(){return manager; }
 
 
-
-
-
-    void LoadMesh(Mesh * mesh, QString file_name);
+    void Load(QString file_name, BaseAsset * asset);
 
 
 
 
 
-signals:
-
-
-
-
-public slots:
 };
 
 #endif // FBXMANAGER_H
