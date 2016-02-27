@@ -15,6 +15,7 @@ ScriptEngine::ScriptEngine(QObject *parent) : QQmlEngine(parent)
 
 
 
+
 }
 
 
@@ -28,6 +29,9 @@ void ScriptEngine::ConnectToTimer(QTimer *new_timer)
 
 
 }
+
+
+
 
 
 
@@ -61,8 +65,23 @@ void ScriptEngine::RunScriptFromString(QString script_code)
 
 
 
+    if (!findChild<QObject*>("Settings"))
+    {
+        qDebug() << "Settings object not found!";
+        return;
+    }
+
+
+
+    QMetaObject::invokeMethod(findChild<QObject*>("Settings"),
+                              "evaluate",
+                              Qt::QueuedConnection,
+                              Q_ARG(QVariant, script_code));
+
 
 }
+
+
 
 
 
@@ -78,7 +97,7 @@ void ScriptEngine::AddQMLScript(QString path, bool has_update)
 
     if(has_update)
     {
-        if (timer)
+        if (!timer.isNull())
             forceUpdate(obj);
         else
             qDebug() << path << ": Could not set update procedure, no timer detected!";

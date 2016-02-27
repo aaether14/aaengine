@@ -13,6 +13,8 @@ Console::Console(QWidget *parent) :
     ui->setupUi(this);
 
 
+
+
     QShortcut *shortcut = new QShortcut(QKeySequence("Ctrl+T"), parent);
     QObject::connect(shortcut, &QShortcut::activated, this, &Console::show);
 
@@ -47,8 +49,13 @@ void Console::on_pushButton_clicked()
 {
 
 
+
+
     if (parent()->findChild<ScriptEngine*>("ScriptEngine"))
     parent()->findChild<ScriptEngine*>("ScriptEngine")->RunScriptFromString(ui->textEdit->toPlainText());
+
+
+
     ui->textEdit->clear();
 
 

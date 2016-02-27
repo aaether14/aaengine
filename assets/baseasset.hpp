@@ -11,6 +11,7 @@ public:
 
 
     BaseAsset();
+    virtual ~BaseAsset() {}
 
 
     virtual bool isLoaded() = 0;

@@ -65,6 +65,10 @@ public:
 
 
 
+    virtual bool HasAsset(QString asset_name);
+
+
+
     Q_INVOKABLE void loadAsset(QString file_name, QString asset_name);
 
 

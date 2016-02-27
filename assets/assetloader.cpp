@@ -49,6 +49,7 @@ AssetLoader::~AssetLoader()
 {
 
     qDeleteAll(loaders);
+    qDeleteAll(assets);
 
 }
 
@@ -77,6 +78,26 @@ void AssetLoader::LoadStack()
 
 
         QPair<QString, QString> new_asset = loading_stack.pop();
+
+
+
+        if (assets.contains(new_asset.second))
+        {
+
+            qDebug() << "AssetLoader: " << new_asset.second << " already in the asset library!";
+            continue;
+
+        }
+
+
+
+        if (!QFileInfo(new_asset.first).exists())
+        {
+            qDebug() << "AssetLoader: " << new_asset.first << " does not exist!";
+            continue;
+        }
+
+
         QString suffix = QFileInfo(new_asset.first).suffix();
 
 
@@ -115,6 +136,18 @@ BaseAsset *AssetLoader::GetAsset(QString asset_name)
 {
 
     return assets[asset_name];
+
+}
+
+
+
+
+bool AssetLoader::HasAsset(QString asset_name)
+{
+
+
+    return assets.contains(asset_name);
+
 
 }
 

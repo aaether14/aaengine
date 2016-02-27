@@ -4,6 +4,7 @@
 
 
 #include <QTextEdit>
+#include <QSharedPointer>
 #include <QPointer>
 
 
@@ -17,10 +18,15 @@ public:
 
 
     static Logger* Instance();
+
+
     static void customMessageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg);
+
+
     void setTextEdit(QTextEdit * p_textEdit);
 
 
+    ~Logger();
 
 
 private:
@@ -28,11 +34,14 @@ private:
 
 
     Logger(){}
+
+
+
     Q_DISABLE_COPY(Logger)
 
 
 
-    static Logger* m_instance;
+    static QSharedPointer<Logger> m_instance;
     static QPointer<QTextEdit> m_textEdit;
 
 

@@ -95,13 +95,40 @@ bool FbxRenderer::Render(QObject *parent)
 
 
             QVariantMap mesh_component = it.toMap();
-            Mesh * current_mesh_component = static_cast<MeshAsset*>(al->GetAsset(mesh_component["asset"].toString()))->GetMesh();
+            QString asset_name = mesh_component["asset"].toString();
+
+
+
+            if (!al->HasAsset(asset_name))
+            {
+                qDebug() << "Could not find " << asset_name << " inside the asset library!";
+                continue;
+            }
+
+
+
+            if (!dynamic_cast<MeshAsset*>(al->GetAsset(asset_name)))
+            {
+                qDebug() << "Asset is not mesh!";
+                continue;
+            }
+
+
+
+            Mesh * current_mesh_component = static_cast<MeshAsset*>(al->GetAsset(asset_name))->GetMesh();
+
+
+
+
 
 
 
             QMatrix4x4 transform;
             QVariantMap transform_component = qvariant_cast<QVariantMap>((qvariant_cast<QVariantMap>(components["Transform"]))[
                     qvariant_cast<QString>(mesh_component["transform"])]);
+
+
+
             transform.translate(qvariant_cast<QVector3D>(transform_component["position"]));
             transform.scale(qvariant_cast<QVector3D>(transform_component["scale"]));
             transform.rotate(QQuaternion::fromEulerAngles(qvariant_cast<QVector3D>(transform_component["rotation"])));
@@ -109,8 +136,11 @@ bool FbxRenderer::Render(QObject *parent)
 
 
 
+
             current_mesh_component->SetGlobalTransform(transform);
             current_mesh_component->Draw(*GetShader("Fbx"));
+
+
 
         }
 

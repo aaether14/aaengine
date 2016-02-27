@@ -25,6 +25,7 @@ Controller::Controller(QWidget *parent) :
 
 
 
+
     if (QFileInfo("data/settings/settings.qml").exists())
         script_engine->AddQMLScript("data/settings/settings.qml", false);
     else

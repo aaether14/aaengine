@@ -4,7 +4,9 @@
 
 
 
+
 #include <QQmlEngine>
+#include <QPointer>
 #include <QQmlComponent>
 #include <QQmlContext>
 #include <QMatrix4x4>
@@ -15,12 +17,16 @@
 
 
 
+
 class ScriptEngine : public QQmlEngine
 {
 
 
+
     Q_OBJECT
-    QTimer * timer;
+
+
+    QPointer<QTimer> timer;
 
 
 

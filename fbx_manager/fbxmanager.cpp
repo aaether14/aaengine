@@ -69,6 +69,14 @@ void FBXManager::Load(QString file_name, BaseAsset *asset)
 
 
 
+    if (!dynamic_cast<MeshAsset*>(asset))
+    {
+        qDebug() << "FbxManager: Could not convert to MeshAsset!";
+        return;
+    }
+
+
+
 
     static_cast<MeshAsset*>(asset)->GetMesh()->LoadFromFBX(GetManager(), file_name);
 
