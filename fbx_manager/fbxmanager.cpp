@@ -52,9 +52,37 @@ void FBXManager::Load(QString file_name, BaseAsset *asset)
 {
 
 
-    if(asset)
-        if(static_cast<MeshAsset*>(asset)->isLoaded())
-            static_cast<MeshAsset*>(asset)->GetMesh()->LoadFromFBX(GetManager(), file_name);
+    if(!asset)
+    {
+        qDebug() << "FbxManager: No asset detected!";
+        return;
+    }
+
+
+
+
+    if(!static_cast<MeshAsset*>(asset)->isLoaded())
+    {
+        qDebug() << "FbxManager: MeshAsset not loaded!";
+        return;
+    }
+
+
+
+
+    static_cast<MeshAsset*>(asset)->GetMesh()->LoadFromFBX(GetManager(), file_name);
+
+
+}
+
+
+
+
+BaseAsset *FBXManager::CreateAsset()
+{
+
+
+    return new MeshAsset();
 
 
 }

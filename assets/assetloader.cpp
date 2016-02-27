@@ -75,9 +75,32 @@ void AssetLoader::LoadStack()
     while (!loading_stack.isEmpty())
     {
 
+
         QPair<QString, QString> new_asset = loading_stack.pop();
-        loaders[extension_to_loader_map[QFileInfo(new_asset.first).suffix()]]->Load(new_asset.first,
-                                                                                    AddAsset(new_asset.second, new MeshAsset()));
+        QString suffix = QFileInfo(new_asset.first).suffix();
+
+
+
+        if (!extension_to_loader_map.contains(suffix))
+        {
+            qDebug() << "AssetLoader: No " << suffix << " loader available!";
+            continue;
+        }
+
+
+        QString loader_name = extension_to_loader_map[suffix];
+
+
+        if (!loaders.contains(loader_name))
+        {
+            qDebug() << "AssetLoader: " << loader_name << " was not found in the expected location!";
+        }
+
+
+        BaseAssetLoader * loader = loaders[loader_name];
+        loader->Load(new_asset.first,
+                     AddAsset(new_asset.second, loader->CreateAsset()));
+
 
 
     }

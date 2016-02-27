@@ -38,6 +38,9 @@ public:
     void Load(QString file_name, BaseAsset * asset);
 
 
+    BaseAsset *CreateAsset();
+
+
 
 
 

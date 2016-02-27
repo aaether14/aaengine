@@ -7,7 +7,7 @@ void BaseRenderer::AddShader(QString shader_name, QOpenGLShaderProgram *shader)
 {
 
 
-    shaders[shader_name] = shader;
+    shaders.insert(shader_name, shader);
 
 }
 
@@ -16,7 +16,7 @@ void BaseRenderer::AddShader(QString shader_name, QOpenGLShaderProgram *shader)
 QOpenGLShaderProgram * BaseRenderer::GetShader(QString shader_name)
 {
 
-    return shaders[shader_name];
+    return shaders.value(shader_name);
 
 }
 

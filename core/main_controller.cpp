@@ -26,7 +26,7 @@ Controller::Controller(QWidget *parent) :
 
 
     if (QFileInfo("data/settings/settings.qml").exists())
-        script_engine->AddQMLScript("data/settings/settings.qml", NULL);
+        script_engine->AddQMLScript("data/settings/settings.qml", false);
     else
         qDebug() << "Could not load settings!";
 
@@ -37,6 +37,11 @@ Controller::Controller(QWidget *parent) :
 
     Console * console = new Console(this);
     About * about = new About(this);
+
+
+
+    Q_UNUSED(console)
+    Q_UNUSED(about)
 
 
 

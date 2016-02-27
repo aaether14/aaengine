@@ -23,6 +23,11 @@ GLController::GLController(QWidget *parent)
 
 
 
+    Q_UNUSED(input)
+    Q_UNUSED(asset_loader)
+
+
+
 
     connect(timer, &QTimer::timeout, fps, &FPS::Update);
     connect(timer, &QTimer::timeout, this, &GLController::Update);
@@ -70,6 +75,7 @@ void GLController::initializeGL()
 
 
     Pipeline * pipeline = new Pipeline(this);
+    Q_UNUSED(pipeline)
 
 
 

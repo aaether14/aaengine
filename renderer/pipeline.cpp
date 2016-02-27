@@ -35,11 +35,20 @@ void Pipeline::Render()
 {
 
 
-    for (auto it : renderers)
+    foreach(auto it, renderers.keys())
     {
-        //Get main controller
-        it->Render(parent()->parent()->parent());
+
+
+        //parnet()->parent()->parent() should get the main controller
+
+
+        if (!renderers[it]->Render(parent()->parent()->parent()))
+            qDebug() << it << " failed!";
+
+
+
     }
+
 
 
 }

@@ -19,9 +19,13 @@ public:
 
 
     BaseAssetLoader();
+    virtual ~BaseAssetLoader() {}
 
 
     virtual void Load(QString file_name, BaseAsset * asset) = 0;
+
+
+    virtual BaseAsset * CreateAsset() = 0;
 
 
 

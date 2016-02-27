@@ -12,6 +12,12 @@ About::About(QWidget *parent) :
 {
 
 
+
+
+    QShortcut *shortcut = new QShortcut(QKeySequence("Ctrl+Shift+H"), parent);
+    QObject::connect(shortcut, &QShortcut::activated, this, &About::show);
+
+
     ui->setupUi(this);
     connect(parent->findChild<QObject*>("GL")->findChild<FPS*>("gFPS"), SIGNAL(updatedFps(int)),
             this, SLOT(ShowFps(int)));

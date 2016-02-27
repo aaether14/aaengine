@@ -28,11 +28,11 @@ public:
 
 
     BaseRenderer();
-    ~BaseRenderer();
+    virtual ~BaseRenderer();
 
 
 
-    virtual void Render(QObject * parent) = 0;
+    virtual bool Render(QObject * parent) = 0;
 
 
 protected:

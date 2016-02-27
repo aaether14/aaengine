@@ -20,7 +20,7 @@ public:
     FbxRenderer();
 
 
-    void Render(QObject *parent);
+    bool Render(QObject *parent);
 
 
 
