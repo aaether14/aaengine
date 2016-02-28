@@ -38,7 +38,8 @@ SOURCES += main.cpp\
     assets/baseasset.cpp \
     assets/meshasset.cpp \
     assets/baseassetloader.cpp \
-    assets/assetloader.cpp
+    assets/assetloader.cpp \
+    utils/math.cpp
 
 
 
@@ -61,7 +62,8 @@ HEADERS  += \
     assets/baseasset.hpp \
     assets/meshasset.hpp \
     assets/baseassetloader.hpp \
-    assets/assetloader.hpp
+    assets/assetloader.hpp \
+    utils/math.hpp
 
 
 

@@ -89,7 +89,20 @@ void ScriptEngine::AddQMLScript(QString path, bool has_update)
 {
 
 
+
     QQmlComponent component(this, QUrl(path));
+
+
+
+    if (!component.isReady() && component.isError())
+    {
+        qDebug() << path << " could not be loaded!";
+        qDebug() << component.errors();
+        return;
+    }
+
+
+
     QObject *obj = qobject_cast<QObject*>(component.create());
     obj->setParent(this);
 

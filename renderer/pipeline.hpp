@@ -37,7 +37,7 @@ public:
 
 
 
-    void Render();
+   virtual void Render();
 
 
 

@@ -115,25 +115,9 @@ bool FbxRenderer::Render(QObject *parent)
 
 
 
+
             Mesh * current_mesh_component = static_cast<MeshAsset*>(al->GetAsset(asset_name))->GetMesh();
-
-
-
-
-
-
-
-            QMatrix4x4 transform;
-            QVariantMap transform_component = qvariant_cast<QVariantMap>((qvariant_cast<QVariantMap>(components["Transform"]))[
-                    qvariant_cast<QString>(mesh_component["transform"])]);
-
-
-
-            transform.translate(qvariant_cast<QVector3D>(transform_component["position"]));
-            transform.scale(qvariant_cast<QVector3D>(transform_component["scale"]));
-            transform.rotate(QQuaternion::fromEulerAngles(qvariant_cast<QVector3D>(transform_component["rotation"])));
-
-
+            QMatrix4x4 transform = components["Transform"].toMap()[mesh_component["transform"].toString()].toMap()["model"].value<QMatrix4x4>();
 
 
 
