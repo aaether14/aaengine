@@ -21,18 +21,40 @@ uniform bool use_diffuse_texture;
 
 
 
+struct light
+{
+    vec4 ambient_color;
+    vec4 diffuse_color;
+    vec4 position;
+    vec4 type_data;
+};
+
+
+
+
+layout(std430, binding = 1) buffer scene
+{
+    light lights[];
+};
+
+
+
 
 vec4 ComputeLightColor()
 {
 
 
-    vec4 color = vec4(1.0);
-
-
-    float light_factor = max(0.0, dot(vec3(0, 1, 0), M_space_normal)) * 1.0 + 0.4;
-
-
-    return color * light_factor;
+    vec4 color;
+    for (int i = 0; i < lights.length(); i++)
+    {
+        if (lights[i].type_data.x == 0)
+        {
+            //Directional light
+            color += (lights[i].diffuse_color * max(0.0, dot(vec3(lights[i].position), M_space_normal)) +
+                      lights[i].ambient_color);
+        }
+    }
+    return color;
 
 
 }

@@ -20,11 +20,17 @@ class Pipeline : public QObject
     Q_OBJECT
 
 
-
+    /**
+     * @brief renderers stores in a hash all the renderers the engine needs
+     */
     QHash<QString, BaseRenderer*> renderers;
 
 
-
+    /**
+     * @brief AddRenderer will add a renderer to the library
+     * @param renderer_name is the key of new renderer
+     * @param renderer is the initialized renderer to be added
+     */
     void AddRenderer(QString renderer_name, BaseRenderer* renderer);
 
 
@@ -32,12 +38,23 @@ class Pipeline : public QObject
 public:
 
 
+    /**
+     * @brief Pipeline will add the engine's renderers
+     * @param parent is part of default QObject constructor
+     */
     explicit Pipeline(QObject *parent = 0);
+
+    /**
+    * @brief ~Pipeline will delete the renderers
+    */
     ~Pipeline();
 
 
 
-   virtual void Render();
+    /**
+    * @brief Render will render the engines scene, could be reimplemented in a derived class
+    */
+    virtual void Render();
 
 
 

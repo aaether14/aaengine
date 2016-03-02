@@ -37,6 +37,9 @@ class Mesh
 
 
     QList<MeshEntry*> mesh_entries;
+
+
+
     QHash<QString, QOpenGLTexture*> textures;
     QHash<QString, Material> materials;
     QHash<QString, QVector<DrawElementsCommand> > commands_cache;
@@ -109,7 +112,6 @@ class Mesh
 
 
 
-
     bool is_loaded;
     QString draw_method;
 
@@ -142,8 +144,8 @@ public:
 
 
 
-    void LoadFromFBX(FbxManager * fbx_manager, QString file_name);
 
+    void LoadFromFBX(FbxManager * fbx_manager, QString file_name);
 
 
 

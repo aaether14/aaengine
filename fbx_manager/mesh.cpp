@@ -185,8 +185,13 @@ void Mesh::DynamicDraw(QOpenGLShaderProgram & shader,
 
 
 
+
+
     QVector<unsigned int> per_object_index;
     QVector<DrawElementsCommand> draw_commands;
+
+
+
 
 
 
@@ -199,8 +204,14 @@ void Mesh::DynamicDraw(QOpenGLShaderProgram & shader,
 
 
 
+
+
+
     f->glBindBuffer( GL_DRAW_INDIRECT_BUFFER, indirect_buffer);
     f->glBufferData( GL_DRAW_INDIRECT_BUFFER, sizeof(DrawElementsCommand) * draw_commands.size(), &draw_commands[0], GL_DYNAMIC_DRAW );
+
+
+
 
 
 
@@ -212,25 +223,27 @@ void Mesh::DynamicDraw(QOpenGLShaderProgram & shader,
 
 
 
-    {
 
 
-        materials[material_name].SendToShader(shader);
-        if (materials[material_name].use_diffuse_texture)
-            textures[materials[material_name].difuse_texture_name]->bind();
-
-
-        f->glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, draw_commands.size(), 0);
-        draw_commands.clear();
-        per_object_index.clear();
+    materials[material_name].SendToShader(shader);
+    if (materials[material_name].use_diffuse_texture)
+        textures[materials[material_name].difuse_texture_name]->bind();
 
 
 
-        if (materials[material_name].use_diffuse_texture)
-            textures[materials[material_name].difuse_texture_name]->release();
+
+    f->glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, draw_commands.size(), 0);
+    draw_commands.clear();
+    per_object_index.clear();
 
 
-    }
+
+
+
+    if (materials[material_name].use_diffuse_texture)
+        textures[materials[material_name].difuse_texture_name]->release();
+
+
 
 
 
@@ -269,23 +282,21 @@ void Mesh::CachedDraw(QOpenGLShaderProgram &shader,
 
 
 
-    {
 
 
-        materials[material_name].SendToShader(shader);
-        if (materials[material_name].use_diffuse_texture)
-            textures[materials[material_name].difuse_texture_name]->bind();
+    materials[material_name].SendToShader(shader);
+    if (materials[material_name].use_diffuse_texture)
+        textures[materials[material_name].difuse_texture_name]->bind();
 
 
-        f->glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, commands_cache.value(material_name).size(), 0);
+    f->glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, commands_cache.value(material_name).size(), 0);
 
 
 
-        if (materials[material_name].use_diffuse_texture)
-            textures[materials[material_name].difuse_texture_name]->release();
+    if (materials[material_name].use_diffuse_texture)
+        textures[materials[material_name].difuse_texture_name]->release();
 
 
-    }
 
 
 
@@ -297,19 +308,19 @@ void Mesh::CachedDraw(QOpenGLShaderProgram &shader,
 
 
 
-Mesh::Mesh() : should_save_scene_after_load(false),
-    is_loaded(false),
-    draw_method("cached"),
-    vao(0),
-    master_ibo(0),
-    master_vbo(0),
-    master_normals_vbo(0),
-    master_uvs_vbo(0),
-    current_control_point_offset(0),
-    current_polygon_offset(0),
+Mesh::Mesh() : vao(0),
     ssbo(0),
     indirect_buffer(0),
-    per_object_buffer(0)
+    per_object_buffer(0),
+    master_vbo(0),
+    master_ibo(0),
+    master_normals_vbo(0),
+    master_uvs_vbo(0),
+    should_save_scene_after_load(false),
+    current_polygon_offset(0),
+    current_control_point_offset(0),
+    is_loaded(false),
+    draw_method("cached")
 {
 
 
@@ -477,20 +488,14 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
-
-    {
-
-        for(int i = 0; i < mesh_entries.size(); i++)
-            model_matrix << toFloat16((global_transform * mesh_entries[i]->GetLocalTransform()).constData());
+    for(int i = 0; i < mesh_entries.size(); i++)
+        model_matrix << toFloat16((global_transform * mesh_entries[i]->GetLocalTransform()).constData());
 
 
 
-        f->glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
-        f->glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(float16) * model_matrix.size(), &model_matrix[0], GL_DYNAMIC_DRAW);
-        f->glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
-
-
-    }
+    f->glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+    f->glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(float16) * model_matrix.size(), &model_matrix[0], GL_DYNAMIC_DRAW);
+    f->glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
 
 
 
@@ -502,14 +507,15 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
-    for (auto it : materials.keys())
+    foreach(auto it, materials.keys())
+    {
         if (!draw_method.compare("cached"))
             CachedDraw(shader, f, it);
         else if (!draw_method.compare("dynamic"))
             DynamicDraw(shader, f, it);
         else
             qDebug() << "Invalid draw method!";
-
+    }
 
 
 

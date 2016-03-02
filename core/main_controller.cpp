@@ -16,7 +16,12 @@ Controller::Controller(QWidget *parent) :
 
 
 
+
     ScriptEngine * script_engine = new ScriptEngine(this);
+
+
+
+
     script_engine->ConnectToTimer(findChild<QObject*>("GL")->findChild<QTimer*>("gTimer"));
     script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<FPS*>("gFPS"));
     script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<InputRegister*>("gInput"));

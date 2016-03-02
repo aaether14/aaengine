@@ -43,7 +43,7 @@ void Pipeline::Render()
 
 
         if (!renderers[it]->Render(parent()->parent()->parent()))
-            qDebug() << it << " failed!";
+            qDebug() << "Pipeline: " << it << " failed!";
 
 
 

@@ -25,7 +25,10 @@ void ScriptEngine::ConnectToTimer(QTimer *new_timer)
 {
 
 
-    timer = new_timer;
+    if (new_timer)
+        timer = new_timer;
+    else
+        qDebug() << "ScriptEngine: Invalid timer reference!";
 
 
 }
@@ -140,8 +143,10 @@ void ScriptEngine::AddQMLSingleton(QString path, QString def, QString name)
 void ScriptEngine::RegisterQObject(QObject *obj)
 {
 
-
-    rootContext()->setContextProperty(obj->objectName(), obj);
+    if (obj)
+        rootContext()->setContextProperty(obj->objectName(), obj);
+    else
+        qDebug() << "ScriptEngine: Could not register QObject due to invalid reference!";
 
 
 }

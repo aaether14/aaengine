@@ -3,8 +3,8 @@
 
 
 Material::Material() : diffuse_color(QVector3D(0, 0, 0)),
-    use_diffuse_texture(false),
-    difuse_texture_name("")
+    difuse_texture_name(""),
+    use_diffuse_texture(false)
 {
 
 }

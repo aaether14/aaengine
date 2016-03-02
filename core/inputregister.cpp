@@ -92,6 +92,8 @@ bool InputRegister::getKey(int key)
 
     if (key < 512)
         return keys[key] > 0;
+    else
+        return false;
 
 }
 
@@ -102,6 +104,7 @@ bool InputRegister::getButton(int button)
 
     if (button < 8)
         return buttons[button] > 0;
+    else return false;
 
 }
 
