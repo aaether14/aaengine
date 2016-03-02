@@ -121,6 +121,15 @@ bool FbxRenderer::Render(QObject *parent)
 
 
 
+
+
+            QString draw_method = mesh_component["draw_method"].toString();
+            if (draw_method.size())
+            current_mesh_component->SetDrawMethod(draw_method);
+
+
+
+
             current_mesh_component->SetGlobalTransform(transform);
             current_mesh_component->Draw(*GetShader("Fbx"));
 

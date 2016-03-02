@@ -38,7 +38,12 @@ class AssetLoader : public QObject
     void AddLoader(QString loader_name, QString extension, BaseAssetLoader * loader);
 
 
-
+    /**
+     * @brief AddAsset gets the new_asset, loads it and adds it to the library
+     * @param asset_name - the name of the asset
+     * @param new_asset - the asset to be added to the asset library
+     * @return returns the loaded asset
+     */
     BaseAsset *AddAsset(QString asset_name, BaseAsset * new_asset);
 
 

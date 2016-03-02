@@ -143,7 +143,7 @@ void Mesh::LoadMaterials(FbxScene *scene, QString fbx_file_name)
 
 
 
-void Mesh::CacheDrawCommands(QVector<MeshEntry *> &mesh_entries,
+void Mesh::CacheDrawCommands(QList<MeshEntry *> &mesh_entries,
                              QVector<DrawElementsCommand> &draw_commands,
                              QVector<unsigned int> &per_object_index,
                              QString key)
@@ -299,7 +299,7 @@ void Mesh::CachedDraw(QOpenGLShaderProgram &shader,
 
 Mesh::Mesh() : should_save_scene_after_load(false),
     is_loaded(false),
-    draw_method(Mesh::DYANIMC_DRAW),
+    draw_method("cached"),
     vao(0),
     master_ibo(0),
     master_vbo(0),
@@ -503,16 +503,19 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
     for (auto it : materials.keys())
-        if (draw_method == Mesh::CACHED_DRAW)
+        if (!draw_method.compare("cached"))
             CachedDraw(shader, f, it);
-        else if (draw_method == Mesh::DYANIMC_DRAW)
+        else if (!draw_method.compare("dynamic"))
             DynamicDraw(shader, f, it);
+        else
+            qDebug() << "Invalid draw method!";
 
 
 
 
 
-            f->glBindVertexArray(0);
+
+    f->glBindVertexArray(0);
 
 
 

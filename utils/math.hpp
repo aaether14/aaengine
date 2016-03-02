@@ -59,6 +59,17 @@ public:
 
 
 
+    Q_INVOKABLE QMatrix4x4 camera(QVector3D position,
+                                  QVector3D target,
+                                  QVector3D up,
+                                  float aspect_ratio,
+                                  float fov,
+                                  float near_plane,
+                                  float far_plane);
+
+
+
+
 signals:
 
 

@@ -30,6 +30,11 @@ Logger* Logger::Instance()
 void Logger::customMessageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
 
+
+    Q_UNUSED(type)
+    Q_UNUSED(context)
+
+
     m_textEdit->append(msg);
 
 }

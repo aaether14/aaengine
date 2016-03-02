@@ -60,6 +60,32 @@ QMatrix4x4 Math::transform(QVector3D translation_xyz,
 
 
 
+QMatrix4x4 Math::camera(QVector3D position,
+                        QVector3D target,
+                        QVector3D up,
+                        float aspect_ratio,
+                        float fov,
+                        float near_plane,
+                        float far_plane)
+{
+
+
+    QMatrix4x4 result;
+    result.perspective(fov, aspect_ratio, near_plane, far_plane);
+    result.lookAt(position,
+                  target,
+                  up);
+
+
+
+    return result;
+
+
+}
+
+
+
+
 QMatrix4x4 Math::scale(QVector3D xyz)
 {
 

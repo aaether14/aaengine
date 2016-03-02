@@ -15,7 +15,7 @@
 
 #include <QOpenGLFunctions_4_3_Core>
 #include <QOpenGLShaderProgram>
-
+#include <QList>
 
 
 
@@ -36,7 +36,7 @@ class Mesh
 
 
 
-    QVector<MeshEntry*> mesh_entries;
+    QList<MeshEntry*> mesh_entries;
     QHash<QString, QOpenGLTexture*> textures;
     QHash<QString, Material> materials;
     QHash<QString, QVector<DrawElementsCommand> > commands_cache;
@@ -89,7 +89,7 @@ class Mesh
 
 
 
-    void CacheDrawCommands(QVector<MeshEntry *> &mesh_entries,
+    void CacheDrawCommands(QList<MeshEntry *> &mesh_entries,
                            QVector<DrawElementsCommand> & draw_commands,
                            QVector<unsigned int> &per_object_index,
                            QString key);
@@ -111,17 +111,7 @@ class Mesh
 
 
     bool is_loaded;
-    int draw_method;
-
-
-
-
-    enum
-    {
-        DYANIMC_DRAW,
-        CACHED_DRAW
-    };
-
+    QString draw_method;
 
 
 
@@ -158,7 +148,7 @@ public:
 
 
     inline void SetGlobalTransform(QMatrix4x4 transform) {global_transform = transform; }
-    inline void SetDrawMethod(int method){draw_method = method; }
+    inline void SetDrawMethod(QString method){draw_method = method; }
 
 
 
