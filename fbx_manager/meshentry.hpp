@@ -21,21 +21,26 @@ class MeshEntry
 
 
 
-
+    /**
+     * @brief local_transform holds the local transform of the mesh entry
+     */
     QMatrix4x4 local_transform;
-    QVector3D BBMin, BBMax;
 
 
-
+    /**
+     *@brief commands is the vector containing the draw commands sorted by
+     *material of the mesh entry
+     */
     QHash<QString, DrawElementsCommand> commands;
 
 
 
-
-    void MapMaterialsToTheirNames(FbxMesh * mesh);
-
-
-
+    /**
+     * @brief LoadVertices will load the vertices of the mesh entry
+     * @param mesh is the mesh node to be handled by this mesh entry
+     * @param master_vertices - see mesh.hpp
+     * @param current_control_point_offset - see mesh.hpp
+     */
     void LoadVertices(FbxMesh * mesh,
                       QVector<float> & master_vertices,
                       int & current_control_point_offset);

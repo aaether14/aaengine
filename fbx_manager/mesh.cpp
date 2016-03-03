@@ -179,11 +179,12 @@ void Mesh::CacheDrawCommands(QList<MeshEntry *> &mesh_entries,
 
 
 void Mesh::DynamicDraw(QOpenGLShaderProgram & shader,
-                       QOpenGLFunctions_4_3_Core * f,
                        QString material_name)
 {
 
 
+
+    QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
 
 
 
@@ -208,7 +209,7 @@ void Mesh::DynamicDraw(QOpenGLShaderProgram & shader,
 
 
     f->glBindBuffer( GL_DRAW_INDIRECT_BUFFER, indirect_buffer);
-    f->glBufferData( GL_DRAW_INDIRECT_BUFFER, sizeof(DrawElementsCommand) * draw_commands.size(), &draw_commands[0], GL_DYNAMIC_DRAW );
+    f->glBufferData( GL_DRAW_INDIRECT_BUFFER, sizeof(DrawElementsCommand) * draw_commands.size(), &draw_commands[0], GL_STATIC_DRAW );
 
 
 
@@ -216,7 +217,7 @@ void Mesh::DynamicDraw(QOpenGLShaderProgram & shader,
 
 
     f->glBindBuffer(GL_ARRAY_BUFFER, per_object_buffer);
-    f->glBufferData(GL_ARRAY_BUFFER, sizeof(unsigned int) * per_object_index.size(), &per_object_index[0], GL_DYNAMIC_DRAW);
+    f->glBufferData(GL_ARRAY_BUFFER, sizeof(unsigned int) * per_object_index.size(), &per_object_index[0], GL_STATIC_DRAW);
     f->glEnableVertexAttribArray(3);
     f->glVertexAttribIPointer(3, 1, GL_UNSIGNED_INT, sizeof(unsigned int), 0);
     f->glVertexAttribDivisor(3, 1);
@@ -254,42 +255,42 @@ void Mesh::DynamicDraw(QOpenGLShaderProgram & shader,
 
 
 void Mesh::CachedDraw(QOpenGLShaderProgram &shader,
-                      QOpenGLFunctions_4_3_Core *f,
                       QString material_name)
 {
 
 
 
 
-    f->glBindBuffer( GL_DRAW_INDIRECT_BUFFER, indirect_buffer);
-    f->glBufferData( GL_DRAW_INDIRECT_BUFFER,
-                     sizeof(DrawElementsCommand) * commands_cache.value(material_name).size(),
-                     &commands_cache.value(material_name)[0],
-            GL_DYNAMIC_DRAW );
+    QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
 
 
 
-    f->glBindBuffer(GL_ARRAY_BUFFER, per_object_buffer);
-    f->glBufferData(GL_ARRAY_BUFFER,
-                    sizeof(unsigned int) * per_object_index_cache.value(material_name).size(),
-                    &per_object_index_cache.value(material_name)[0],
-            GL_DYNAMIC_DRAW);
 
-
+    f->glBindBuffer(GL_ARRAY_BUFFER, cached_per_object_buffer);
     f->glEnableVertexAttribArray(3);
-    f->glVertexAttribIPointer(3, 1, GL_UNSIGNED_INT, sizeof(unsigned int), 0);
+    f->glVertexAttribIPointer(3, 1,
+                              GL_UNSIGNED_INT, sizeof(unsigned int),
+                              (GLvoid*)(sizeof(unsigned int) * per_object_buffer_stride_cache.value(material_name)));
     f->glVertexAttribDivisor(3, 1);
 
 
 
 
 
+
     materials[material_name].SendToShader(shader);
+
+
+
     if (materials[material_name].use_diffuse_texture)
         textures[materials[material_name].difuse_texture_name]->bind();
 
 
-    f->glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, commands_cache.value(material_name).size(), 0);
+
+    f->glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT,
+                                   (GLvoid*)(sizeof(DrawElementsCommand)*indirect_buffer_stride_cache.value(material_name)),
+                                   indirect_buffer_size_cache.value(material_name), 0);
+
 
 
 
@@ -352,6 +353,10 @@ Mesh::~Mesh()
         f->glDeleteBuffers(1, &indirect_buffer);
     if (ssbo)
         f->glDeleteBuffers(1, &ssbo);
+    if (cached_indirect_buffer)
+        f->glDeleteBuffers(1, &cached_indirect_buffer);
+    if (cached_per_object_buffer)
+        f->glDeleteBuffers(1, &cached_per_object_buffer);
     if(per_object_buffer)
         f->glDeleteBuffers(1, &per_object_buffer);
     if (master_vbo)
@@ -372,6 +377,9 @@ Mesh::~Mesh()
 
 
     materials.clear();
+    indirect_buffer_stride_cache.clear();
+    indirect_buffer_size_cache.clear();
+    per_object_buffer_stride_cache.clear();
 
 
 
@@ -488,13 +496,14 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
-    for(int i = 0; i < mesh_entries.size(); i++)
-        model_matrix << toFloat16((global_transform * mesh_entries[i]->GetLocalTransform()).constData());
+    foreach(auto it, mesh_entries)
+        model_matrix << toFloat16((global_transform * it->GetLocalTransform()).constData());
+
 
 
 
     f->glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
-    f->glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(float16) * model_matrix.size(), &model_matrix[0], GL_DYNAMIC_DRAW);
+    f->glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(float16) * model_matrix.size(), &model_matrix[0], GL_STATIC_DRAW);
     f->glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
 
 
@@ -509,12 +518,16 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
     foreach(auto it, materials.keys())
     {
+
+
         if (!draw_method.compare("cached"))
-            CachedDraw(shader, f, it);
+            CachedDraw(shader, it);
         else if (!draw_method.compare("dynamic"))
-            DynamicDraw(shader, f, it);
+            DynamicDraw(shader, it);
         else
             qDebug() << "Invalid draw method!";
+
+
     }
 
 
@@ -698,13 +711,22 @@ void Mesh::LoadBufferObjects(FbxNode *root)
 
 
 
+    //Handling cached drawing data loading
 
-    for (auto it : materials.keys())
+
+
+    QVector<DrawElementsCommand> cached_commands;
+    QVector<unsigned int> cached_per_object_index;
+
+
+
+    foreach(auto it, materials.keys())
     {
+
+
 
         QVector<DrawElementsCommand> commands;
         QVector<unsigned int> per_object_index;
-
 
 
         CacheDrawCommands(mesh_entries,
@@ -713,10 +735,44 @@ void Mesh::LoadBufferObjects(FbxNode *root)
                           it);
 
 
-        commands_cache[it] = commands;
-        per_object_index_cache[it] = per_object_index;
+
+        indirect_buffer_stride_cache[it] = cached_commands.size();
+        indirect_buffer_size_cache[it] = commands.size();
+        per_object_buffer_stride_cache[it] = cached_per_object_index.size();
+
+
+
+        cached_commands << commands;
+        cached_per_object_index << per_object_index;
+
+
+
+
 
     }
+
+
+
+    f->glGenBuffers(1, &cached_indirect_buffer);
+    f->glBindBuffer( GL_DRAW_INDIRECT_BUFFER, cached_indirect_buffer);
+    f->glBufferData( GL_DRAW_INDIRECT_BUFFER,
+                     sizeof(DrawElementsCommand) * cached_commands.size(),
+                     &cached_commands[0],
+            GL_STATIC_DRAW );
+
+
+    f->glGenBuffers(1, &cached_per_object_buffer);
+    f->glBindBuffer(GL_ARRAY_BUFFER, cached_per_object_buffer);
+    f->glBufferData(GL_ARRAY_BUFFER,
+                    sizeof(unsigned int) * cached_per_object_index.size(),
+                    &cached_per_object_index[0],
+            GL_STATIC_DRAW);
+
+
+
+
+    cached_commands.clear();
+    cached_per_object_index.clear();
 
 
 
