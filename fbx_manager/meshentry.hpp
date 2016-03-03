@@ -16,6 +16,10 @@
 
 
 
+/**
+ *@brief The MeshEntry class holds a mesh entry and will load its data to the
+ *referenced master buffers
+ */
 class MeshEntry
 {
 
@@ -46,20 +50,42 @@ class MeshEntry
                       int & current_control_point_offset);
 
 
+    /**
+     * @brief LoadNormals will load the normals of the mesh entry
+     * @param mesh is the mesh node to be handled by this mesh entry
+     * @param master_normals - see mesh.hpp
+     */
     void LoadNormals(FbxMesh * mesh,
                      QVector<float> & master_normals);
 
 
-    void LoadUVs(FbxMesh *mesh, QVector<float> & master_uvs);
+    /**
+     * @brief LoadUVs will load the uvs of the mesh entry
+     * @param mesh is the mesh node to be handled by this mesh entry
+     * @param master_uvs - see mesh.hpp
+     */
+    void LoadUVs(FbxMesh *mesh,
+                 QVector<float> & master_uvs);
 
 
-
+    /**
+     * @brief LoadIndices will load the indices of the mesh entry
+     * @param mesh is the mesh node the be handled by this mesh entry
+     * @param master_indices - see mesh.hpp
+     * @param current_polygon_offset - see mesh.hpp
+     * @param current_control_point_offset - see mesh.hpp
+     */
     void LoadIndices(FbxMesh * mesh,
                      QVector<unsigned int> & master_indices,
                      int & current_polygon_offset,
                      int & current_control_point_offset);
 
 
+    /**
+     * @brief LoadTransform will load the transform of the mesh entry acording
+     *  to its local transform and its parent's local transform
+     * @param mesh is the mesh whose transform we will load
+     */
     void LoadTransform(FbxMesh * mesh);
 
 
@@ -67,11 +93,26 @@ class MeshEntry
 public:
 
 
+    /**
+     * @brief MeshEntry - basic constructor
+     */
     MeshEntry();
+    /**
+      @brief ~MeshEntry - basic destructor
+    */
     ~MeshEntry();
 
 
-
+    /**
+     * @brief LoadMesh will load the provided mesh to the master buffers
+     * @param mesh the mesh to be loaded
+     * @param master_indices - see mesh.hpp
+     * @param master_vertices - see mesh.hpp
+     * @param master_normals - see mesh.hpp
+     * @param master_uvs - see mesh.hpp
+     * @param current_control_point_offset - see mesh.hpp
+     * @param current_polygon_offset - see mesh.hpp
+     */
     void LoadMesh(FbxMesh * mesh,
                   QVector<unsigned int> &master_indices,
                   QVector<float> &master_vertices,
@@ -83,11 +124,26 @@ public:
 
 
 
-
+    /**
+     * @brief GetDrawCommand get the draw command stored in the hash
+     * using the provided material_name
+     * @param material_name
+     * @return will return the draw command
+     */
     inline DrawElementsCommand GetDrawCommand(QString material_name){return commands.value(material_name); }
+    /**
+     * @brief DoesMaterialExist will check if there is any draw command
+     * available for the provided material name
+     * @param material_name will return true if the mesh entry
+     *  has a component tied to this material, false otherwise
+     * @return
+     */
     inline bool DoesMaterialExist(QString material_name){return commands.contains(material_name); }
 
-
+    /**
+     * @brief GetLocalTransform will get the local transform of the mesh entry
+     * @return
+     */
     inline QMatrix4x4 GetLocalTransform(){return local_transform; }
 
 

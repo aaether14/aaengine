@@ -49,7 +49,7 @@ AssetLoader::~AssetLoader()
 {
 
     qDeleteAll(loaders);
-    qDeleteAll(assets);
+    UnloadAssets();
 
 }
 
@@ -147,6 +147,18 @@ bool AssetLoader::HasAsset(QString asset_name)
 
 
     return assets.contains(asset_name);
+
+
+}
+
+
+
+
+void AssetLoader::UnloadAssets()
+{
+
+
+    qDeleteAll(assets);
 
 
 }

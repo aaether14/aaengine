@@ -31,19 +31,15 @@ Controller::Controller(QWidget *parent) :
 
 
 
-
-    if (QFileInfo("data/settings/settings.qml").exists())
-        script_engine->AddQMLScript("data/settings/settings.qml", false);
-    else
-        qDebug() << "Could not load settings!";
-
-
-
-
-
-
+    ProjectManager * project_manager = new ProjectManager(this);
     Console * console = new Console(this);
     About * about = new About(this);
+
+
+
+
+    script_engine->RegisterQObject(project_manager);
+
 
 
 

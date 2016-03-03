@@ -35,14 +35,36 @@ void Pipeline::Render()
 {
 
 
+
+
+
+    QObject * main_controller = parent()->parent()->parent();
+
+
+
+    if (!main_controller->findChild<ProjectManager*>("ProjectManager"))
+    {
+        qDebug() << "Pipeline: Could not find ProjectManager!";
+        return;
+    }
+
+
+
+
+    ProjectManager * pm = main_controller->findChild<ProjectManager*>("ProjectManager");
+    if (!pm->GetProjectLoaded())
+        return;
+
+
+
+
     foreach(auto it, renderers.keys())
     {
 
 
-        //parnet()->parent()->parent() should get the main controller
 
 
-        if (!renderers[it]->Render(parent()->parent()->parent()))
+        if (!renderers[it]->Render(main_controller))
             qDebug() << "Pipeline: " << it << " failed!";
 
 

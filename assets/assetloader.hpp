@@ -53,8 +53,8 @@ public:
 
 
 
-   explicit AssetLoader(QObject *parent = 0);
-   ~AssetLoader();
+    explicit AssetLoader(QObject *parent = 0);
+    ~AssetLoader();
 
 
 
@@ -71,6 +71,10 @@ public:
 
 
     virtual bool HasAsset(QString asset_name);
+
+
+
+    virtual void UnloadAssets();
 
 
 

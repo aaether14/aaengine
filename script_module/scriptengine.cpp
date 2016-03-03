@@ -154,4 +154,26 @@ void ScriptEngine::RegisterQObject(QObject *obj)
 
 
 
+bool ScriptEngine::LoadProject(QString project_name)
+{
+
+
+
+    if (QFileInfo(project_name).exists())
+        AddQMLScript(project_name, false);
+    else
+    {
+        qDebug() << "Could not load settings at " << project_name << "!";
+        return false;
+    }
+
+
+    return true;
+
+
+}
+
+
+
+
 

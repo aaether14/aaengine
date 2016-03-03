@@ -67,7 +67,7 @@ void GLController::initializeGL()
 
 
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
-    f->glClearColor(0.8, 0.85, 0.9, 1.0);
+    f->glClearColor(0.0, 0.0, 0.0, 1.0);
     f->glEnable(GL_DEPTH_TEST);
     f->glEnable(GL_CULL_FACE);
 

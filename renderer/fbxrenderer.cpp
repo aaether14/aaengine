@@ -37,7 +37,7 @@ void FbxRenderer::HandleLights(QVariantMap light_map)
 
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
     f->glBindBuffer(GL_SHADER_STORAGE_BUFFER, light_ssbo);
-    f->glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(light) * scene_lights.size(), &scene_lights[0], GL_DYNAMIC_DRAW);
+    f->glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(light) * scene_lights.size(), &scene_lights[0], GL_STATIC_DRAW);
     f->glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, light_ssbo);
 
 

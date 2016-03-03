@@ -39,7 +39,9 @@ SOURCES += main.cpp\
     assets/meshasset.cpp \
     assets/baseassetloader.cpp \
     assets/assetloader.cpp \
-    utils/math.cpp
+    utils/math.cpp \
+    core/projectmanager.cpp \
+    utils/json.cpp
 
 
 
@@ -63,7 +65,9 @@ HEADERS  += \
     assets/meshasset.hpp \
     assets/baseassetloader.hpp \
     assets/assetloader.hpp \
-    utils/math.hpp
+    utils/math.hpp \
+    core/projectmanager.hpp \
+    utils/json.hpp
 
 
 

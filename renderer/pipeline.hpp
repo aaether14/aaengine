@@ -9,6 +9,8 @@
 #include <QString>
 #include <QOpenGLWidget>
 #include <renderer/fbxrenderer.hpp>
+#include <core/projectmanager.hpp>
+
 
 
 
