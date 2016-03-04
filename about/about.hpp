@@ -15,6 +15,12 @@ namespace Ui {
 class About;
 }
 
+
+
+/**
+ *@brief The About class will hold an ui containing useful information about
+ *the app
+ */
 class About : public QDialog
 {
 
@@ -24,6 +30,13 @@ class About : public QDialog
 
 
 public:
+
+
+    /**
+     * @brief About will initialize shortcut and set
+     * to update the fps display every frame
+     * @param parent
+     */
     explicit About(QWidget *parent = 0);
     ~About();
 
@@ -35,6 +48,12 @@ private:
 
 
 public slots:
+
+
+    /**
+     * @brief ShowFps will update the fps display
+     * @param fps
+     */
     void ShowFps(int fps);
 
 

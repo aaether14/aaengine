@@ -38,8 +38,17 @@ public:
 
 
 private slots:
+
+
+
     void on_actionConsole_triggered();
     void on_actionAbout_triggered();
+
+
+
+    void ResetScriptEngine();
+
+
 
 private:
     Ui::Controller *ui;

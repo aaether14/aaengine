@@ -133,20 +133,27 @@ bool FbxRenderer::Render(QObject *parent)
 
 
     GetShader("Fbx")->bind();
-
-
-
-
-
     QObject * scene = se->findChild<QObject*>("Settings");
-    if (scene->property("out_viewProj").isValid())
+
+
+
+
+
+
+    QVariant out_viewProj;
+    if (QMetaObject::invokeMethod(scene,
+                                  "getCamera",
+                                  Q_RETURN_ARG(QVariant, out_viewProj)))
     {
-        GetShader("Fbx")->setUniformValue("VP",
-                                          scene->property("out_viewProj").value<QMatrix4x4>());
+
+
+        GetShader("Fbx")->setUniformValue("VP", out_viewProj.value<QMatrix4x4>());
+
+
     }
     else
     {
-        qDebug() << "Could not extract out_viewProj from Settings object";
+        qDebug() << "Could not call getCamera method in the Settings object!";
         return false;
     }
 
@@ -155,12 +162,21 @@ bool FbxRenderer::Render(QObject *parent)
 
 
 
-    if (scene->property("out_components").isValid())
+    QVariant scene_components;
+    if (QMetaObject::invokeMethod(scene,
+                                  "getComponents",
+                                  Q_RETURN_ARG(QVariant, scene_components)))
     {
 
 
 
-        QVariantMap components = scene->property("out_components").toMap();
+
+        QVariantMap components = scene_components.toMap();
+        if (components.isEmpty())
+            return true;
+
+
+
         HandleLights(components["Light"].toMap());
 
 
@@ -217,7 +233,7 @@ bool FbxRenderer::Render(QObject *parent)
     }
     else
     {
-        qDebug() << "Could not extract out_components from Settings object!";
+        qDebug() << "Could not call getComponents method in the Settings object!";
         return false;
     }
 

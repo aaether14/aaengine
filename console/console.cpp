@@ -25,7 +25,6 @@ Console::Console(QWidget *parent) :
 
 
 
-
     Logger::Instance()->setTextEdit(ui->textEdit_2);
     ui->textEdit_2->setTextColor(Qt::red);
 

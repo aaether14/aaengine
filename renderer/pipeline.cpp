@@ -84,6 +84,7 @@ Pipeline::~Pipeline()
 
 
     qDeleteAll(renderers);
+    renderers.clear();
 
 
 }

@@ -35,6 +35,15 @@ class ScriptEngine : public QQmlEngine
 
 
 
+    /**
+     *@brief timer_connections will store the timer connections to break them
+     *upon reload
+     */
+    QList<QMetaObject::Connection> timer_connections;
+
+
+
+
 public:
 
 
@@ -43,6 +52,10 @@ public:
      * @param parent
      */
     explicit ScriptEngine(QObject *parent = 0);
+    /**
+    @brief ~ScriptEngine will destroy any connections tied to the timer
+    */
+    ~ScriptEngine();
 
     /**
      * @brief ConnectToTimer will set the internal timer pointer to the provided one
@@ -52,11 +65,13 @@ public:
 
 
 
-    Q_INVOKABLE void addQMLScript(QString path, bool has_update);
+
+    Q_INVOKABLE void addQMLScript(QString path);
 
 
 
-    Q_INVOKABLE void forceUpdate(QObject * obj);
+    Q_INVOKABLE void forceUpdate(QJSValue value);
+
 
 
 
@@ -66,15 +81,24 @@ signals:
 public slots:
 
 
+    /**
+     * @brief RunScriptFromString will call evaluate function from Settings object
+     * @param script_code is the code to be run
+     */
     void RunScriptFromString(QString script_code);
 
+    /**
+     * @brief AddQMLScript will add a script to the QML context
+     *  and parent it to the ScriptEngine
+     * @param path is the path to the script
+     */
+    void AddQMLScript(QString path);
 
-    void AddQMLScript(QString path, bool has_update);
 
-
-    void AddQMLSingleton(QString path, QString def, QString name);
-
-
+    /**
+     * @brief RegisterQObject will register the object to the QML context
+     * @param obj is the object to be registered
+     */
     void RegisterQObject(QObject * obj);
 
 

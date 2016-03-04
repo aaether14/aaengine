@@ -376,10 +376,18 @@ Mesh::~Mesh()
 
 
 
+    textures.clear();
+    mesh_entries.clear();
+
+
+
     materials.clear();
     indirect_buffer_stride_cache.clear();
     indirect_buffer_size_cache.clear();
     per_object_buffer_stride_cache.clear();
+
+
+
 
 
 

@@ -30,7 +30,8 @@ BaseAsset *AssetLoader::AddAsset(QString asset_name, BaseAsset *new_asset)
 
 
 
-AssetLoader::AssetLoader(QObject *parent) : QObject(parent)
+AssetLoader::AssetLoader(QObject *parent) : QObject(parent),
+    enque_asset_deletion(false)
 {
 
 
@@ -48,8 +49,12 @@ AssetLoader::AssetLoader(QObject *parent) : QObject(parent)
 AssetLoader::~AssetLoader()
 {
 
+
     qDeleteAll(loaders);
-    UnloadAssets();
+    qDeleteAll(assets);
+
+    assets.clear();
+    loaders.clear();
 
 }
 
@@ -71,6 +76,22 @@ void AssetLoader::AddToLoadingStack(QString file_name, QString asset_name)
 
 void AssetLoader::LoadStack()
 {
+
+
+
+
+    if (enque_asset_deletion)
+    {
+
+        qDeleteAll(assets);
+        assets.clear();
+
+
+        enque_asset_deletion = false;
+
+    }
+
+
 
 
     while (!loading_stack.isEmpty())
@@ -158,7 +179,7 @@ void AssetLoader::UnloadAssets()
 {
 
 
-    qDeleteAll(assets);
+    enque_asset_deletion = true;
 
 
 }

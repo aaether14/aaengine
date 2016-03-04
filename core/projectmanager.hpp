@@ -64,9 +64,8 @@ public:
 
     /**
      * @brief LoadProject will unload the currently loaded project and load a new one
-     * @param project_name is the name of the project to be loaded
      */
-    void LoadProject(QString project_name);
+    void LoadProject();
     /**
      *@brief UnloadProject will unload a project deleting the Settings object
      *in the ScriptEngine
@@ -77,6 +76,11 @@ public:
 
 signals:
 
+
+    /**
+     * @brief resetScriptEngine - upon project reloading the script engine needs to be reset
+     */
+    void resetScriptEngine();
 
 
 public slots:

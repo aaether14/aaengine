@@ -21,6 +21,22 @@ ScriptEngine::ScriptEngine(QObject *parent) : QQmlEngine(parent)
 
 
 
+ScriptEngine::~ScriptEngine()
+{
+
+
+    foreach(auto it, timer_connections)
+        disconnect(it);
+
+
+    timer_connections.clear();
+
+
+}
+
+
+
+
 void ScriptEngine::ConnectToTimer(QTimer *new_timer)
 {
 
@@ -39,11 +55,11 @@ void ScriptEngine::ConnectToTimer(QTimer *new_timer)
 
 
 
-void ScriptEngine::addQMLScript(QString path, bool has_update)
+void ScriptEngine::addQMLScript(QString path)
 {
 
 
-    AddQMLScript(path, has_update);
+    AddQMLScript(path);
 
 
 }
@@ -51,11 +67,14 @@ void ScriptEngine::addQMLScript(QString path, bool has_update)
 
 
 
-void ScriptEngine::forceUpdate(QObject *obj)
+void ScriptEngine::forceUpdate(QJSValue value)
 {
 
 
-    connect(timer, SIGNAL(timeout()), obj, SLOT(onUpdate()));
+    timer_connections << connect(timer.data(), &QTimer::timeout, [=]() mutable
+    {
+        value.call();
+    });
 
 
 }
@@ -88,7 +107,7 @@ void ScriptEngine::RunScriptFromString(QString script_code)
 
 
 
-void ScriptEngine::AddQMLScript(QString path, bool has_update)
+void ScriptEngine::AddQMLScript(QString path)
 {
 
 
@@ -111,32 +130,11 @@ void ScriptEngine::AddQMLScript(QString path, bool has_update)
 
 
 
-    if(has_update)
-    {
-        if (!timer.isNull())
-            forceUpdate(obj);
-        else
-            qDebug() << path << ": Could not set update procedure, no timer detected!";
-    }
-
-
 
 }
 
 
 
-
-void ScriptEngine::AddQMLSingleton(QString path, QString def, QString name)
-{
-
-
-    qmlRegisterSingletonType(QUrl(path),
-                             def.toStdString().c_str(),
-                             1, 0,
-                             name.toStdString().c_str());
-
-
-}
 
 
 
@@ -160,7 +158,7 @@ bool ScriptEngine::LoadProject(QString project_name)
 
 
     if (QFileInfo(project_name).exists())
-        AddQMLScript(project_name, false);
+        AddQMLScript(project_name);
     else
     {
         qDebug() << "Could not load settings at " << project_name << "!";

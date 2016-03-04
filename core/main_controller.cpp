@@ -17,28 +17,19 @@ Controller::Controller(QWidget *parent) :
 
 
 
-    ScriptEngine * script_engine = new ScriptEngine(this);
-
-
-
-
-    script_engine->ConnectToTimer(findChild<QObject*>("GL")->findChild<QTimer*>("gTimer"));
-    script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<FPS*>("gFPS"));
-    script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<InputRegister*>("gInput"));
-    script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<AssetLoader*>("AssetLoader"));
-    script_engine->RegisterQObject(new Math(this));
-
-
-
-
     ProjectManager * project_manager = new ProjectManager(this);
+
+
+
+    ResetScriptEngine();
+    project_manager->LoadProject();
+    connect(project_manager, SIGNAL(resetScriptEngine()), this, SLOT(ResetScriptEngine()));
+
+
+
+
     Console * console = new Console(this);
     About * about = new About(this);
-
-
-
-
-    script_engine->RegisterQObject(project_manager);
 
 
 
@@ -82,6 +73,32 @@ void Controller::on_actionAbout_triggered()
 
     if (findChild<About*>("About"))
         findChild<About*>("About")->show();
+
+}
+
+
+
+
+void Controller::ResetScriptEngine()
+{
+
+
+
+    if (findChild<ScriptEngine*>("ScriptEngine"))
+        delete findChild<ScriptEngine*>("ScriptEngine");
+
+
+
+    ScriptEngine * script_engine = new ScriptEngine(this);
+
+
+    script_engine->ConnectToTimer(findChild<QObject*>("GL")->findChild<QTimer*>("gTimer"));
+    script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<FPS*>("gFPS"));
+    script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<InputRegister*>("gInput"));
+    script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<AssetLoader*>("AssetLoader"));
+    script_engine->RegisterQObject(new Math(script_engine));
+
+
 
 }
 
