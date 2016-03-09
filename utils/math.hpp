@@ -11,6 +11,9 @@
 
 
 
+/**
+ *@brief The Math class is a simple math functions wrapper for Script usage
+ */
 class Math : public QObject
 {
 
@@ -22,7 +25,10 @@ class Math : public QObject
 public:
 
 
-
+    /**
+     * @brief Math - basic constructor
+     * @param parent
+     */
     explicit Math(QObject *parent = 0);
 
 

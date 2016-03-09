@@ -15,11 +15,6 @@ Console::Console(QWidget *parent) :
 
 
 
-    QShortcut *shortcut = new QShortcut(QKeySequence("Ctrl+T"), parent);
-    QObject::connect(shortcut, &QShortcut::activated, this, &Console::show);
-
-
-
     ui->splitter->setStretchFactor(0, 2);
     ui->splitter->setStretchFactor(1, 1);
 

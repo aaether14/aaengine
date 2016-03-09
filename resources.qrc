@@ -2,6 +2,7 @@
     <qresource prefix="/icons">
         <file>terminal.ico</file>
         <file>project.ico</file>
+        <file>about.ico</file>
     </qresource>
     <qresource prefix="/shaders">
         <file>fbx_render.frag</file>

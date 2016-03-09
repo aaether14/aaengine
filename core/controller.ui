@@ -34,20 +34,26 @@
      <height>27</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuOpen">
+   <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>Open</string>
+     <string>&amp;File</string>
     </property>
-    <addaction name="actionConsole"/>
     <addaction name="actionProject"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>Help</string>
+     <string>&amp;Help</string>
     </property>
     <addaction name="actionAbout"/>
    </widget>
-   <addaction name="menuOpen"/>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>&amp;Tools</string>
+    </property>
+    <addaction name="actionConsole"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="toolBar">
@@ -71,6 +77,9 @@
    <property name="text">
     <string>Console</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
   </action>
   <action name="actionProject">
    <property name="icon">
@@ -78,12 +87,22 @@
      <normaloff>:/icons/project.ico</normaloff>:/icons/project.ico</iconset>
    </property>
    <property name="text">
-    <string>Project</string>
+    <string>Open Project...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
   <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/icons/about.ico</normaloff>:/icons/about.ico</iconset>
+   </property>
    <property name="text">
     <string>About...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+H</string>
    </property>
   </action>
  </widget>

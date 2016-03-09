@@ -11,6 +11,10 @@
 
 
 
+/**
+ *@brief The InputRegister class will register input events in a form they can
+ *be transmitted to script
+ */
 class InputRegister : public QObject
 {
 
@@ -18,9 +22,18 @@ class InputRegister : public QObject
 
     Q_OBJECT
 
-
+    /**
+     * @brief keys will be more than 0 if the key is pressed
+     */
     int keys[512];
+    /**
+     *@brief buttons will be more than 0 if the mouse button is pressed
+     */
     int buttons[8];
+    /**
+     *@brief mouse_position will store the mouse position relative to the
+     *QOpenGLWidget (GLController)
+     */
     QVector2D mouse_position;
 
 

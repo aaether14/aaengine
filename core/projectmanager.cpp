@@ -11,8 +11,6 @@ ProjectManager::ProjectManager(QObject *parent) : QObject(parent),
 
 
     setObjectName("ProjectManager");
-    config_json = Json::GetJsonFromFile("data/config.json");
-
 
 
 
@@ -34,6 +32,7 @@ void ProjectManager::LoadProject()
 
 
 
+    config_json = Json::GetJsonFromFile("data/config.json");
 
 
 

@@ -5,7 +5,9 @@
 
 
 #include <QJsonDocument>
+#include <QJsonObject>
 #include <QFile>
+#include <QDebug>
 
 
 
@@ -32,6 +34,15 @@ public:
      * @return will return the parsed QJsonDocument
      */
     static QJsonDocument GetJsonFromFile(QString file_name);
+
+
+
+    /**
+     * @brief SaveJsonToFile will save the provided json to a file
+     * @param file_name is the name of the file where the json will be saved
+     * @param json_doc is the json document that will be saved to the file
+     */
+    static void SaveJsonToFile(QString file_name, QJsonDocument json_doc);
 
 
 

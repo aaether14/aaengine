@@ -183,6 +183,32 @@ void GLController::mouseMoveEvent(QMouseEvent *e)
 
 
 
+void GLController::Pause()
+{
+
+
+    if (findChild<QTimer*>("gTimer"))
+        findChild<QTimer*>("gTimer")->stop();
+
+
+
+}
+
+
+
+
+void GLController::Unpause()
+{
+
+
+    if (findChild<QTimer*>("gTimer"))
+        findChild<QTimer*>("gTimer")->start();
+
+
+}
+
+
+
 
 
 void GLController::Update()

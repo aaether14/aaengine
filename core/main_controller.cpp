@@ -59,7 +59,16 @@ void Controller::on_actionConsole_triggered()
 
 
     if (findChild<Console*>("Console"))
-        findChild<Console*>("Console")->show();
+    {
+
+        Console * console = findChild<Console*>("Console");
+        console->setVisible(!console->isVisible());
+
+
+        if (console->isVisible())
+            console->activateWindow();
+
+    }
 
 
 
@@ -72,7 +81,81 @@ void Controller::on_actionAbout_triggered()
 {
 
     if (findChild<About*>("About"))
-        findChild<About*>("About")->show();
+    {
+
+        About * about = findChild<About*>("About");
+        about->setVisible(!about->isVisible());
+
+
+        if (about->isVisible())
+            about->activateWindow();
+
+    }
+
+}
+
+
+
+
+
+
+
+
+void Controller::on_actionProject_triggered()
+{
+
+
+    if (findChild<GLController*>("GL"))
+        findChild<GLController*>("GL")->Pause();
+    else
+    {
+        qDebug() << "MainController: No GL controller detected!";
+        return;
+    }
+
+
+
+    QString project_name = QFileDialog::getOpenFileName(this, "Open Project", QString(), "All Files(*.qml)");
+
+
+
+    findChild<GLController*>("GL")->Unpause();
+
+
+
+
+
+    if (!project_name.size())
+        return;
+
+
+
+    if (!findChild<ProjectManager*>("ProjectManager"))
+    {
+        qDebug() << "MainController: Could not load: " << project_name << " because ProjectManager was not found!";
+        return;
+    }
+
+
+
+
+    QJsonObject serialized_config_json = Json::GetJsonFromFile("data/config.json").object();
+    QJsonObject serialized_engine_json = serialized_config_json["AaetherEngine"].toObject();
+
+
+
+    serialized_engine_json["project"] = QDir(".").relativeFilePath(project_name);
+    serialized_config_json["AaetherEngine"] = serialized_engine_json;
+
+
+
+    Json::SaveJsonToFile("data/config.json", QJsonDocument(serialized_config_json));
+
+
+
+    findChild<ProjectManager*>("ProjectManager")->LoadProject();
+
+
 
 }
 
@@ -101,8 +184,5 @@ void Controller::ResetScriptEngine()
 
 
 }
-
-
-
 
 

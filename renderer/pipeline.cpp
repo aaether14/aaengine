@@ -65,7 +65,12 @@ void Pipeline::Render()
 
 
         if (!renderers[it]->Render(main_controller))
+        {
+
             qDebug() << "Pipeline: " << it << " failed!";
+            pm->UnloadProject();
+
+        }
 
 
 

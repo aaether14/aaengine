@@ -4,7 +4,6 @@
 
 
 #include <QDialog>
-#include <QShortcut>
 #include <core/fps.hpp>
 
 

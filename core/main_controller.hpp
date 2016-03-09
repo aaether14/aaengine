@@ -5,6 +5,10 @@
 
 
 #include <QMainWindow>
+#include <QFileDialog>
+
+
+
 #include <core/glcontroller.hpp>
 #include <console/console.hpp>
 #include <about/about.hpp>
@@ -43,10 +47,12 @@ private slots:
 
     void on_actionConsole_triggered();
     void on_actionAbout_triggered();
+    void on_actionProject_triggered();
 
 
 
     void ResetScriptEngine();
+
 
 
 

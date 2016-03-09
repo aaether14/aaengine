@@ -16,12 +16,19 @@ QJsonDocument Json::GetJsonFromFile(QString file_name)
 
 
     QString file_content;
-    QFile file;
+    QFile file(file_name);
 
 
 
-    file.setFileName(file_name);
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qDebug() << "Could not open: " << file_name << " to load the json document!";
+        return QJsonDocument();
+    }
+
+
+
     file_content = file.readAll();
     file.close();
 
@@ -31,3 +38,32 @@ QJsonDocument Json::GetJsonFromFile(QString file_name)
 
 
 }
+
+
+
+
+void Json::SaveJsonToFile(QString file_name, QJsonDocument json_doc)
+{
+
+
+
+    QFile file(file_name);
+
+
+
+    if (!file.open(QIODevice::WriteOnly)) {
+        qDebug() << "Could not open: " << file_name << " to save the json document!";
+        return;
+    }
+
+
+    file.write(json_doc.toJson());
+    file.close();
+
+
+
+}
+
+
+
+

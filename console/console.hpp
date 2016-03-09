@@ -5,7 +5,6 @@
 
 #include <script_module/scriptengine.hpp>
 #include <console/logger.hpp>
-#include <QShortcut>
 #include <QDialog>
 
 
