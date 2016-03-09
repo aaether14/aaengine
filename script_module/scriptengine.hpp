@@ -74,6 +74,14 @@ public:
 
 
 
+    Q_INVOKABLE void setWindowProperty(QString property_name, QVariant new_property);
+
+
+
+    Q_INVOKABLE QVariant getWindowProperty(QString property_name);
+
+
+
 
 signals:
 

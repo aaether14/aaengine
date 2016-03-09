@@ -82,6 +82,31 @@ void ScriptEngine::forceUpdate(QJSValue value)
 
 
 
+void ScriptEngine::setWindowProperty(QString property_name, QVariant new_property)
+{
+
+
+    parent()->setProperty(property_name.toStdString().c_str(), new_property);
+
+
+}
+
+
+
+
+QVariant ScriptEngine::getWindowProperty(QString property_name)
+{
+
+
+    return parent()->property(property_name.toStdString().c_str());
+
+
+}
+
+
+
+
+
 void ScriptEngine::RunScriptFromString(QString script_code)
 {
 

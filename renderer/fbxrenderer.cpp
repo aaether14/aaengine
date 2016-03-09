@@ -58,8 +58,8 @@ FbxRenderer::FbxRenderer() : light_ssbo(0)
 
 
     QOpenGLShaderProgram * fbx_shader = new QOpenGLShaderProgram();
-    fbx_shader->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/fbx_render.vert");
-    fbx_shader->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fbx_render.frag");
+    fbx_shader->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/__data/shaders/fbx_render.vert");
+    fbx_shader->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/__data/shaders/fbx_render.frag");
     fbx_shader->link();
 
 

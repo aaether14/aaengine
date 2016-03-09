@@ -1,11 +1,11 @@
 <RCC>
     <qresource prefix="/icons">
-        <file>terminal.ico</file>
-        <file>project.ico</file>
-        <file>about.ico</file>
+        <file>__data/icons/about.ico</file>
+        <file>__data/icons/project.ico</file>
+        <file>__data/icons/terminal.ico</file>
     </qresource>
     <qresource prefix="/shaders">
-        <file>fbx_render.frag</file>
-        <file>fbx_render.vert</file>
+        <file>__data/shaders/fbx_render.frag</file>
+        <file>__data/shaders/fbx_render.vert</file>
     </qresource>
 </RCC>

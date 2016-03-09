@@ -72,7 +72,7 @@
   <action name="actionConsole">
    <property name="icon">
     <iconset resource="../resources.qrc">
-     <normaloff>:/icons/terminal.ico</normaloff>:/icons/terminal.ico</iconset>
+     <normaloff>:/icons/__data/icons/terminal.ico</normaloff>:/icons/__data/icons/terminal.ico</iconset>
    </property>
    <property name="text">
     <string>Console</string>
@@ -84,7 +84,7 @@
   <action name="actionProject">
    <property name="icon">
     <iconset resource="../resources.qrc">
-     <normaloff>:/icons/project.ico</normaloff>:/icons/project.ico</iconset>
+     <normaloff>:/icons/__data/icons/project.ico</normaloff>:/icons/__data/icons/project.ico</iconset>
    </property>
    <property name="text">
     <string>Open Project...</string>
@@ -96,7 +96,7 @@
   <action name="actionAbout">
    <property name="icon">
     <iconset resource="../resources.qrc">
-     <normaloff>:/icons/about.ico</normaloff>:/icons/about.ico</iconset>
+     <normaloff>:/icons/__data/icons/about.ico</normaloff>:/icons/__data/icons/about.ico</iconset>
    </property>
    <property name="text">
     <string>About...</string>

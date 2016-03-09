@@ -16,6 +16,10 @@ Controller::Controller(QWidget *parent) :
 
 
 
+    Console * console = new Console(this);
+    About * about = new About(this);
+
+
 
     ProjectManager * project_manager = new ProjectManager(this);
 
@@ -25,11 +29,6 @@ Controller::Controller(QWidget *parent) :
     project_manager->LoadProject();
     connect(project_manager, SIGNAL(resetScriptEngine()), this, SLOT(ResetScriptEngine()));
 
-
-
-
-    Console * console = new Console(this);
-    About * about = new About(this);
 
 
 
@@ -115,7 +114,7 @@ void Controller::on_actionProject_triggered()
 
 
 
-    QString project_name = QFileDialog::getOpenFileName(this, "Open Project", QString(), "All Files(*.qml)");
+    QString project_name = QFileDialog::getOpenFileName(this, "Open Project", QString(), "*.qml");
 
 
 
@@ -127,6 +126,10 @@ void Controller::on_actionProject_triggered()
 
     if (!project_name.size())
         return;
+
+
+
+    setProperty("windowTitle", QDir(".").relativeFilePath(project_name));
 
 
 
