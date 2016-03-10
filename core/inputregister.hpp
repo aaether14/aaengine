@@ -40,15 +40,41 @@ class InputRegister : public QObject
 public:
 
 
+    /**
+     * @brief InputRegister - basic constructor
+     * @param parent
+     */
     explicit InputRegister(QObject *parent = 0);
+    /**
+    *@brief ~InputRegister - basic destructor
+    */
     ~InputRegister();
 
 
-
+    /**
+     * @brief RegisterKeyPress - see glcontroller.hpp
+     * @param e
+     */
     void RegisterKeyPress(QKeyEvent * e);
+    /**
+     * @brief RegisterKeyRelease - see glcontroller.hpp
+     * @param e
+     */
     void RegisterKeyRelease(QKeyEvent * e);
+    /**
+     * @brief RegisterMousePress - see glcontroller.hpp
+     * @param e
+     */
     void RegisterMousePress(QMouseEvent * e);
+    /**
+     * @brief RegisterMouseRelease - see glcontroller.hpp
+     * @param e
+     */
     void RegisterMouseRelease(QMouseEvent * e);
+    /**
+     * @brief RegisterMouseMovement - see glcontroller.hpp
+     * @param e
+     */
     void RegisterMouseMovement(QMouseEvent * e);
 
 

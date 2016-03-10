@@ -122,9 +122,9 @@ bool FbxRenderer::Render(QObject *parent)
 
 
 
-    if (!se->findChild<QObject*>("Settings"))
+    if (!se->findChild<GameObject*>("GameObject"))
     {
-        qDebug() << "Could not find Settings object inside Script Engine!";
+        qDebug() << "Could not find GameObject inside Script Engine!";
         return false;
     }
 
@@ -133,114 +133,89 @@ bool FbxRenderer::Render(QObject *parent)
 
 
     GetShader("Fbx")->bind();
-    QObject * scene = se->findChild<QObject*>("Settings");
+    GameObject * game_object = se->findChild<GameObject*>("GameObject");
+
+
+
+
+
+    GetShader("Fbx")->setUniformValue("VP", game_object->getViewProj());
 
 
 
 
 
 
-    QVariant out_viewProj;
-    if (QMetaObject::invokeMethod(scene,
-                                  "getCamera",
-                                  Q_RETURN_ARG(QVariant, out_viewProj)))
+    QVariantMap components = game_object->getComponents().toMap();
+
+
+
+
+    if (components.isEmpty())
+        return true;
+
+
+
+
+
+    HandleLights(components["Light"].toMap());
+
+
+
+    foreach(auto it, components["Mesh"].toMap())
     {
 
 
-        GetShader("Fbx")->setUniformValue("VP", out_viewProj.value<QMatrix4x4>());
 
-
-    }
-    else
-    {
-        qDebug() << "Could not call getCamera method in the Settings object!";
-        return false;
-    }
+        QVariantMap mesh_component = it.toMap();
+        QString asset_name = mesh_component["asset"].toString();
 
 
 
-
-
-
-    QVariant scene_components;
-    if (QMetaObject::invokeMethod(scene,
-                                  "getComponents",
-                                  Q_RETURN_ARG(QVariant, scene_components)))
-    {
-
-
-
-
-        QVariantMap components = scene_components.toMap();
-        if (components.isEmpty())
-            return true;
-
-
-
-        HandleLights(components["Light"].toMap());
-
-
-
-        foreach(auto it, components["Mesh"].toMap())
+        if (!al->HasAsset(asset_name))
         {
-
-
-
-            QVariantMap mesh_component = it.toMap();
-            QString asset_name = mesh_component["asset"].toString();
-
-
-
-            if (!al->HasAsset(asset_name))
-            {
-                qDebug() << "Could not find " << asset_name << " inside the asset library!";
-                continue;
-            }
-
-
-
-            if (!dynamic_cast<MeshAsset*>(al->GetAsset(asset_name)))
-            {
-                qDebug() << "Asset is not mesh!";
-                continue;
-            }
-
-
-
-
-            Mesh * current_mesh_component = static_cast<MeshAsset*>(al->GetAsset(asset_name))->GetMesh();
-            QMatrix4x4 transform = components["Transform"].toMap()[mesh_component["transform"].toString()].toMap()["model"].value<QMatrix4x4>();
-
-
-
-
-
-            QString draw_method = mesh_component["draw_method"].toString();
-            if (draw_method.size())
-                current_mesh_component->SetDrawMethod(draw_method);
-
-
-
-
-            current_mesh_component->SetGlobalTransform(transform);
-            current_mesh_component->Draw(*GetShader("Fbx"));
-
-
-
+            qDebug() << "Could not find " << asset_name << " inside the asset library!";
+            continue;
         }
 
 
-    }
-    else
-    {
-        qDebug() << "Could not call getComponents method in the Settings object!";
-        return false;
+
+        if (!dynamic_cast<MeshAsset*>(al->GetAsset(asset_name)))
+        {
+            qDebug() << "Asset is not mesh!";
+            continue;
+        }
+
+
+
+
+        Mesh * current_mesh_component = static_cast<MeshAsset*>(al->GetAsset(asset_name))->GetMesh();
+        QMatrix4x4 transform = components["Transform"].toMap()[mesh_component["transform"].toString()].toMap()["model"].value<QMatrix4x4>();
+
+
+
+
+
+        QString draw_method = mesh_component["draw_method"].toString();
+        if (draw_method.size())
+            current_mesh_component->SetDrawMethod(draw_method);
+
+
+
+
+        current_mesh_component->SetGlobalTransform(transform);
+        current_mesh_component->Draw(*GetShader("Fbx"));
+
+
+
     }
 
 
 
 
     GetShader("Fbx")->release();
+
+
 
 
 

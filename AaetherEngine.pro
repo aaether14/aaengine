@@ -41,7 +41,9 @@ SOURCES += main.cpp\
     assets/assetloader.cpp \
     utils/math.cpp \
     core/projectmanager.cpp \
-    utils/json.cpp
+    utils/json.cpp \
+    script_module/gameobject.cpp \
+    fbx_manager/mesh_material.cpp
 
 
 
@@ -67,7 +69,8 @@ HEADERS  += \
     assets/assetloader.hpp \
     utils/math.hpp \
     core/projectmanager.hpp \
-    utils/json.hpp
+    utils/json.hpp \
+    script_module/gameobject.hpp
 
 
 
@@ -75,6 +78,7 @@ HEADERS  += \
 FORMS    += core/controller.ui \
     console/console.ui \
     about/about.ui
+
 
 
 

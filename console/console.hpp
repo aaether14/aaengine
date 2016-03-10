@@ -22,11 +22,11 @@ class Console;
  */
 class Console : public QDialog
 {
-
+    
     Q_OBJECT
-
+    
 public:
-
+    
     /**
      * @brief Console will initialize the shortcut and redirect
      * the normal console output to in-game console
@@ -34,22 +34,29 @@ public:
      */
     explicit Console(QWidget *parent = 0);
     /**
-      @brief ~Console - basic destructor
+      *@brief ~Console - basic destructor
     */
     ~Console();
 
 
+    /**
+     *@brief onAction will determine what the console will do when the action
+     *regarding it will be triggered
+     */
+    void onAction();
+    
+    
 private slots:
-
+    
     /**
      *@brief on_pushButton_clicked will send the text inside the text edit to
      *the script engine
      */
     void on_pushButton_clicked();
-
+    
 private:
-
-
+    
+    
     Ui::Console *ui;
 };
 

@@ -58,16 +58,7 @@ void Controller::on_actionConsole_triggered()
 
 
     if (findChild<Console*>("Console"))
-    {
-
-        Console * console = findChild<Console*>("Console");
-        console->setVisible(!console->isVisible());
-
-
-        if (console->isVisible())
-            console->activateWindow();
-
-    }
+        findChild<Console*>("Console")->onAction();
 
 
 
@@ -80,16 +71,8 @@ void Controller::on_actionAbout_triggered()
 {
 
     if (findChild<About*>("About"))
-    {
+        findChild<About*>("About")->onAction();
 
-        About * about = findChild<About*>("About");
-        about->setVisible(!about->isVisible());
-
-
-        if (about->isVisible())
-            about->activateWindow();
-
-    }
 
 }
 
@@ -165,6 +148,21 @@ void Controller::on_actionProject_triggered()
 
 
 
+void Controller::on_actionExit_triggered()
+{
+
+
+
+    close();
+
+
+
+}
+
+
+
+
+
 void Controller::ResetScriptEngine()
 {
 
@@ -187,5 +185,4 @@ void Controller::ResetScriptEngine()
 
 
 }
-
 

@@ -10,8 +10,12 @@ ScriptEngine::ScriptEngine(QObject *parent) : QQmlEngine(parent)
 
 
     setObjectName("ScriptEngine");
-    RegisterQObject(this);
 
+
+
+
+    RegisterQObject(this);
+    RegisterQObject(new GameObject(this));
 
 
 
@@ -59,7 +63,22 @@ void ScriptEngine::addQMLScript(QString path)
 {
 
 
-    AddQMLScript(path);
+
+    QQmlComponent component(this, QUrl(path));
+
+
+
+    if (!component.isReady() && component.isError())
+    {
+        qDebug() << path << " could not be loaded!";
+        qDebug() << component.errors();
+        return;
+    }
+
+
+
+    QObject *obj = qobject_cast<QObject*>(component.create());
+    obj->setParent(this);
 
 
 }
@@ -69,6 +88,11 @@ void ScriptEngine::addQMLScript(QString path)
 
 void ScriptEngine::forceUpdate(QJSValue value)
 {
+
+
+    if (!value.isCallable())
+        return;
+
 
 
     timer_connections << connect(timer.data(), &QTimer::timeout, [=]() mutable
@@ -87,6 +111,18 @@ void ScriptEngine::setWindowProperty(QString property_name, QVariant new_propert
 
 
     parent()->setProperty(property_name.toStdString().c_str(), new_property);
+
+
+}
+
+
+
+
+void ScriptEngine::closeWindow()
+{
+
+
+    qobject_cast<QWidget*>(parent())->close();
 
 
 }
@@ -132,36 +168,6 @@ void ScriptEngine::RunScriptFromString(QString script_code)
 
 
 
-void ScriptEngine::AddQMLScript(QString path)
-{
-
-
-
-    QQmlComponent component(this, QUrl(path));
-
-
-
-    if (!component.isReady() && component.isError())
-    {
-        qDebug() << path << " could not be loaded!";
-        qDebug() << component.errors();
-        return;
-    }
-
-
-
-    QObject *obj = qobject_cast<QObject*>(component.create());
-    obj->setParent(this);
-
-
-
-
-}
-
-
-
-
-
 
 void ScriptEngine::RegisterQObject(QObject *obj)
 {
@@ -183,7 +189,7 @@ bool ScriptEngine::LoadProject(QString project_name)
 
 
     if (QFileInfo(project_name).exists())
-        AddQMLScript(project_name);
+        addQMLScript(project_name);
     else
     {
         qDebug() << "Could not load settings at " << project_name << "!";

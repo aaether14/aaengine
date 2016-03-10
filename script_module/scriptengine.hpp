@@ -9,16 +9,22 @@
 #include <QPointer>
 #include <QQmlComponent>
 #include <QQmlContext>
-#include <QMatrix4x4>
 #include <QDebug>
 #include <QTimer>
 #include <QFileInfo>
 
 
 
+#include <script_module/gameobject.hpp>
+#include <QWidget>
 
 
 
+
+/**
+ *@brief The ScriptEngine class will derive QQmlEngine and provide
+ *functionality for script server hosting
+ */
 class ScriptEngine : public QQmlEngine
 {
 
@@ -78,6 +84,10 @@ public:
 
 
 
+    Q_INVOKABLE void closeWindow();
+
+
+
     Q_INVOKABLE QVariant getWindowProperty(QString property_name);
 
 
@@ -94,13 +104,6 @@ public slots:
      * @param script_code is the code to be run
      */
     void RunScriptFromString(QString script_code);
-
-    /**
-     * @brief AddQMLScript will add a script to the QML context
-     *  and parent it to the ScriptEngine
-     * @param path is the path to the script
-     */
-    void AddQMLScript(QString path);
 
 
     /**

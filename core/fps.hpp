@@ -97,7 +97,6 @@ public:
     Q_INVOKABLE int get() {return Get(); }
 
 
-
     Q_INVOKABLE float delta() {return Delta(); }
 
 

@@ -39,6 +39,22 @@ Console::~Console()
 
 
 
+void Console::onAction()
+{
+
+
+    setVisible(!isVisible());
+
+
+    if (isVisible())
+        activateWindow();
+
+
+}
+
+
+
+
 void Console::on_pushButton_clicked()
 {
 

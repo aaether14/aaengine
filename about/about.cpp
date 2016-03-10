@@ -15,6 +15,9 @@ About::About(QWidget *parent) :
 
 
     ui->setupUi(this);
+
+
+
     connect(parent->findChild<QObject*>("GL")->findChild<FPS*>("gFPS"), SIGNAL(updatedFps(int)),
             this, SLOT(ShowFps(int)));
 
@@ -29,6 +32,26 @@ About::About(QWidget *parent) :
 About::~About()
 {
     delete ui;
+}
+
+
+
+
+
+
+void About::onAction()
+{
+
+
+
+    setVisible(!isVisible());
+
+
+    if (isVisible())
+        activateWindow();
+
+
+
 }
 
 

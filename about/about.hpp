@@ -41,6 +41,15 @@ public:
 
 
 
+    /**
+     *@brief onAction will determine what About will do when about action is
+     *triggered
+     */
+    void onAction();
+
+
+
+
 private:
     Ui::About *ui;
 
