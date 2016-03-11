@@ -6,6 +6,10 @@
 
 #include <QWidget>
 #include <QShortcut>
+#include <QDir>
+
+
+
 #include <utils/json.hpp>
 #include <script_module/scriptengine.hpp>
 #include <assets/assetloader.hpp>
@@ -71,6 +75,14 @@ public:
      *in the ScriptEngine
      */
     void UnloadProject();
+
+
+    /**
+     *@brief LoadProjectAndModifyConfig will, aside from loading the project
+     *from config json, modify the config json with the new path
+     *@param project_path is the path of the project to be loaded
+     */
+    void LoadProjectAndModifyConfig(QString project_path);
 
 
 

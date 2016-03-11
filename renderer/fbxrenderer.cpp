@@ -102,6 +102,7 @@ bool FbxRenderer::Render(QObject *parent)
 
 
 
+
     if (!parent->findChild<QObject*>("GL")->findChild<AssetLoader*>("AssetLoader"))
     {
         qDebug() << "Could not find Asset Loader!";
@@ -175,7 +176,7 @@ bool FbxRenderer::Render(QObject *parent)
         if (!al->HasAsset(asset_name))
         {
             qDebug() << "Could not find " << asset_name << " inside the asset library!";
-            continue;
+            return false;
         }
 
 
@@ -183,7 +184,7 @@ bool FbxRenderer::Render(QObject *parent)
         if (!dynamic_cast<MeshAsset*>(al->GetAsset(asset_name)))
         {
             qDebug() << "Asset is not mesh!";
-            continue;
+            return false;
         }
 
 

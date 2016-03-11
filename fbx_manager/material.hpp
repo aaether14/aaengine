@@ -27,9 +27,17 @@ public:
 
 
     /**
-     * @brief diffuse_color is the diffuse component of the material
+     *@brief diffuse_color is the diffuse component of the material
      */
     QVector3D diffuse_color;
+    /**
+     *@brief ambient_color is the ambient component of the material
+     */
+    QVector3D ambient_color;
+    /**
+     *@brief emissive_color is the emissive component of the material
+     */
+    QVector3D emissive_color;
     /**
      *@brief difuse_texture_name is the name of the diffuse texture the
      *material is using

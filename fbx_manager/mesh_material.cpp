@@ -63,7 +63,7 @@ void Mesh::LoadMaterials(FbxScene *scene, QString fbx_file_name)
                             new_mat.use_diffuse_texture = true;
                         }
                         else
-                            qDebug() << "Could not find" << texture_index <<"!";
+                            qDebug() << "Could not find" << texture->GetFileName() <<"!";
 
 
 

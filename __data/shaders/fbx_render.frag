@@ -47,12 +47,24 @@ vec4 ComputeLightColor()
     vec4 color;
     for (int i = 0; i < lights.length(); i++)
     {
+
+
+
         if (lights[i].type_data.x == 0)
         {
             //Directional light
+
+
             color += (lights[i].diffuse_color * max(0.0, dot(vec3(lights[i].position), M_space_normal)) +
                       lights[i].ambient_color);
+
+
+
         }
+
+
+
+
     }
     return color;
 

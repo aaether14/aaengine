@@ -3,7 +3,9 @@
 
 
 Material::Material() : diffuse_color(QVector3D(0, 0, 0)),
-    difuse_texture_name(""),
+    ambient_color(QVector3D(0, 0, 0)),
+    emissive_color(QVector3D(0, 0, 0)),
+    difuse_texture_name(QString()),
     use_diffuse_texture(false)
 {
 

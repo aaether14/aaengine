@@ -8,18 +8,7 @@ ProjectManager::ProjectManager(QObject *parent) : QObject(parent),
 {
 
 
-
-
     setObjectName("ProjectManager");
-
-
-
-    QShortcut *shortcut = new QShortcut(QKeySequence("Ctrl+R"), qobject_cast<QWidget*>(parent));
-    connect(shortcut, &QShortcut::activated, [=]() {
-        LoadProject();
-    });
-
-
 
 
 }
@@ -37,35 +26,29 @@ void ProjectManager::LoadProject()
 
 
     UnloadProject();
-    emit resetScriptEngine();
 
 
 
-
-
-    if (parent()->findChild<ScriptEngine*>("ScriptEngine"))
+    if (!parent()->findChild<ScriptEngine*>("ScriptEngine"))
     {
-
-
-
-
-        ScriptEngine * se = parent()->findChild<ScriptEngine*>("ScriptEngine");
-        se->RegisterQObject(this);
-
-
-
-        SetProjectLoaded(se->LoadProject(config_json.toVariant().toMap()["AaetherEngine"].toMap()["project"].toString()));
-
-
-
-        if (!GetProjectLoaded())
-            qDebug() << "ProjectManager: Could not load the project specified in config.json!";
-
-
-
-    }
-    else
         qDebug() << "ProjectManager: Could not find the ScriptEngine!";
+        return;
+    }
+
+
+
+    ScriptEngine * se = parent()->findChild<ScriptEngine*>("ScriptEngine");
+
+
+
+    SetProjectLoaded(se->LoadProject(config_json.toVariant().toMap()["AaetherEngine"].toMap()["project"].toString()));
+
+
+
+    if (!GetProjectLoaded())
+        qDebug() << "ProjectManager: Could not load the project specified in config.json!";
+
+
 
 
 
@@ -77,8 +60,6 @@ void ProjectManager::LoadProject()
 
 void ProjectManager::UnloadProject()
 {
-
-
 
 
 
@@ -97,5 +78,63 @@ void ProjectManager::UnloadProject()
 
 
 
+    emit resetScriptEngine();
+
+
+
 
 }
+
+
+
+
+
+
+void ProjectManager::LoadProjectAndModifyConfig(QString project_path)
+{
+
+
+
+    parent()->setProperty("windowTitle", QDir(".").relativeFilePath(project_path));
+
+
+
+
+    QJsonObject serialized_config_json = Json::GetJsonFromFile("data/config.json").object();
+    QJsonObject serialized_engine_json = serialized_config_json["AaetherEngine"].toObject();
+
+
+
+    serialized_engine_json["project"] = QDir(".").relativeFilePath(project_path);
+    serialized_config_json["AaetherEngine"] = serialized_engine_json;
+
+
+
+    Json::SaveJsonToFile("data/config.json", QJsonDocument(serialized_config_json));
+
+
+
+    LoadProject();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

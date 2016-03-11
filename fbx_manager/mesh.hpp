@@ -31,6 +31,7 @@ class Mesh
 {
 
 
+
     /**
     @brief float16 is a typedef to the 16 float array, it is needed in order to
     convert QMatrix4x4 to something we can send to the shader
@@ -136,6 +137,11 @@ class Mesh
      *whole mesh
      */
     GLuint master_uvs_vbo;
+    /**
+     *@brief master_tangents_vbo will store in the opengl memory the tangents
+     *of the whole mesh
+     */
+    GLuint master_tangents_vbo;
 
 
 
@@ -187,7 +193,8 @@ class Mesh
                        QVector<unsigned int> & master_indices,
                        QVector<float> & master_vertices,
                        QVector<float> & master_normals,
-                       QVector<float> & master_uvs);
+                       QVector<float> & master_uvs,
+                       QVector<float> & master_tangents);
 
 
 

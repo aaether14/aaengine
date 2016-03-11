@@ -3,8 +3,12 @@
 
 
 
+
+
+
 GLController::GLController(QWidget *parent)
-    : QOpenGLWidget(parent)
+    : QOpenGLWidget(parent),
+      is_playing(false)
 {
 
 
@@ -12,7 +16,7 @@ GLController::GLController(QWidget *parent)
 
     QTimer * timer = new QTimer(this);
     timer->setObjectName("gTimer");
-    timer->start(0.0);
+    timer->setInterval(0);
 
 
 
@@ -171,6 +175,7 @@ void GLController::mouseReleaseEvent(QMouseEvent *e)
 
 
 
+
 void GLController::mouseMoveEvent(QMouseEvent *e)
 {
 
@@ -183,12 +188,18 @@ void GLController::mouseMoveEvent(QMouseEvent *e)
 
 
 
+
+
 void GLController::Pause()
 {
 
 
     if (findChild<QTimer*>("gTimer"))
         findChild<QTimer*>("gTimer")->stop();
+
+
+
+    is_playing = false;
 
 
 
@@ -205,7 +216,31 @@ void GLController::Unpause()
         findChild<QTimer*>("gTimer")->start();
 
 
+    is_playing = true;
+
+
 }
+
+
+
+
+void GLController::SetPlaying(bool playing)
+{
+
+
+
+    if (playing == true)
+        Unpause();
+    else
+        Pause();
+
+
+
+}
+
+
+
+
 
 
 

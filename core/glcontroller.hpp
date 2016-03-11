@@ -35,6 +35,14 @@ class GLController : public QOpenGLWidget
 
 
 
+    /**
+     *@brief is_playing will be true if the game is unpaused and false
+     *otherwise
+     */
+    bool is_playing;
+
+
+
 
 public:
 
@@ -105,6 +113,20 @@ public:
      *@brief will unpase the QTimer
     */
     void Unpause();
+
+
+    /**
+     * @brief SetPlaying will set whether the game is playing or not
+     * @param playing is the value that is_playing will be set to
+     */
+    void SetPlaying(bool playing);
+
+
+    /**
+     * @brief IsPlaying will return whether the game is paused or not
+     * @return is_playing private member;
+     */
+    inline bool IsPlaying(){return is_playing; }
 
 
 

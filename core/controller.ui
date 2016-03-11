@@ -52,9 +52,18 @@
      <string>&amp;Tools</string>
     </property>
     <addaction name="actionConsole"/>
+    <addaction name="actionImport"/>
+   </widget>
+   <widget class="QMenu" name="menuBuild">
+    <property name="title">
+     <string>&amp;Build</string>
+    </property>
+    <addaction name="actionRebuild"/>
+    <addaction name="actionPlay"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
+   <addaction name="menuBuild"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="toolBar">
@@ -69,6 +78,8 @@
    </attribute>
    <addaction name="actionConsole"/>
    <addaction name="actionProject"/>
+   <addaction name="actionRebuild"/>
+   <addaction name="actionPlay"/>
   </widget>
   <action name="actionConsole">
    <property name="icon">
@@ -116,6 +127,45 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionRebuild">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/icons/__data/icons/reload.ico</normaloff>:/icons/__data/icons/reload.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Rebuild</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionPlay">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/icons/__data/icons/play.ico</normaloff>:/icons/__data/icons/play.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Play</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionImport">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/icons/__data/icons/import.ico</normaloff>:/icons/__data/icons/import.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Import...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
    </property>
   </action>
  </widget>

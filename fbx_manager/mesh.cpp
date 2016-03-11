@@ -3,12 +3,17 @@
 
 
 
+
+
+
 void Mesh::RecursiveLoad(FbxNode * node,
                          QVector<unsigned int> & master_indices,
                          QVector<float> & master_vertices,
                          QVector<float> &master_normals,
-                         QVector<float> &master_uvs)
+                         QVector<float> &master_uvs, QVector<float> &master_tangents)
 {
+
+
 
 
 
@@ -18,7 +23,9 @@ void Mesh::RecursiveLoad(FbxNode * node,
                       master_indices,
                       master_vertices,
                       master_normals,
-                      master_uvs);
+                      master_uvs,
+                      master_tangents);
+
 
 
 
@@ -26,6 +33,11 @@ void Mesh::RecursiveLoad(FbxNode * node,
 
     if(!node->GetNodeAttribute())
         return;
+
+
+
+
+
     FbxNodeAttribute::EType AttributeType = node->GetNodeAttribute()->GetAttributeType();
     if(AttributeType != FbxNodeAttribute::eMesh)
         return;
@@ -33,15 +45,39 @@ void Mesh::RecursiveLoad(FbxNode * node,
 
 
 
-
     FbxMesh * mesh = node->GetMesh();
-    if (mesh->GetElementNormalCount() > 0 && mesh->GetElementUVCount() > 0)
-        if (mesh->GetElementNormal(0)->GetMappingMode() != FbxGeometryElement::eByControlPoint ||
-                mesh->GetElementUV(0)->GetMappingMode() != FbxGeometryElement::eByControlPoint)
-        {
-            mesh->SplitPoints();
-            should_save_scene_after_load = true;
-        }
+    bool should_split = false;
+
+
+
+
+    if (mesh->GetElementNormalCount() > 0)
+        if (mesh->GetElementNormal(0)->GetMappingMode() != FbxGeometryElement::eByControlPoint)
+            should_split = true;
+
+
+
+
+    if (mesh->GetElementUVCount() > 0)
+        if (mesh->GetElementUV(0)->GetMappingMode() != FbxGeometryElement::eByControlPoint)
+            should_split = true;
+
+
+
+
+    if (mesh->GetElementTangentCount() > 0)
+        if (mesh->GetElementTangent(0)->GetMappingMode() != FbxGeometryElement::eByControlPoint)
+            should_split = true;
+
+
+
+
+
+    if (should_split)
+    {
+        mesh->SplitPoints();
+        should_save_scene_after_load = true;
+    }
 
 
 
@@ -53,6 +89,7 @@ void Mesh::RecursiveLoad(FbxNode * node,
                              master_vertices,
                              master_normals,
                              master_uvs,
+                             master_tangents,
                              current_control_point_offset,
                              current_polygon_offset);
 
@@ -118,6 +155,7 @@ void Mesh::DynamicDraw(QOpenGLShaderProgram & shader,
 
 
 
+
     QVector<unsigned int> per_object_index;
     QVector<DrawElementsCommand> draw_commands;
 
@@ -148,9 +186,9 @@ void Mesh::DynamicDraw(QOpenGLShaderProgram & shader,
 
     f->glBindBuffer(GL_ARRAY_BUFFER, per_object_buffer);
     f->glBufferData(GL_ARRAY_BUFFER, sizeof(unsigned int) * per_object_index.size(), &per_object_index[0], GL_STATIC_DRAW);
-    f->glEnableVertexAttribArray(3);
-    f->glVertexAttribIPointer(3, 1, GL_UNSIGNED_INT, sizeof(unsigned int), 0);
-    f->glVertexAttribDivisor(3, 1);
+    f->glEnableVertexAttribArray(4);
+    f->glVertexAttribIPointer(4, 1, GL_UNSIGNED_INT, sizeof(unsigned int), 0);
+    f->glVertexAttribDivisor(4, 1);
 
 
 
@@ -197,11 +235,11 @@ void Mesh::CachedDraw(QOpenGLShaderProgram &shader,
 
 
     f->glBindBuffer(GL_ARRAY_BUFFER, cached_per_object_buffer);
-    f->glEnableVertexAttribArray(3);
-    f->glVertexAttribIPointer(3, 1,
+    f->glEnableVertexAttribArray(4);
+    f->glVertexAttribIPointer(4, 1,
                               GL_UNSIGNED_INT, sizeof(unsigned int),
                               (GLvoid*)(sizeof(unsigned int) * per_object_buffer_stride_cache.value(material_name)));
-    f->glVertexAttribDivisor(3, 1);
+    f->glVertexAttribDivisor(4, 1);
 
 
 
@@ -247,6 +285,7 @@ Mesh::Mesh() : vao(0),
     master_ibo(0),
     master_normals_vbo(0),
     master_uvs_vbo(0),
+    master_tangents_vbo(0),
     should_save_scene_after_load(false),
     current_polygon_offset(0),
     current_control_point_offset(0),
@@ -297,6 +336,8 @@ Mesh::~Mesh()
         f->glDeleteBuffers(1, &master_normals_vbo);
     if (master_uvs_vbo)
         f->glDeleteBuffers(1, &master_uvs_vbo);
+    if (master_tangents_vbo)
+        f->glDeleteBuffers(1, &master_tangents_vbo);
 
 
 
@@ -458,9 +499,9 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
     {
 
 
-        if (!draw_method.compare("cached"))
+        if (draw_method == "cached")
             CachedDraw(shader, it);
-        else if (!draw_method.compare("dynamic"))
+        else if (draw_method == "dynamic")
             DynamicDraw(shader, it);
         else
             qDebug() << "Invalid draw method!";
@@ -492,6 +533,9 @@ QString Mesh::ComputeTextureFilename(QString texture_name, QString fbx_file_name
 
 
     QString texture_file_name;
+
+
+
     texture_name.replace("\\", "/");
     texture_name = texture_name.mid(texture_name.lastIndexOf("/") + 1, texture_name.length());
 
@@ -499,8 +543,16 @@ QString Mesh::ComputeTextureFilename(QString texture_name, QString fbx_file_name
 
 
     QString directory;
+
+
+
+
     if (QString(fbx_file_name).lastIndexOf("/") > 0)
         directory = QString(fbx_file_name).mid(0, QString(fbx_file_name).lastIndexOf("/"));
+
+
+
+
     if (directory.length() > 0)
         texture_file_name = directory + "/" + texture_name;
 
@@ -512,11 +564,16 @@ QString Mesh::ComputeTextureFilename(QString texture_name, QString fbx_file_name
         return texture_file_name;
     else
     {
+
+
         texture_file_name = directory + "/" + QFileInfo(fbx_file_name).baseName() + ".fbm/" + texture_name;
         if (QFileInfo(texture_file_name).exists())
             return texture_file_name;
         else
-            return "";
+            return QString();
+
+
+
     }
 
 
@@ -551,169 +608,6 @@ void Mesh::NormalizeScene(FbxScene *scene, FbxManager *fbx_manager)
 
     FbxGeometryConverter geometry_converter(fbx_manager);
     geometry_converter.Triangulate(scene, true);
-
-
-
-}
-
-
-
-
-void Mesh::LoadBufferObjects(FbxNode *root)
-{
-
-
-
-
-
-    QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
-    f->glGenBuffers(1, &ssbo);
-    f->glGenBuffers(1, &indirect_buffer);
-    f->glGenBuffers(1, &per_object_buffer);
-
-
-
-
-
-    QVector<unsigned int> master_indices;
-    QVector<float> master_vertices;
-    QVector<float> master_normals;
-    QVector<float> master_uvs;
-
-
-
-
-    RecursiveLoad(root,
-                  master_indices,
-                  master_vertices,
-                  master_normals,
-                  master_uvs);
-
-
-
-
-    //creating vertex array object
-
-
-
-
-    f->glGenVertexArrays(1, &vao);
-    f->glBindVertexArray(vao);
-
-
-
-    //loading indices
-
-
-
-    f->glGenBuffers(1, &master_ibo);
-    f->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, master_ibo);
-    f->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * master_indices.size(), &master_indices[0], GL_STATIC_DRAW);
-
-
-
-
-    f->glGenBuffers(1, &master_vbo);
-    f->glBindBuffer(GL_ARRAY_BUFFER, master_vbo);
-    f->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * master_vertices.size(), &master_vertices[0], GL_STATIC_DRAW);
-    f->glEnableVertexAttribArray(0);
-    f->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-
-
-    f->glGenBuffers(1, &master_normals_vbo);
-    f->glBindBuffer(GL_ARRAY_BUFFER, master_normals_vbo);
-    f->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * master_normals.size(), &master_normals[0], GL_STATIC_DRAW);
-    f->glEnableVertexAttribArray(1);
-    f->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-
-
-
-    f->glGenBuffers(1, &master_uvs_vbo);
-    f->glBindBuffer(GL_ARRAY_BUFFER, master_uvs_vbo);
-    f->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * master_uvs.size(), &master_uvs[0], GL_STATIC_DRAW);
-    f->glEnableVertexAttribArray(2);
-    f->glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-
-
-
-
-    f->glBindVertexArray(0);
-    master_indices.clear();
-    master_vertices.clear();
-    master_normals.clear();
-    master_uvs.clear();
-
-
-
-
-    //Handling cached drawing data loading
-
-
-
-    QVector<DrawElementsCommand> cached_commands;
-    QVector<unsigned int> cached_per_object_index;
-
-
-
-    foreach(auto it, materials.keys())
-    {
-
-
-
-        QVector<DrawElementsCommand> commands;
-        QVector<unsigned int> per_object_index;
-
-
-        CacheDrawCommands(mesh_entries,
-                          commands,
-                          per_object_index,
-                          it);
-
-
-
-        indirect_buffer_stride_cache[it] = cached_commands.size();
-        indirect_buffer_size_cache[it] = commands.size();
-        per_object_buffer_stride_cache[it] = cached_per_object_index.size();
-
-
-
-        cached_commands << commands;
-        cached_per_object_index << per_object_index;
-
-
-
-
-
-    }
-
-
-
-    f->glGenBuffers(1, &cached_indirect_buffer);
-    f->glBindBuffer( GL_DRAW_INDIRECT_BUFFER, cached_indirect_buffer);
-    f->glBufferData( GL_DRAW_INDIRECT_BUFFER,
-                     sizeof(DrawElementsCommand) * cached_commands.size(),
-                     &cached_commands[0],
-            GL_STATIC_DRAW );
-
-
-    f->glGenBuffers(1, &cached_per_object_buffer);
-    f->glBindBuffer(GL_ARRAY_BUFFER, cached_per_object_buffer);
-    f->glBufferData(GL_ARRAY_BUFFER,
-                    sizeof(unsigned int) * cached_per_object_index.size(),
-                    &cached_per_object_index[0],
-            GL_STATIC_DRAW);
-
-
-
-
-    cached_commands.clear();
-    cached_per_object_index.clear();
-
-
-
 
 
 

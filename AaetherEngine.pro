@@ -43,7 +43,8 @@ SOURCES += main.cpp\
     core/projectmanager.cpp \
     utils/json.cpp \
     script_module/gameobject.cpp \
-    fbx_manager/mesh_material.cpp
+    fbx_manager/mesh_material.cpp \
+    fbx_manager/mesh_buffer_loader.cpp
 
 
 

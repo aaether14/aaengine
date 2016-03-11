@@ -30,7 +30,8 @@ MeshEntry::~MeshEntry()
 void MeshEntry::LoadMesh(FbxMesh * mesh,
                          QVector<unsigned int> &master_indices,
                          QVector<float> &master_vertices,
-                         QVector<float> &master_normals, QVector<float> &master_uvs,
+                         QVector<float> &master_normals,
+                         QVector<float> &master_uvs, QVector<float> &master_tangents,
                          int & current_control_point_offset,
                          int & current_polygon_offset)
 {
@@ -42,6 +43,7 @@ void MeshEntry::LoadMesh(FbxMesh * mesh,
     LoadVertices(mesh, master_vertices, current_control_point_offset);
     LoadNormals(mesh, master_normals);
     LoadUVs(mesh, master_uvs);
+    LoadTangents(mesh, master_tangents);
     LoadTransform(mesh);
 
 
@@ -50,7 +52,6 @@ void MeshEntry::LoadMesh(FbxMesh * mesh,
     //mesh->ComputeBBox();
     //BBMin = QVector3D(mesh->BBoxMin.Get().mData[0], mesh->BBoxMin.Get().mData[1], mesh->BBoxMin.Get().mData[2]);
     //BBMax = QVector3D(mesh->BBoxMax.Get().mData[0], mesh->BBoxMax.Get().mData[1], mesh->BBoxMax.Get().mData[2]);
-
 
 
 
@@ -101,7 +102,6 @@ void MeshEntry::LoadNormals(FbxMesh * mesh,
             master_normals << 0.0 << 0.0 << 0.0;
 
 
-        qDebug() << "Invalid normals!";
         return;
 
     }
@@ -152,6 +152,8 @@ void MeshEntry::LoadUVs(FbxMesh *mesh, QVector<float> &master_uvs)
 {
 
 
+
+
     if (mesh->GetElementUVCount() < 1)
     {
 
@@ -159,10 +161,10 @@ void MeshEntry::LoadUVs(FbxMesh *mesh, QVector<float> &master_uvs)
             master_uvs << 0.0 << 0.0;
 
 
-        qDebug() << "Invalid UVs!";
         return;
 
     }
+
 
 
 
@@ -198,6 +200,58 @@ void MeshEntry::LoadUVs(FbxMesh *mesh, QVector<float> &master_uvs)
 
 
 
+void MeshEntry::LoadTangents(FbxMesh *mesh, QVector<float> &master_tangents)
+{
+
+
+
+
+    if(mesh->GetElementTangentCount() < 1)
+    {
+
+        for (int i = 0; i < mesh->GetControlPointsCount(); i++)
+            master_tangents << 0.0 << 0.0 << 0.0;
+
+
+        return;
+
+    }
+
+
+
+
+    FbxGeometryElementTangent* vertex_tangent = mesh->GetElementTangent(0);
+    if (vertex_tangent->GetMappingMode() == FbxGeometryElement::eByControlPoint)
+    {
+
+
+    }
+    else
+    {
+        qDebug() << "Invalid tangent format!";
+    }
+
+
+
+
+    for (int i = 0; i < mesh->GetControlPointsCount(); i++)
+    {
+
+
+        master_tangents << (float)(vertex_tangent->GetDirectArray().GetAt(i).mData[0]);
+        master_tangents << (float)(vertex_tangent->GetDirectArray().GetAt(i).mData[1]);
+        master_tangents << (float)(vertex_tangent->GetDirectArray().GetAt(i).mData[2]);
+
+
+    }
+
+
+
+}
+
+
+
+
 
 
 void MeshEntry::LoadIndices(FbxMesh *mesh,
@@ -212,6 +266,10 @@ void MeshEntry::LoadIndices(FbxMesh *mesh,
 
     QHash<int, QVector<unsigned int> > material_mapped_indices;
     FbxLayerElementArrayTemplate<int> *material_indices;
+
+
+
+
     mesh->GetMaterialIndices(&material_indices);
 
 
@@ -227,7 +285,7 @@ void MeshEntry::LoadIndices(FbxMesh *mesh,
 
 
 
-    for (auto it : material_mapped_indices.keys())
+    foreach(auto it, material_mapped_indices.keys())
     {
 
 
@@ -257,8 +315,21 @@ void MeshEntry::LoadTransform(FbxMesh *mesh)
 
 
 
-    FbxAMatrix transform = mesh->GetNode()->GetParent()->EvaluateLocalTransform(0)
-            * mesh->GetNode()->EvaluateLocalTransform(0);
+
+
+    FbxVector4 T = mesh->GetNode()->GetGeometricTranslation (FbxNode::eSourcePivot);
+    FbxVector4 R = mesh->GetNode()->GetGeometricRotation(FbxNode::eSourcePivot);
+    FbxVector4 S = mesh->GetNode()->GetGeometricScaling(FbxNode::eSourcePivot);
+    FbxAMatrix geometric_offset_transform(T, R, S);
+
+
+
+
+
+    FbxAMatrix transform = mesh->GetNode()->GetScene()->GetAnimationEvaluator()->GetNodeGlobalTransform(mesh->GetNode()) *
+            geometric_offset_transform;
+
+
 
 
 

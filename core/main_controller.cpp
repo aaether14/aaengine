@@ -5,30 +5,99 @@
 
 
 
+QString Controller::OpenFileDialog(QString file_dialog_name, QString suffix_to_look_for)
+{
+
+
+
+    if (!findChild<GLController*>("GL"))
+    {
+        qDebug() << "MainController: No GL controller detected! (project loading)";
+        return QString();
+    }
+
+
+
+
+
+    bool was_playing = findChild<GLController*>("GL")->IsPlaying() == true;
+
+
+
+
+    if (was_playing)
+        findChild<GLController*>("GL")->Pause();
+
+
+
+
+    QString project_name = QFileDialog::getOpenFileName(this, file_dialog_name, QString(), suffix_to_look_for);
+
+
+
+
+    if (was_playing)
+        findChild<GLController*>("GL")->Unpause();
+
+
+
+    return project_name;
+
+
+
+
+}
+
+
+
+
+
+
+
 Controller::Controller(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Controller)
 {
 
 
-
+    /**
+      Basic ui setup
+    */
     ui->setupUi(this);
 
 
 
+    /**
+     *Initialize ui dialogs
+     */
     Console * console = new Console(this);
     About * about = new About(this);
 
 
 
+
+    /**
+     * Initialize project manager
+     */
     ProjectManager * project_manager = new ProjectManager(this);
 
 
-
+    /**
+     * Load config.json project
+     */
     ResetScriptEngine();
     project_manager->LoadProject();
     connect(project_manager, SIGNAL(resetScriptEngine()), this, SLOT(ResetScriptEngine()));
 
+
+
+
+    /**
+    *Check if Play QAction is checked, if not toggle it in order to send a
+    *signal to start game loop
+    */
+    if(!ui->actionPlay->isChecked())
+        ui->actionPlay->toggle();
 
 
 
@@ -81,38 +150,19 @@ void Controller::on_actionAbout_triggered()
 
 
 
-
-
 void Controller::on_actionProject_triggered()
 {
 
 
-    if (findChild<GLController*>("GL"))
-        findChild<GLController*>("GL")->Pause();
-    else
-    {
-        qDebug() << "MainController: No GL controller detected!";
-        return;
-    }
 
 
-
-    QString project_name = QFileDialog::getOpenFileName(this, "Open Project", QString(), "*.qml");
-
-
-
-    findChild<GLController*>("GL")->Unpause();
-
-
+    QString project_name = OpenFileDialog("Open Project", "*.qml");
 
 
 
     if (!project_name.size())
         return;
 
-
-
-    setProperty("windowTitle", QDir(".").relativeFilePath(project_name));
 
 
 
@@ -125,21 +175,10 @@ void Controller::on_actionProject_triggered()
 
 
 
-    QJsonObject serialized_config_json = Json::GetJsonFromFile("data/config.json").object();
-    QJsonObject serialized_engine_json = serialized_config_json["AaetherEngine"].toObject();
+    findChild<ProjectManager*>("ProjectManager")->LoadProjectAndModifyConfig(project_name);
 
 
 
-    serialized_engine_json["project"] = QDir(".").relativeFilePath(project_name);
-    serialized_config_json["AaetherEngine"] = serialized_engine_json;
-
-
-
-    Json::SaveJsonToFile("data/config.json", QJsonDocument(serialized_config_json));
-
-
-
-    findChild<ProjectManager*>("ProjectManager")->LoadProject();
 
 
 
@@ -152,12 +191,79 @@ void Controller::on_actionExit_triggered()
 {
 
 
-
     close();
+
+
+}
+
+
+
+
+void Controller::on_actionRebuild_triggered()
+{
+
+
+
+    if (!findChild<ProjectManager*>("ProjectManager"))
+    {
+        qDebug() << "MainController: Could not find ProjectManager in order to reload project!";
+        return;
+    }
+
+
+
+    if (!ui->actionPlay->isChecked())
+        ui->actionPlay->toggle();
+
+
+
+    findChild<ProjectManager*>("ProjectManager")->LoadProject();
 
 
 
 }
+
+
+
+
+void Controller::on_actionPlay_toggled(bool arg1)
+{
+
+
+
+    if (!findChild<GLController*>("GL"))
+    {
+        qDebug() << "MainController: No GL controller detected! (play toggle)";
+        return;
+    }
+
+
+
+    findChild<GLController*>("GL")->SetPlaying(arg1);
+
+
+
+
+}
+
+
+
+
+
+
+
+void Controller::on_actionImport_triggered()
+{
+
+
+
+    QString fbx_file_name = OpenFileDialog("Import...", "*.fbx");
+
+
+
+}
+
+
 
 
 
@@ -185,4 +291,5 @@ void Controller::ResetScriptEngine()
 
 
 }
+
 

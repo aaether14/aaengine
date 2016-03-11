@@ -68,6 +68,18 @@ class MeshEntry
                  QVector<float> & master_uvs);
 
 
+
+
+    /**
+     * @brief LoadTangents will load the tangents of the mesh entry
+     * @param mesh is the mesh not to be handled by this mesh entry
+     * @param master_tangents - see mesh.hpp
+     */
+    void LoadTangents(FbxMesh * mesh,
+                      QVector<float> &master_tangents);
+
+
+
     /**
      * @brief LoadIndices will load the indices of the mesh entry
      * @param mesh is the mesh node the be handled by this mesh entry
@@ -79,6 +91,7 @@ class MeshEntry
                      QVector<unsigned int> & master_indices,
                      int & current_polygon_offset,
                      int & current_control_point_offset);
+
 
 
     /**
@@ -110,6 +123,7 @@ public:
      * @param master_vertices - see mesh.hpp
      * @param master_normals - see mesh.hpp
      * @param master_uvs - see mesh.hpp
+     * @param master_tangents - see mesh.hpp
      * @param current_control_point_offset - see mesh.hpp
      * @param current_polygon_offset - see mesh.hpp
      */
@@ -118,6 +132,7 @@ public:
                   QVector<float> &master_vertices,
                   QVector<float> &master_normals,
                   QVector<float> &master_uvs,
+                  QVector<float> &master_tangents,
                   int & current_control_point_offset,
                   int & current_polygon_offset);
 

@@ -4,6 +4,9 @@
         <file>__data/icons/project.ico</file>
         <file>__data/icons/terminal.ico</file>
         <file>__data/icons/exit.ico</file>
+        <file>__data/icons/reload.ico</file>
+        <file>__data/icons/play.ico</file>
+        <file>__data/icons/import.ico</file>
     </qresource>
     <qresource prefix="/shaders">
         <file>__data/shaders/fbx_render.frag</file>
