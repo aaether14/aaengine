@@ -48,8 +48,11 @@ FBXManager::~FBXManager()
 
 
 
-void FBXManager::Load(QString file_name, BaseAsset *asset)
+void FBXManager::Load(QString file_name,
+                      BaseAsset *asset,
+                      QVariantMap load_options)
 {
+
 
 
     if(!asset)
@@ -78,7 +81,15 @@ void FBXManager::Load(QString file_name, BaseAsset *asset)
 
 
 
-    static_cast<MeshAsset*>(asset)->GetMesh()->LoadFromFBX(GetManager(), file_name);
+
+    bool should_normalize = load_options.size() > 0 ? load_options["normalize"].toBool() : false;
+
+
+
+
+    static_cast<MeshAsset*>(asset)->GetMesh()->LoadFromFBX(GetManager(),
+                                                           file_name,
+                                                           should_normalize);
 
 
 }

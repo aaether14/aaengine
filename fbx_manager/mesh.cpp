@@ -10,7 +10,8 @@ void Mesh::RecursiveLoad(FbxNode * node,
                          QVector<unsigned int> & master_indices,
                          QVector<float> & master_vertices,
                          QVector<float> &master_normals,
-                         QVector<float> &master_uvs, QVector<float> &master_tangents)
+                         QVector<float> &master_uvs,
+                         QVector<float> &master_tangents)
 {
 
 
@@ -51,6 +52,7 @@ void Mesh::RecursiveLoad(FbxNode * node,
 
 
 
+
     if (mesh->GetElementNormalCount() > 0)
         if (mesh->GetElementNormal(0)->GetMappingMode() != FbxGeometryElement::eByControlPoint)
             should_split = true;
@@ -60,13 +62,6 @@ void Mesh::RecursiveLoad(FbxNode * node,
 
     if (mesh->GetElementUVCount() > 0)
         if (mesh->GetElementUV(0)->GetMappingMode() != FbxGeometryElement::eByControlPoint)
-            should_split = true;
-
-
-
-
-    if (mesh->GetElementTangentCount() > 0)
-        if (mesh->GetElementTangent(0)->GetMappingMode() != FbxGeometryElement::eByControlPoint)
             should_split = true;
 
 
@@ -141,136 +136,6 @@ void Mesh::CacheDrawCommands(QList<MeshEntry *> &mesh_entries,
 
 }
 
-
-
-
-
-void Mesh::DynamicDraw(QOpenGLShaderProgram & shader,
-                       QString material_name)
-{
-
-
-
-    QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
-
-
-
-
-    QVector<unsigned int> per_object_index;
-    QVector<DrawElementsCommand> draw_commands;
-
-
-
-
-
-
-
-    CacheDrawCommands(mesh_entries,
-                      draw_commands,
-                      per_object_index,
-                      material_name);
-
-
-
-
-
-
-
-    f->glBindBuffer( GL_DRAW_INDIRECT_BUFFER, indirect_buffer);
-    f->glBufferData( GL_DRAW_INDIRECT_BUFFER, sizeof(DrawElementsCommand) * draw_commands.size(), &draw_commands[0], GL_STATIC_DRAW );
-
-
-
-
-
-
-    f->glBindBuffer(GL_ARRAY_BUFFER, per_object_buffer);
-    f->glBufferData(GL_ARRAY_BUFFER, sizeof(unsigned int) * per_object_index.size(), &per_object_index[0], GL_STATIC_DRAW);
-    f->glEnableVertexAttribArray(4);
-    f->glVertexAttribIPointer(4, 1, GL_UNSIGNED_INT, sizeof(unsigned int), 0);
-    f->glVertexAttribDivisor(4, 1);
-
-
-
-
-
-    materials[material_name].SendToShader(shader);
-    if (materials[material_name].use_diffuse_texture)
-        textures[materials[material_name].difuse_texture_name]->bind();
-
-
-
-
-    f->glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, draw_commands.size(), 0);
-    draw_commands.clear();
-    per_object_index.clear();
-
-
-
-
-
-    if (materials[material_name].use_diffuse_texture)
-        textures[materials[material_name].difuse_texture_name]->release();
-
-
-
-
-
-}
-
-
-
-
-
-void Mesh::CachedDraw(QOpenGLShaderProgram &shader,
-                      QString material_name)
-{
-
-
-
-
-    QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
-
-
-
-
-    f->glBindBuffer(GL_ARRAY_BUFFER, cached_per_object_buffer);
-    f->glEnableVertexAttribArray(4);
-    f->glVertexAttribIPointer(4, 1,
-                              GL_UNSIGNED_INT, sizeof(unsigned int),
-                              (GLvoid*)(sizeof(unsigned int) * per_object_buffer_stride_cache.value(material_name)));
-    f->glVertexAttribDivisor(4, 1);
-
-
-
-
-
-
-    materials[material_name].SendToShader(shader);
-
-
-
-    if (materials[material_name].use_diffuse_texture)
-        textures[materials[material_name].difuse_texture_name]->bind();
-
-
-
-    f->glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT,
-                                   (GLvoid*)(sizeof(DrawElementsCommand)*indirect_buffer_stride_cache.value(material_name)),
-                                   indirect_buffer_size_cache.value(material_name), 0);
-
-
-
-
-    if (materials[material_name].use_diffuse_texture)
-        textures[materials[material_name].difuse_texture_name]->release();
-
-
-
-
-
-
-}
 
 
 
@@ -367,7 +232,9 @@ Mesh::~Mesh()
 
 
 
-void Mesh::LoadFromFBX(FbxManager *fbx_manager, QString file_name)
+void Mesh::LoadFromFBX(FbxManager *fbx_manager,
+                       QString file_name,
+                       bool normalize_scene)
 {
 
 
@@ -400,7 +267,12 @@ void Mesh::LoadFromFBX(FbxManager *fbx_manager, QString file_name)
 
 
 
-    NormalizeScene(scene, fbx_manager);
+    if(normalize_scene)
+        NormalizeScene(scene, fbx_manager);
+
+
+
+
     LoadMaterials(scene, file_name);
     LoadBufferObjects(scene->GetRootNode());
 
@@ -409,6 +281,7 @@ void Mesh::LoadFromFBX(FbxManager *fbx_manager, QString file_name)
 
     if (should_save_scene_after_load)
     {
+
 
         FbxExporter *exporter = FbxExporter::Create(fbx_manager, "Aaether Engine Exporter");
 
@@ -454,15 +327,29 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
+    /**
+    *If the mesh wasn't successfully loaded, don't bother to try drawing it
+    */
+
+
     if (!is_loaded)
         return;
 
 
 
+    /**
+    Set the texture sampler for diffuse texture
+    */
 
     shader.setUniformValue("diffuse_texture", 0);
 
 
+
+
+    /**
+     *get the current context function and bind the vertex array object of the
+     *mesh
+     */
 
 
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
@@ -470,7 +357,10 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
-
+    /**
+     *the model matrix vector will be filled with the model matrices of the
+     *mesh entries of the mesh
+     */
     QVector<float16> model_matrix;
 
 
@@ -478,6 +368,12 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
     foreach(auto it, mesh_entries)
         model_matrix << toFloat16((global_transform * it->GetLocalTransform()).constData());
 
+
+
+
+    /**
+    *Send the model matrices to the shader via ssbo binding
+    */
 
 
 
@@ -494,17 +390,34 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
+    /**
+    *For each material, depending on the draw method selected by the mesh,
+    attempt to draw the model
+    */
+
 
     foreach(auto it, materials.keys())
     {
 
 
         if (draw_method == "cached")
+        {
+
             CachedDraw(shader, it);
+
+        }
         else if (draw_method == "dynamic")
+        {
+
             DynamicDraw(shader, it);
+
+        }
         else
+        {
+
             qDebug() << "Invalid draw method!";
+
+        }
 
 
     }
@@ -512,6 +425,9 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
+    /**
+    *Unbind the vertex array object
+    */
 
     f->glBindVertexArray(0);
 
@@ -535,6 +451,11 @@ QString Mesh::ComputeTextureFilename(QString texture_name, QString fbx_file_name
     QString texture_file_name;
 
 
+    /**
+    *first put the name of the texture in a standard form, then get just from
+    *it
+    */
+
 
     texture_name.replace("\\", "/");
     texture_name = texture_name.mid(texture_name.lastIndexOf("/") + 1, texture_name.length());
@@ -546,31 +467,52 @@ QString Mesh::ComputeTextureFilename(QString texture_name, QString fbx_file_name
 
 
 
+    /**
+    *get the directory for the texture
+    */
+
 
     if (QString(fbx_file_name).lastIndexOf("/") > 0)
+    {
         directory = QString(fbx_file_name).mid(0, QString(fbx_file_name).lastIndexOf("/"));
+    }
 
 
 
 
     if (directory.length() > 0)
+    {
         texture_file_name = directory + "/" + texture_name;
+    }
 
 
 
 
-
+    /**
+    Check if the texture exists in the folder of the fbx model. If so, return
+    the computed texture name, otherwise try in the .fbm folder in the same
+    location
+    */
     if (QFileInfo(texture_file_name).exists())
+    {
         return texture_file_name;
+    }
     else
     {
 
 
         texture_file_name = directory + "/" + QFileInfo(fbx_file_name).baseName() + ".fbm/" + texture_name;
+
+
+
         if (QFileInfo(texture_file_name).exists())
+        {
             return texture_file_name;
+        }
         else
+        {
             return QString();
+        }
 
 
 
@@ -585,6 +527,7 @@ QString Mesh::ComputeTextureFilename(QString texture_name, QString fbx_file_name
 
 void Mesh::NormalizeScene(FbxScene *scene, FbxManager *fbx_manager)
 {
+
 
 
 
@@ -608,6 +551,26 @@ void Mesh::NormalizeScene(FbxScene *scene, FbxManager *fbx_manager)
 
     FbxGeometryConverter geometry_converter(fbx_manager);
     geometry_converter.Triangulate(scene, true);
+
+
+
+
+    for (int i = 0; i < scene->GetGeometryCount(); i++)
+    {
+
+
+        FbxMesh * current_mesh = FbxCast<FbxMesh>(scene->GetGeometry(i));
+        if (!current_mesh)
+            continue;
+
+
+        current_mesh->GenerateTangentsData(0, true);
+
+    }
+
+
+
+    should_save_scene_after_load = true;
 
 
 

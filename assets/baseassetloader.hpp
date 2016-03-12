@@ -6,6 +6,7 @@
 
 #include <assets/baseasset.hpp>
 #include <QString>
+#include <QVariantMap>
 
 
 
@@ -37,8 +38,12 @@ public:
      * a loading routine for the assets it targets
      * @param file_name is the name of the file the loader will try to load
      * @param asset is the asset where the loader will try to load the data into
+     * @param load_options is a hash map of options you want the loader to keep
+     * account of
      */
-    virtual void Load(QString file_name, BaseAsset * asset) = 0;
+    virtual void Load(QString file_name,
+                      BaseAsset * asset,
+                      QVariantMap load_options = QVariantMap()) = 0;
 
     /**
      * @brief CreateAsset should create an instance of a class deriving from BaseAsset

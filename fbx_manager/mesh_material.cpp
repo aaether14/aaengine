@@ -30,14 +30,8 @@ void Mesh::LoadMaterials(FbxScene *scene, QString fbx_file_name)
 
 
 
-                QVector3D diffuse_color(diffuse_prop.Get<FbxDouble3>().mData[0],
-                        diffuse_prop.Get<FbxDouble3>().mData[1],
-                        diffuse_prop.Get<FbxDouble3>().mData[2]);
-
-
-
                 Material new_mat;
-                new_mat.diffuse_color = diffuse_color;
+                new_mat.diffuse_color = Material::FbxPropertyToVector3(diffuse_prop);
 
 
 

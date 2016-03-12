@@ -51,8 +51,12 @@ public:
      * @brief Load will load the fbx model into the provided MeshAsset
      * @param file_name is the name of the fbx file
      * @param asset is the pointer to the asset data will stored into
+     * @param load_options is a hash map of options you want the
+     * loader to keep account of
      */
-    void Load(QString file_name, BaseAsset * asset);
+    void Load(QString file_name,
+              BaseAsset * asset,
+              QVariantMap load_options);
 
 
     /**

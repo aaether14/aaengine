@@ -304,9 +304,14 @@ public:
     /**
      * @brief LoadFromFBX loads the mesh from the fbx file
      * @param fbx_manager is the manager of the fbx sdk
+     * @param normalize_scene will be set to true if you want to
+     * normalize axis system, scene unit and generate tangent data
+     * for the loaded mesh
      * @param file_name is the name of the file to be loaded
      */
-    void LoadFromFBX(FbxManager * fbx_manager, QString file_name);
+    void LoadFromFBX(FbxManager * fbx_manager,
+                     QString file_name,
+                     bool normalize_scene);
 
 
     /**

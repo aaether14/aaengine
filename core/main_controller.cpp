@@ -261,6 +261,54 @@ void Controller::on_actionImport_triggered()
 
 
 
+    if (!fbx_file_name.size())
+        return;
+
+
+
+
+    if (!findChild<QObject*>("GL")->findChild<AssetLoader*>("AssetLoader"))
+    {
+        qDebug() << "MainController: Could not find Asset Loader!";
+        return;
+    }
+
+
+
+
+    AssetLoader * al = findChild<QObject*>("GL")->findChild<AssetLoader*>("AssetLoader");
+
+
+
+
+    if (!al->HasLoader("fbx"))
+    {
+        qDebug() << "MainController: Could not find fbx loader!";
+        return;
+    }
+
+
+
+
+    FBXManager * fm = static_cast<FBXManager*>(al->GetLoader("fbx"));
+    MeshAsset * dummy_asset = static_cast<MeshAsset*>(fm->CreateAsset());
+
+
+
+    QVariantMap load_options;
+    load_options["normalize"] = true;
+    fm->Load(fbx_file_name, dummy_asset, load_options);
+
+
+
+    delete dummy_asset;
+
+
+
+
+
+
+
 }
 
 

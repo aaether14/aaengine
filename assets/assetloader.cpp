@@ -16,6 +16,8 @@ void AssetLoader::AddLoader(QString loader_name, QString extension, BaseAssetLoa
 
 
 
+
+
 BaseAsset *AssetLoader::AddAsset(QString asset_name, BaseAsset *new_asset)
 {
 
@@ -35,7 +37,12 @@ AssetLoader::AssetLoader(QObject *parent) : QObject(parent),
 {
 
 
+
+
     setObjectName("AssetLoader");
+
+
+
     AddLoader("FbxLoader", "fbx", new FBXManager());
 
 
@@ -50,11 +57,16 @@ AssetLoader::~AssetLoader()
 {
 
 
+
     qDeleteAll(loaders);
     qDeleteAll(assets);
 
+
+
     assets.clear();
     loaders.clear();
+
+
 
 }
 
@@ -74,8 +86,11 @@ void AssetLoader::AddToLoadingStack(QString file_name, QString asset_name)
 
 
 
+
+
 void AssetLoader::LoadStack()
 {
+
 
 
 
@@ -94,6 +109,9 @@ void AssetLoader::LoadStack()
 
 
 
+
+
+
     while (!loading_stack.isEmpty())
     {
 
@@ -102,50 +120,132 @@ void AssetLoader::LoadStack()
 
 
 
-        if (assets.contains(new_asset.second))
+
+        try
         {
 
-            qDebug() << "AssetLoader: " << new_asset.second << " already in the asset library!";
-            continue;
+
+
+            LoadStackInstance(new_asset);
+
+
 
         }
 
-
-
-        if (!QFileInfo(new_asset.first).exists())
+        catch(aae::AError &error)
         {
-            qDebug() << "AssetLoader: " << new_asset.first << " does not exist!";
-            continue;
+            qDebug() << error.what();
         }
-
-
-        QString suffix = QFileInfo(new_asset.first).suffix();
-
-
-
-        if (!extension_to_loader_map.contains(suffix))
-        {
-            qDebug() << "AssetLoader: No " << suffix << " loader available!";
-            continue;
-        }
-
-
-        QString loader_name = extension_to_loader_map[suffix];
-
-
-        if (!loaders.contains(loader_name))
-        {
-            qDebug() << "AssetLoader: " << loader_name << " was not found in the expected location!";
-        }
-
-
-        BaseAssetLoader * loader = loaders[loader_name];
-        loader->Load(new_asset.first,
-                     AddAsset(new_asset.second, loader->CreateAsset()));
 
 
 
     }
+
+
+
+
+
+}
+
+
+
+void AssetLoader::LoadStackInstance(QPair<QString, QString> instance)
+{
+
+
+
+
+    /**
+    First check whether of not the asset is already in the library
+    */
+
+
+    if (assets.contains(instance.second))
+    {
+
+        QString msg = "AssetLoader: " + instance.second + " is already in the library!";
+        throw aae::AError(msg);
+
+    }
+
+
+
+
+
+    /**
+    Also check if the file we are trying to load even exists
+    */
+
+
+
+    if (!QFileInfo(instance.first).exists())
+    {
+
+        QString msg = "AssetLoader: " + instance.first + " does not exist!";
+        throw aae::AError(msg);
+
+    }
+
+
+
+    /**
+     *@brief suffix is the suffix of the file we are trying to load, it is
+     *useful because we will direct the file towards coresponding loader
+     */
+
+
+    QString suffix = QFileInfo(instance.first).suffix();
+
+
+
+
+    /**
+    Check whether of not there is any loader that can load this extension
+    */
+
+
+    if (!extension_to_loader_map.contains(suffix))
+    {
+        QString msg = "AssetLoader: No " + suffix + " loader available!";
+        throw aae::AError(msg);
+    }
+
+
+
+    /**
+     * @brief loader_name is the name of the loader we are trying to use in order to load the new asset
+     */
+    QString loader_name = extension_to_loader_map[suffix];
+
+
+
+    /**
+    Check if for some reason the desired load is not in the loader library
+    */
+
+
+    if (!loaders.contains(loader_name))
+    {
+        QString msg = "AssetLoader: " + loader_name + " was not found in the expected location!";
+        throw aae::AError(msg);
+    }
+
+
+
+
+
+    /**
+     *If everything went well go ahead and load the asset using the right
+     *loader
+     */
+
+
+    BaseAssetLoader * loader = loaders[loader_name];
+    loader->Load(instance.first,
+                 AddAsset(instance.second, loader->CreateAsset()));
+
+
+
 
 
 }
@@ -168,6 +268,30 @@ bool AssetLoader::HasAsset(QString asset_name)
 
 
     return assets.contains(asset_name);
+
+
+}
+
+
+
+
+BaseAssetLoader *AssetLoader::GetLoader(QString extension)
+{
+
+
+    return loaders[extension_to_loader_map[extension]];
+
+
+}
+
+
+
+
+bool AssetLoader::HasLoader(QString extension)
+{
+
+
+    return loaders.contains(extension_to_loader_map[extension]);
 
 
 }

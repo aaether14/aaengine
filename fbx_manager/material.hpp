@@ -5,6 +5,7 @@
 
 #include <QVector3D>
 #include <QOpenGLShaderProgram>
+#include <fbxsdk.h>
 
 
 
@@ -54,6 +55,14 @@ public:
      * @param shader is the shader the material will sent to by uniforms
      */
     void SendToShader(QOpenGLShaderProgram & shader);
+
+
+    /**
+     * @brief FbxPropertyToVector3 will convert a vec3 from FbxProperty to QVector3D
+     * @param prop is the FbxProperty to be converted
+     * @return
+     */
+    static QVector3D FbxPropertyToVector3(FbxProperty prop);
 
 
 

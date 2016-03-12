@@ -44,7 +44,10 @@ SOURCES += main.cpp\
     utils/json.cpp \
     script_module/gameobject.cpp \
     fbx_manager/mesh_material.cpp \
-    fbx_manager/mesh_buffer_loader.cpp
+    fbx_manager/mesh_buffer_loader.cpp \
+    fbx_manager/mesh_cached_draw.cpp \
+    fbx_manager/mesh_dynamic_draw.cpp \
+    error/aerror.cpp
 
 
 
@@ -71,7 +74,8 @@ HEADERS  += \
     utils/math.hpp \
     core/projectmanager.hpp \
     utils/json.hpp \
-    script_module/gameobject.hpp
+    script_module/gameobject.hpp \
+    error/aerror.hpp
 
 
 

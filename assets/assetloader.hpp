@@ -14,6 +14,8 @@
 
 
 
+#include <error/aerror.hpp>
+
 
 
 /**
@@ -114,6 +116,14 @@ public:
 
 
     /**
+     * @brief LoadStackInstance will try to load a single instance from the
+     * loading stack
+     * @param instance is the instance we will try to load
+     */
+    virtual void LoadStackInstance(QPair<QString, QString> instance);
+
+
+    /**
      * @brief GetAsset returns the adress of the requested asset
      * @param asset_name is the name of the requested asset
      * @return
@@ -127,6 +137,23 @@ public:
      * @return
      */
     virtual bool HasAsset(QString asset_name);
+
+
+    /**
+     * @brief GetLoader will return the adress of loader requested by extension,
+     * it is better that you check such an loader exists using HasLoader
+     * @param extension is the extension you are requesting a loader for
+     * @return
+     */
+    virtual BaseAssetLoader *GetLoader(QString extension);
+
+
+    /**
+     * @brief HasLoader will check if there is any loader for the provided extension
+     * @param extension is the extension you are requesting a loader for
+     * @return
+     */
+    virtual bool HasLoader(QString extension);
 
 
     /**
