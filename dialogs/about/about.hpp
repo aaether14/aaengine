@@ -3,9 +3,8 @@
 
 
 
-#include <QDialog>
 #include <core/fps.hpp>
-
+#include <dialogs/base_dialog.hpp>
 
 
 
@@ -20,7 +19,7 @@ class About;
  *@brief The About class will hold an ui containing useful information about
  *the app
  */
-class About : public QDialog
+class About : public baseDialog
 {
 
 
@@ -38,14 +37,6 @@ public:
      */
     explicit About(QWidget *parent = 0);
     ~About();
-
-
-
-    /**
-     *@brief onAction will determine what About will do when about action is
-     *triggered
-     */
-    void onAction();
 
 
 

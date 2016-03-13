@@ -40,9 +40,6 @@ AssetLoader::AssetLoader(QObject *parent) : QObject(parent),
 
 
     setObjectName("AssetLoader");
-
-
-
     AddLoader("FbxLoader", "fbx", new FBXManager());
 
 
@@ -324,6 +321,18 @@ void AssetLoader::loadAsset(QString file_name, QString asset_name)
 {
 
     AddToLoadingStack(file_name, asset_name);
+
+}
+
+
+
+
+void AssetLoader::logAssetInfo()
+{
+
+
+    qDebug() << assets;
+
 
 }
 

@@ -167,6 +167,10 @@ public:
 
 
 
+    Q_INVOKABLE void logAssetInfo();
+
+
+
 
 signals:
 

@@ -12,6 +12,7 @@
 
 #include <QTimer>
 #include <QDebug>
+#include <QFileDialog>
 
 
 
@@ -127,6 +128,19 @@ public:
      * @return is_playing private member;
      */
     inline bool IsPlaying(){return is_playing; }
+
+
+
+
+    /**
+     * @brief OpenFileDialog will open a file dialog and return the file you chose,
+     * it will also pause the engine while the file dialog is opened and unpause after
+     * that
+     * @param file_dialog_name is the name of the file dialog
+     * @param suffix_to_look_for is the suffix of the files the file dialog will look for
+     * @return the name of the file you chose from the dialog
+     */
+    QString OpenFileDialog(QString file_dialog_name, QString suffix_to_look_for);
 
 
 

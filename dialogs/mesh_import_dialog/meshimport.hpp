@@ -3,7 +3,14 @@
 
 
 
-#include <QDialog>
+
+
+#include <QDebug>
+#include <QFileDialog>
+
+
+#include <dialogs/base_dialog.hpp>
+#include <core/glcontroller.hpp>
 
 
 
@@ -19,7 +26,7 @@ class MeshImport;
  *@brief The MeshImport class will handle the mesh import dialog which will let
  *you set the options for mesh importing and standardizing
  */
-class MeshImport : public QDialog
+class MeshImport : public baseDialog
 {
 
 
@@ -44,12 +51,6 @@ public:
 
 
 
-    /**
-    * @brief onAction will determine what About will do when about action is
-    *triggered
-     */
-    void onAction();
-
 
     /**
      *@brief Reset will reset changes made to default layout (i.e uncheck
@@ -60,6 +61,20 @@ public:
 
 
 
+
+private slots:
+
+
+    /**
+     *@brief on_pushButton_2_clicked will import the mesh with the provided
+     *settings
+     */
+    void on_pushButton_2_clicked();
+
+    /**
+     *@brief on_pushButton_clicked will browse for the file you want to import
+     */
+    void on_pushButton_clicked();
 
 private:
 

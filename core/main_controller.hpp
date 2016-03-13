@@ -5,14 +5,13 @@
 
 
 #include <QMainWindow>
-#include <QFileDialog>
 
 
 
 #include <core/glcontroller.hpp>
-#include <console/console.hpp>
-#include <about/about.hpp>
-#include <mesh_import_dialog/meshimport.hpp>
+#include <dialogs/console/console.hpp>
+#include <dialogs/about/about.hpp>
+#include <dialogs/mesh_import_dialog/meshimport.hpp>
 #include <core/projectmanager.hpp>
 #include <utils/math.hpp>
 
@@ -40,17 +39,6 @@ class Controller : public QMainWindow
 
     Q_OBJECT
 
-
-
-    /**
-     * @brief OpenFileDialog will open a file dialog and return the file you chose,
-     * it will also pause the engine while the file dialog is opened and unpause after
-     * that
-     * @param file_dialog_name is the name of the file dialog
-     * @param suffix_to_look_for is the suffix of the files the file dialog will look for
-     * @return the name of the file you chose from the dialog
-     */
-    QString OpenFileDialog(QString file_dialog_name, QString suffix_to_look_for);
 
 
 

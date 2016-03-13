@@ -4,8 +4,8 @@
 
 
 #include <script_module/scriptengine.hpp>
-#include <console/logger.hpp>
-#include <QDialog>
+#include <dialogs/console/logger.hpp>
+#include <dialogs/base_dialog.hpp>
 
 
 
@@ -20,7 +20,7 @@ class Console;
 /**
  * @brief The Console class will handle the in-game console
  */
-class Console : public QDialog
+class Console : public baseDialog
 {
     
     Q_OBJECT
@@ -28,7 +28,7 @@ class Console : public QDialog
 public:
     
     /**
-     * @brief Console will initialize the shortcut and redirect
+     * @brief Console will redirect
      * the normal console output to in-game console
      * @param parent
      */
@@ -38,12 +38,6 @@ public:
     */
     ~Console();
 
-
-    /**
-     *@brief onAction will determine what the console will do when the action
-     *regarding it will be triggered
-     */
-    void onAction();
     
     
 private slots:

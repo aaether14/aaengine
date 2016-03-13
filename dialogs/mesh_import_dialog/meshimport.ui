@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>MeshImport</string>
   </property>
-  <widget class="QCheckBox" name="checkBox">
+  <widget class="QCheckBox" name="checkBox_convert_axis">
    <property name="geometry">
     <rect>
      <x>20</x>
@@ -26,7 +26,7 @@
     <string>Convert Axis</string>
    </property>
   </widget>
-  <widget class="QCheckBox" name="checkBox_2">
+  <widget class="QCheckBox" name="checkBox_convert_scale">
    <property name="geometry">
     <rect>
      <x>20</x>
@@ -62,7 +62,7 @@
     <string>Browse...</string>
    </property>
   </widget>
-  <widget class="QCheckBox" name="checkBox_3">
+  <widget class="QCheckBox" name="checkBox_split_points">
    <property name="geometry">
     <rect>
      <x>20</x>
@@ -75,7 +75,7 @@
     <string>Split Points</string>
    </property>
   </widget>
-  <widget class="QCheckBox" name="checkBox_4">
+  <widget class="QCheckBox" name="checkBox_generate_tangents">
    <property name="geometry">
     <rect>
      <x>20</x>
@@ -86,6 +86,19 @@
    </property>
    <property name="text">
     <string>Generate Tangents</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_2">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>230</y>
+     <width>85</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Import</string>
    </property>
   </widget>
  </widget>

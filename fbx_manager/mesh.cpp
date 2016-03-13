@@ -47,32 +47,6 @@ void Mesh::RecursiveLoad(FbxNode * node,
 
 
     FbxMesh * mesh = node->GetMesh();
-    bool should_split = false;
-
-
-
-
-
-    if (mesh->GetElementNormalCount() > 0)
-        if (mesh->GetElementNormal(0)->GetMappingMode() != FbxGeometryElement::eByControlPoint)
-            should_split = true;
-
-
-
-
-    if (mesh->GetElementUVCount() > 0)
-        if (mesh->GetElementUV(0)->GetMappingMode() != FbxGeometryElement::eByControlPoint)
-            should_split = true;
-
-
-
-
-
-    if (should_split)
-    {
-        mesh->SplitPoints();
-        should_save_scene_after_load = true;
-    }
 
 
 
@@ -87,6 +61,7 @@ void Mesh::RecursiveLoad(FbxNode * node,
                              master_tangents,
                              current_control_point_offset,
                              current_polygon_offset);
+
 
 
 
@@ -195,26 +170,41 @@ Mesh::~Mesh()
 
 
 
+    /**
+     *Release gpu memory
+     */
+
 
 
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
 
 
 
+
+
     if (vao)
         f->glDeleteVertexArrays(1, &vao);
+    if (ssbo)
+        f->glDeleteBuffers(1, &ssbo);
+
 
 
     if (indirect_buffer)
         f->glDeleteBuffers(1, &indirect_buffer);
-    if (ssbo)
-        f->glDeleteBuffers(1, &ssbo);
+    if(per_object_buffer)
+        f->glDeleteBuffers(1, &per_object_buffer);
+
+
+
+
     if (cached_indirect_buffer)
         f->glDeleteBuffers(1, &cached_indirect_buffer);
     if (cached_per_object_buffer)
         f->glDeleteBuffers(1, &cached_per_object_buffer);
-    if(per_object_buffer)
-        f->glDeleteBuffers(1, &per_object_buffer);
+
+
+
+
     if (master_vbo)
         f->glDeleteBuffers(1, &master_vbo);
     if (master_ibo)
@@ -229,13 +219,16 @@ Mesh::~Mesh()
 
 
 
+
     qDeleteAll(textures);
     qDeleteAll(mesh_entries);
 
 
 
+
     textures.clear();
     mesh_entries.clear();
+
 
 
 
@@ -256,21 +249,35 @@ Mesh::~Mesh()
 
 void Mesh::LoadFromFBX(FbxManager *fbx_manager,
                        QString file_name,
-                       bool normalize_scene)
+                       bool normalize_scene,
+                       bool convert_axis,
+                       bool convert_scale,
+                       bool split_points,
+                       bool generate_tangents)
 {
 
 
 
 
+    /**
+     *First, create a fbx importer using the FbxManager
+     */
+
     FbxImporter* importer = FbxImporter::Create(fbx_manager, "default_importer");
 
 
+    /**
+     *Initialize importer on the mesh you want to load
+     */
 
     bool importer_status = importer->Initialize(file_name.toStdString().c_str(),
                                                 -1,
                                                 fbx_manager->GetIOSettings());
 
 
+    /**
+    *Catch any importer error that have might occured
+    */
 
     if(!importer_status)
     {
@@ -281,6 +288,11 @@ void Mesh::LoadFromFBX(FbxManager *fbx_manager,
 
 
 
+    /**
+     * Load the scene using the importer
+     */
+
+
     FbxScene * scene = FbxScene::Create(fbx_manager, "default_scene");
     importer->Import(scene);
     importer->Destroy();
@@ -288,30 +300,53 @@ void Mesh::LoadFromFBX(FbxManager *fbx_manager,
 
 
 
+    /**
+    *If requested, normalize the scene with the provided parameters
+    */
 
     if(normalize_scene)
-        NormalizeScene(scene, fbx_manager);
+        NormalizeScene(scene, fbx_manager,
+                       convert_axis,
+                       convert_scale,
+                       split_points,
+                       generate_tangents);
 
 
 
+
+    /**
+     *Load materials and buffer objects
+     */
 
     LoadMaterials(scene, file_name);
     LoadBufferObjects(scene->GetRootNode());
 
 
 
+    /**
+    *If after load saving was requested, do so
+    */
+
 
     if (should_save_scene_after_load)
     {
 
 
+        /**
+         *Initialize an exporter using the filename of the mesh
+         */
+
         FbxExporter *exporter = FbxExporter::Create(fbx_manager, "Aaether Engine Exporter");
+
 
 
         bool exporter_status = exporter->Initialize(file_name.toStdString().c_str(),
                                                     -1,
                                                     fbx_manager->GetIOSettings());
 
+        /**
+        *Catch any error that might have occured during initialization
+        */
 
         if(!exporter_status)
         {
@@ -321,12 +356,21 @@ void Mesh::LoadFromFBX(FbxManager *fbx_manager,
         }
 
 
+        /**
+        *If everything went well, proceed to exporting the scene
+        */
+
         exporter->Export(scene);
         exporter->Destroy();
 
 
     }
 
+
+
+    /**
+    *Mark the mesh as successfully loaded and release FbxScene memory
+    */
 
 
     is_loaded = true;
@@ -336,6 +380,7 @@ void Mesh::LoadFromFBX(FbxManager *fbx_manager,
 
 
 }
+
 
 
 
@@ -542,79 +587,6 @@ QString Mesh::ComputeTextureFilename(QString texture_name, QString fbx_file_name
 
 
 }
-
-
-
-
-void Mesh::NormalizeScene(FbxScene *scene, FbxManager *fbx_manager)
-{
-
-
-    /**
-     *if the mesh is not in the OpenGL axis system format, convert it
-     */
-
-    FbxAxisSystem SceneAxisSystem = scene->GetGlobalSettings().GetAxisSystem();
-    if (SceneAxisSystem != FbxAxisSystem::OpenGL)
-    {
-        FbxAxisSystem::OpenGL.ConvertScene(scene);
-    }
-
-
-
-    /**
-     *if the mesh is not in a resonable scale system, convert it
-     */
-
-    FbxSystemUnit SceneSystemUnit = scene->GetGlobalSettings().GetSystemUnit();
-    if( SceneSystemUnit.GetScaleFactor() != 1.0 )
-    {
-        FbxSystemUnit::cm.ConvertScene(scene);
-    }
-
-
-
-    /**
-     *Triangulate the scene in odrer to correctly send vertex data to shader
-     */
-
-    FbxGeometryConverter geometry_converter(fbx_manager);
-    geometry_converter.Triangulate(scene, true);
-
-
-
-
-    /**
-    *Generate tangent data for all meshes in the scene
-    */
-
-    for (int i = 0; i < scene->GetGeometryCount(); i++)
-    {
-
-
-        FbxMesh * current_mesh = FbxCast<FbxMesh>(scene->GetGeometry(i));
-        if (!current_mesh)
-            continue;
-
-
-        current_mesh->GenerateTangentsData(0, true);
-
-    }
-
-
-
-    /**
-    *Mark that the mesh should be saved after loading the file
-    */
-    should_save_scene_after_load = true;
-
-
-
-}
-
-
-
-
 
 
 

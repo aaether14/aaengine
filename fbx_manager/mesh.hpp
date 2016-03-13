@@ -19,6 +19,7 @@
 
 
 
+
 #include <fbx_manager/meshentry.hpp>
 
 
@@ -165,8 +166,20 @@ class Mesh
      * orientation that can occur in the a fbx scene
      * @param scene is the fbx scene to be normalized
      * @param fbx_manager is the manager of the fbx sdk
+     * @param convert_axis will attempt to convert mesh axis
+     * system to opengl one
+     * @param convert_scale will attempt to convert mesh scale
+     * system to engine's one
+     * @param split_points will attepmt to split vertices so as
+     * there are only per control point vertex atributes (i.e normal,
+     * tanget etc.)
+     * @param generate_tangent will attempt to generate tangents for the mesh
      */
-    void NormalizeScene(FbxScene * scene, FbxManager * fbx_manager);
+    void NormalizeScene(FbxScene * scene, FbxManager * fbx_manager,
+                        bool convert_axis,
+                        bool convert_scale,
+                        bool split_points,
+                        bool generate_tangents);
 
 
     /**
@@ -304,14 +317,26 @@ public:
     /**
      * @brief LoadFromFBX loads the mesh from the fbx file
      * @param fbx_manager is the manager of the fbx sdk
+     * @param file_name is the name of the file to be loaded
      * @param normalize_scene will be set to true if you want to
      * normalize axis system, scene unit and generate tangent data
      * for the loaded mesh
-     * @param file_name is the name of the file to be loaded
+     * @param convert_axis will attempt to convert mesh axis
+     * system to opengl one
+     * @param convert_scale will attempt to convert mesh scale
+     * system to engine's one
+     * @param split_points will attepmt to split vertices so as
+     * there are only per control point vertex atributes (i.e normal,
+     * tanget etc.)
+     * @param generate_tangent will attempt to generate tangents for the mesh
      */
     void LoadFromFBX(FbxManager * fbx_manager,
                      QString file_name,
-                     bool normalize_scene);
+                     bool normalize_scene,
+                     bool convert_axis = false,
+                     bool convert_scale = false,
+                     bool split_points = false,
+                     bool generate_tangents = false);
 
 
     /**

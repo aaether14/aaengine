@@ -1,17 +1,17 @@
-#include <console/console.hpp>
+#include <dialogs/console/console.hpp>
 #include "ui_console.h"
 
 
 
 
 Console::Console(QWidget *parent) :
-    QDialog(parent),
+    baseDialog(parent),
     ui(new Ui::Console)
 {
 
 
-    ui->setupUi(this);
 
+    ui->setupUi(this);
 
 
 
@@ -37,20 +37,6 @@ Console::~Console()
 }
 
 
-
-
-void Console::onAction()
-{
-
-
-    setVisible(!isVisible());
-
-
-    if (isVisible())
-        activateWindow();
-
-
-}
 
 
 

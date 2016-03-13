@@ -1,4 +1,4 @@
-#include <about/about.hpp>
+#include <dialogs/about/about.hpp>
 #include "ui_about.h"
 
 
@@ -7,7 +7,7 @@
 
 
 About::About(QWidget *parent) :
-    QDialog(parent),
+    baseDialog(parent),
     ui(new Ui::About)
 {
 
@@ -38,21 +38,6 @@ About::~About()
 
 
 
-
-void About::onAction()
-{
-
-
-
-    setVisible(!isVisible());
-
-
-    if (isVisible())
-        activateWindow();
-
-
-
-}
 
 
 

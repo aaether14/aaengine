@@ -5,53 +5,6 @@
 
 
 
-QString Controller::OpenFileDialog(QString file_dialog_name, QString suffix_to_look_for)
-{
-
-
-
-    if (!findChild<GLController*>("GL"))
-    {
-        qDebug() << "MainController: No GL controller detected! (project loading)";
-        return QString();
-    }
-
-
-
-
-
-    bool was_playing = findChild<GLController*>("GL")->IsPlaying() == true;
-
-
-
-
-    if (was_playing)
-        findChild<GLController*>("GL")->Pause();
-
-
-
-
-    QString project_name = QFileDialog::getOpenFileName(this, file_dialog_name, QString(), suffix_to_look_for);
-
-
-
-
-    if (was_playing)
-        findChild<GLController*>("GL")->Unpause();
-
-
-
-    return project_name;
-
-
-
-
-}
-
-
-
-
-
 
 
 Controller::Controller(QWidget *parent) :
@@ -128,8 +81,8 @@ void Controller::on_actionConsole_triggered()
 {
 
 
-    if (findChild<Console*>("Console"))
-        findChild<Console*>("Console")->onAction();
+    if (findChild<baseDialog*>("Console"))
+        findChild<baseDialog*>("Console")->onAction();
 
 
 
@@ -141,8 +94,8 @@ void Controller::on_actionConsole_triggered()
 void Controller::on_actionAbout_triggered()
 {
 
-    if (findChild<About*>("About"))
-        findChild<About*>("About")->onAction();
+    if (findChild<baseDialog*>("About"))
+        findChild<baseDialog*>("About")->onAction();
 
 
 }
@@ -157,8 +110,20 @@ void Controller::on_actionProject_triggered()
 
 
 
+    if (!findChild<GLController*>("GL"))
+    {
+        qDebug() << "MainController: No GL controller detected!";
+        return;
+    }
 
-    QString project_name = OpenFileDialog("Open Project", "*.qml");
+
+
+
+
+
+    QString project_name = findChild<GLController*>("GL")->OpenFileDialog("Open Project", "*.qml");
+
+
 
 
 
@@ -259,8 +224,8 @@ void Controller::on_actionImport_triggered()
 
 
 
-    if (findChild<MeshImport*>("MeshImport"))
-        findChild<MeshImport*>("MeshImport")->onAction();
+    if (findChild<baseDialog*>("MeshImport"))
+        findChild<baseDialog*>("MeshImport")->onAction();
 
 
 

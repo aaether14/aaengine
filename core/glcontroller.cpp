@@ -258,3 +258,52 @@ void GLController::Update()
 
 
 
+
+
+
+
+
+
+QString GLController::OpenFileDialog(QString file_dialog_name, QString suffix_to_look_for)
+{
+
+
+
+
+    bool was_playing = IsPlaying() == true;
+
+
+
+
+    if (was_playing)
+        Pause();
+
+
+
+
+    QString project_name = QFileDialog::getOpenFileName(this, file_dialog_name, QString(), suffix_to_look_for);
+
+
+
+
+    if (was_playing)
+        Unpause();
+
+
+
+    return project_name;
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+

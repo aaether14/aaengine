@@ -21,9 +21,9 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     core/glcontroller.cpp \
-    console/console.cpp \
+    dialogs/console/console.cpp \
     script_module/scriptengine.cpp \
-    console/logger.cpp \
+    dialogs/console/logger.cpp \
     fbx_manager/fbxmanager.cpp \
     fbx_manager/meshentry.cpp \
     fbx_manager/mesh.cpp \
@@ -31,7 +31,7 @@ SOURCES += main.cpp\
     core/inputregister.cpp \
     core/main_controller.cpp \
     fbx_manager/material.cpp \
-    about/about.cpp \
+    dialogs/about/about.cpp \
     renderer/baserenderer.cpp \
     renderer/pipeline.cpp \
     renderer/fbxrenderer.cpp \
@@ -48,15 +48,17 @@ SOURCES += main.cpp\
     fbx_manager/mesh_cached_draw.cpp \
     fbx_manager/mesh_dynamic_draw.cpp \
     error/aerror.cpp \
-    mesh_import_dialog/meshimport.cpp
+    dialogs/mesh_import_dialog/meshimport.cpp \
+    dialogs/base_dialog.cpp \
+    fbx_manager/mesh_scene_normalize.cpp
 
 
 
 HEADERS  += \
     core/glcontroller.hpp \
-    console/console.hpp \
+    dialogs/console/console.hpp \
     script_module/scriptengine.hpp \
-    console/logger.hpp \
+    dialogs/console/logger.hpp \
     fbx_manager/fbxmanager.hpp \
     fbx_manager/meshentry.hpp \
     fbx_manager/mesh.hpp \
@@ -64,7 +66,7 @@ HEADERS  += \
     core/inputregister.hpp \
     core/main_controller.hpp \
     fbx_manager/material.hpp \
-    about/about.hpp \
+    dialogs/about/about.hpp \
     renderer/baserenderer.hpp \
     renderer/pipeline.hpp \
     renderer/fbxrenderer.hpp \
@@ -77,15 +79,16 @@ HEADERS  += \
     utils/json.hpp \
     script_module/gameobject.hpp \
     error/aerror.hpp \
-    mesh_import_dialog/meshimport.hpp
+    dialogs/mesh_import_dialog/meshimport.hpp \
+    dialogs/base_dialog.hpp
 
 
 
 
 FORMS    += core/controller.ui \
-    console/console.ui \
-    about/about.ui \
-    mesh_import_dialog/meshimport.ui
+    dialogs/console/console.ui \
+    dialogs/about/about.ui \
+    dialogs/mesh_import_dialog/meshimport.ui
 
 
 
