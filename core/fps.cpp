@@ -9,8 +9,14 @@ FPS::FPS(QObject *parent) : QObject(parent),
 {
 
 
+
     setObjectName("gFPS");
+
+
     elapsed_timer = new QTime();
+
+
+
 
 }
 
@@ -29,23 +35,54 @@ void FPS::Update()
 {
 
 
+
+    /**
+    *If the timer hasn't yet been turned on, go ahead and start it
+    */
+
+
     if (!elapsed_timer->isValid())
         elapsed_timer->start();
 
 
 
+    /**
+    *Increment the frame counter every frame
+    */
+
+
     frame_counter++;
-    if (elapsed_timer->elapsed() > 100)
+
+
+
+    /**
+    *Compute fps every fixed interval of time
+    */
+
+
+    if (elapsed_timer->elapsed() > FPS_TIME_BETWEEN_COMPUTATIONS)
     {
 
+
+        /**
+        *Compute fps and reset frame counter
+        */
 
         fps = (float)(frame_counter) / (float)(elapsed_timer->elapsed()) * 1000.0;
         frame_counter = 0;
 
 
+        /**
+        *Compute the time elapsed between frames
+        */
+
         r_delta = 1.0 / (float)(fps);
         elapsed_timer->restart();
 
+
+        /**
+        *Emit a signal that the fps has been recomputed
+        */
 
         emit updatedFps(fps);
 
@@ -59,7 +96,9 @@ void FPS::Update()
 
 int FPS::Get()
 {
+
     return fps;
+
 }
 
 
@@ -67,7 +106,9 @@ int FPS::Get()
 
 float FPS::Delta()
 {
+
     return r_delta;
+
 }
 
 

@@ -11,15 +11,14 @@ void Mesh::DynamicDraw(QOpenGLShaderProgram & shader,
 
 
 
+
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
 
 
 
 
-    QVector<unsigned int> per_object_index;
     QVector<DrawElementsCommand> draw_commands;
-
-
+    QVector<unsigned int> per_object_index;
 
 
 
@@ -46,15 +45,21 @@ void Mesh::DynamicDraw(QOpenGLShaderProgram & shader,
 
     f->glBindBuffer(GL_ARRAY_BUFFER, per_object_buffer);
     f->glBufferData(GL_ARRAY_BUFFER, sizeof(unsigned int) * per_object_index.size(), &per_object_index[0], GL_STATIC_DRAW);
-    f->glEnableVertexAttribArray(4);
-    f->glVertexAttribIPointer(4, 1, GL_UNSIGNED_INT, sizeof(unsigned int), 0);
-    f->glVertexAttribDivisor(4, 1);
+    f->glEnableVertexAttribArray(3);
+    f->glVertexAttribIPointer(3, 1, GL_UNSIGNED_INT, sizeof(unsigned int), 0);
+    f->glVertexAttribDivisor(3, 1);
 
 
 
 
 
     materials[material_name].SendToShader(shader);
+
+
+
+
+
+
     if (materials[material_name].use_diffuse_texture)
         textures[materials[material_name].difuse_texture_name]->bind();
 
@@ -62,6 +67,10 @@ void Mesh::DynamicDraw(QOpenGLShaderProgram & shader,
 
 
     f->glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, draw_commands.size(), 0);
+
+
+
+
     draw_commands.clear();
     per_object_index.clear();
 

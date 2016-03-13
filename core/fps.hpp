@@ -11,6 +11,12 @@
 
 
 
+#define FPS_TIME_BETWEEN_COMPUTATIONS 100
+
+
+
+
+
 /**
  * @brief The FPS class is a basic fps computer
  */

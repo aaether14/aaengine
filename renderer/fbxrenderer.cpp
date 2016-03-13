@@ -96,112 +96,202 @@ FbxRenderer::~FbxRenderer()
 
 
 
-bool FbxRenderer::Render(QObject *parent)
+
+
+void FbxRenderer::Render(QObject *parent)
 {
 
 
 
 
+    /**
+    *Check if you can find AssetLoader
+    */
+
 
     if (!parent->findChild<QObject*>("GL")->findChild<AssetLoader*>("AssetLoader"))
     {
-        qDebug() << "Could not find Asset Loader!";
-        return false;
+
+        throw aae::AError("Could not find Asset Loader!");
+
     }
+
+
+
+    /**
+    *Check if you can find ScriptEngine
+    */
+
     if(!parent->findChild<ScriptEngine*>("ScriptEngine"))
     {
-        qDebug() << "Could not find Script Engine!";
-        return false;
+
+        throw aae::AError("Could not find Script Engine!");
+
     }
 
 
 
+    /**
+     *If AssetLoader and ScriptEngine are in the right location, get a
+     *reference to them
+     */
 
     AssetLoader * al = parent->findChild<QObject*>("GL")->findChild<AssetLoader*>("AssetLoader");
     ScriptEngine * se = parent->findChild<ScriptEngine*>("ScriptEngine");
 
 
 
+    /**
+    *Check if the ScriptEngine has a GameObject
+    */
+
 
     if (!se->findChild<GameObject*>("GameObject"))
     {
-        qDebug() << "Could not find GameObject inside Script Engine!";
-        return false;
+
+        throw aae::AError("Could not find GameObject inside Script Engine!");
+
     }
 
 
 
 
+    /**
+    *Bind the shader used to render fbx meshes
+    */
+
 
     GetShader("Fbx")->bind();
+
+
+
+    /**
+     *If GameObject is in the right location, get a reference to it
+     */
+
     GameObject * game_object = se->findChild<GameObject*>("GameObject");
 
 
 
-
+    /**
+    *Extract the MVP from the GameObject and send it to shader
+    */
 
     GetShader("Fbx")->setUniformValue("VP", game_object->getViewProj());
 
 
 
 
-
+    /**
+     *Extract components from the gameobject;
+     */
 
     QVariantMap components = game_object->getComponents().toMap();
 
 
 
 
+    /**
+    *If there are no components to render, return
+    */
+
+
     if (components.isEmpty())
-        return true;
+        return;
 
 
 
-
+    /**
+     *Extract light components and send them to shader
+     */
 
     HandleLights(components["Light"].toMap());
 
 
+
+    /**
+    *Loop through the mesh components and try to render each one
+    */
 
     foreach(auto it, components["Mesh"].toMap())
     {
 
 
 
+        /**
+         *First extract the variant map holding information about the
+         *mesh
+         */
         QVariantMap mesh_component = it.toMap();
+
+
+        /**
+         *Get the name of the asset used by the mesh
+         */
+
         QString asset_name = mesh_component["asset"].toString();
 
 
 
+        /**
+        *Check if the asset requested is in the library
+        */
+
         if (!al->HasAsset(asset_name))
         {
-            qDebug() << "Could not find " << asset_name << " inside the asset library!";
-            return false;
+
+            QString msg =  "Could not find " + asset_name + " inside the asset library!";
+            throw aae::AError(msg);
+
         }
 
-
+        /**
+        *Check if the asset requested is actaully a MeshAsset
+        */
 
         if (!dynamic_cast<MeshAsset*>(al->GetAsset(asset_name)))
         {
-            qDebug() << "Asset is not mesh!";
-            return false;
+
+            throw aae::AError("Asset is not a MeshAsset!");
+
         }
 
 
 
+        /**
+         * If everything went well, get a pointer to the mesh of the MeshAsset
+         */
 
         Mesh * current_mesh_component = static_cast<MeshAsset*>(al->GetAsset(asset_name))->GetMesh();
+
+        /**
+         *Extract the model matrix indicated by the Transform used by the mesh
+         */
+
         QMatrix4x4 transform = components["Transform"].toMap()[mesh_component["transform"].toString()].toMap()["model"].value<QMatrix4x4>();
 
 
 
-
+        /**
+         *Get which draw method the mesh should use
+         */
 
         QString draw_method = mesh_component["draw_method"].toString();
+
+
+        /**
+        *If the draw method is valid then set it for the mesh in cause
+        */
+
         if (draw_method.size())
             current_mesh_component->SetDrawMethod(draw_method);
 
 
+
+        /**
+        *At last, load model matrix to the mesh then render it using the fbx
+        *render shader
+        */
 
 
         current_mesh_component->SetGlobalTransform(transform);
@@ -220,7 +310,7 @@ bool FbxRenderer::Render(QObject *parent)
 
 
 
-    return true;
+    return;
 
 
 

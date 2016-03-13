@@ -143,18 +143,40 @@ void Mesh::CacheDrawCommands(QList<MeshEntry *> &mesh_entries,
 
 
 Mesh::Mesh() : vao(0),
+
+
+
     ssbo(0),
     indirect_buffer(0),
     per_object_buffer(0),
+
+
+
+    cached_indirect_buffer(0),
+    cached_per_object_buffer(0),
+
+
+
     master_vbo(0),
     master_ibo(0),
     master_normals_vbo(0),
     master_uvs_vbo(0),
     master_tangents_vbo(0),
+
+
+
     should_save_scene_after_load(false),
+
+
     current_polygon_offset(0),
     current_control_point_offset(0),
+
+
+
     is_loaded(false),
+
+
+
     draw_method("cached")
 {
 
@@ -304,7 +326,6 @@ void Mesh::LoadFromFBX(FbxManager *fbx_manager,
 
 
     }
-
 
 
 
@@ -529,7 +550,9 @@ void Mesh::NormalizeScene(FbxScene *scene, FbxManager *fbx_manager)
 {
 
 
-
+    /**
+     *if the mesh is not in the OpenGL axis system format, convert it
+     */
 
     FbxAxisSystem SceneAxisSystem = scene->GetGlobalSettings().GetAxisSystem();
     if (SceneAxisSystem != FbxAxisSystem::OpenGL)
@@ -539,6 +562,9 @@ void Mesh::NormalizeScene(FbxScene *scene, FbxManager *fbx_manager)
 
 
 
+    /**
+     *if the mesh is not in a resonable scale system, convert it
+     */
 
     FbxSystemUnit SceneSystemUnit = scene->GetGlobalSettings().GetSystemUnit();
     if( SceneSystemUnit.GetScaleFactor() != 1.0 )
@@ -548,12 +574,19 @@ void Mesh::NormalizeScene(FbxScene *scene, FbxManager *fbx_manager)
 
 
 
+    /**
+     *Triangulate the scene in odrer to correctly send vertex data to shader
+     */
 
     FbxGeometryConverter geometry_converter(fbx_manager);
     geometry_converter.Triangulate(scene, true);
 
 
 
+
+    /**
+    *Generate tangent data for all meshes in the scene
+    */
 
     for (int i = 0; i < scene->GetGeometryCount(); i++)
     {
@@ -570,6 +603,9 @@ void Mesh::NormalizeScene(FbxScene *scene, FbxManager *fbx_manager)
 
 
 
+    /**
+    *Mark that the mesh should be saved after loading the file
+    */
     should_save_scene_after_load = true;
 
 

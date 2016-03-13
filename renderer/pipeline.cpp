@@ -3,6 +3,7 @@
 
 
 
+
 void Pipeline::AddRenderer(QString renderer_name, BaseRenderer *renderer)
 {
 
@@ -18,8 +19,10 @@ Pipeline::Pipeline(QObject *parent) : QObject(parent)
 {
 
 
+
     setObjectName("Pipeline");
     AddRenderer("FbxRenderer", new FbxRenderer());
+
 
 
 
@@ -42,6 +45,7 @@ void Pipeline::Render()
 
 
 
+
     if (!main_controller->findChild<ProjectManager*>("ProjectManager"))
     {
         qDebug() << "Pipeline: Could not find ProjectManager!";
@@ -51,7 +55,11 @@ void Pipeline::Render()
 
 
 
+
     ProjectManager * pm = main_controller->findChild<ProjectManager*>("ProjectManager");
+
+
+
     if (!pm->GetProjectLoaded())
         return;
 
@@ -64,11 +72,27 @@ void Pipeline::Render()
 
 
 
-        if (!renderers[it]->Render(main_controller))
+        try
         {
 
+
+            renderers[it]->Render(main_controller);
+
+
+        }
+        catch(aae::AError &error)
+        {
+
+
+
             qDebug() << "Pipeline: " << it << " failed!";
+            qDebug() << error.what();
+
+
+
             pm->UnloadProject();
+
+
 
         }
 

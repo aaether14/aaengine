@@ -2,6 +2,13 @@
 
 
 
+
+namespace aae
+{
+
+
+
+
 Json::Json()
 {
 
@@ -67,3 +74,6 @@ void Json::SaveJsonToFile(QString file_name, QJsonDocument json_doc)
 
 
 
+
+
+}

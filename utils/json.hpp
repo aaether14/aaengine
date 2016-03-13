@@ -11,6 +11,14 @@
 
 
 
+
+namespace aae
+{
+
+
+
+
+
 /**
  * @brief The Json class will provide basic json loading functionality
  */
@@ -48,5 +56,9 @@ public:
 
 
 };
+
+
+
+}
 
 #endif // JSON_H

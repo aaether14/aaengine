@@ -4,6 +4,11 @@
 
 
 
+namespace aae
+{
+
+
+
 
 Math::Math(QObject *parent) : QObject(parent)
 {
@@ -93,6 +98,13 @@ QMatrix4x4 Math::scale(QVector3D xyz)
     QMatrix4x4 result;
     result.scale(xyz);
     return result;
+
+
+}
+
+
+
+
 
 
 }

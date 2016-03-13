@@ -64,9 +64,8 @@ public:
     /**
      * @brief Render will render the mesh components taking in account also the transform components
      * @param parent is needed to acces the Settings object which stores the mesh components
-     * @return
      */
-    bool Render(QObject *parent);
+    void Render(QObject *parent);
 
 
 

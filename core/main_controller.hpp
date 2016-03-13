@@ -12,6 +12,7 @@
 #include <core/glcontroller.hpp>
 #include <console/console.hpp>
 #include <about/about.hpp>
+#include <mesh_import_dialog/meshimport.hpp>
 #include <core/projectmanager.hpp>
 #include <utils/math.hpp>
 

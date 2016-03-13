@@ -21,7 +21,7 @@ void ProjectManager::LoadProject()
 
 
 
-    config_json = Json::GetJsonFromFile("data/config.json");
+    config_json = aae::Json::GetJsonFromFile("data/config.json");
 
 
 
@@ -100,7 +100,7 @@ void ProjectManager::LoadProjectAndModifyConfig(QString project_path)
 
 
 
-    QJsonObject serialized_config_json = Json::GetJsonFromFile("data/config.json").object();
+    QJsonObject serialized_config_json = aae::Json::GetJsonFromFile("data/config.json").object();
     QJsonObject serialized_engine_json = serialized_config_json["AaetherEngine"].toObject();
 
 
@@ -110,7 +110,7 @@ void ProjectManager::LoadProjectAndModifyConfig(QString project_path)
 
 
 
-    Json::SaveJsonToFile("data/config.json", QJsonDocument(serialized_config_json));
+    aae::Json::SaveJsonToFile("data/config.json", QJsonDocument(serialized_config_json));
 
 
 

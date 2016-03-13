@@ -72,6 +72,7 @@ Controller::Controller(QWidget *parent) :
      */
     Console * console = new Console(this);
     About * about = new About(this);
+    MeshImport * mesh_import = new MeshImport(this);
 
 
 
@@ -104,6 +105,7 @@ Controller::Controller(QWidget *parent) :
 
     Q_UNUSED(console)
     Q_UNUSED(about)
+    Q_UNUSED(mesh_import)
 
 
 
@@ -257,54 +259,8 @@ void Controller::on_actionImport_triggered()
 
 
 
-    QString fbx_file_name = OpenFileDialog("Import...", "*.fbx");
-
-
-
-    if (!fbx_file_name.size())
-        return;
-
-
-
-
-    if (!findChild<QObject*>("GL")->findChild<AssetLoader*>("AssetLoader"))
-    {
-        qDebug() << "MainController: Could not find Asset Loader!";
-        return;
-    }
-
-
-
-
-    AssetLoader * al = findChild<QObject*>("GL")->findChild<AssetLoader*>("AssetLoader");
-
-
-
-
-    if (!al->HasLoader("fbx"))
-    {
-        qDebug() << "MainController: Could not find fbx loader!";
-        return;
-    }
-
-
-
-
-    FBXManager * fm = static_cast<FBXManager*>(al->GetLoader("fbx"));
-    MeshAsset * dummy_asset = static_cast<MeshAsset*>(fm->CreateAsset());
-
-
-
-    QVariantMap load_options;
-    load_options["normalize"] = true;
-    fm->Load(fbx_file_name, dummy_asset, load_options);
-
-
-
-    delete dummy_asset;
-
-
-
+    if (findChild<MeshImport*>("MeshImport"))
+        findChild<MeshImport*>("MeshImport")->onAction();
 
 
 
@@ -334,7 +290,7 @@ void Controller::ResetScriptEngine()
     script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<FPS*>("gFPS"));
     script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<InputRegister*>("gInput"));
     script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<AssetLoader*>("AssetLoader"));
-    script_engine->RegisterQObject(new Math(script_engine));
+    script_engine->RegisterQObject(new aae::Math(script_engine));
 
 
 

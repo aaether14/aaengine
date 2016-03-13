@@ -11,6 +11,12 @@
 
 
 
+namespace aae
+{
+
+
+
+
 /**
  *@brief The Math class is a simple math functions wrapper for Script usage
  */
@@ -83,5 +89,11 @@ signals:
 
 public slots:
 };
+
+
+
+
+
+}
 
 #endif // MATH_H

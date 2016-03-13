@@ -47,7 +47,8 @@ SOURCES += main.cpp\
     fbx_manager/mesh_buffer_loader.cpp \
     fbx_manager/mesh_cached_draw.cpp \
     fbx_manager/mesh_dynamic_draw.cpp \
-    error/aerror.cpp
+    error/aerror.cpp \
+    mesh_import_dialog/meshimport.cpp
 
 
 
@@ -75,14 +76,16 @@ HEADERS  += \
     core/projectmanager.hpp \
     utils/json.hpp \
     script_module/gameobject.hpp \
-    error/aerror.hpp
+    error/aerror.hpp \
+    mesh_import_dialog/meshimport.hpp
 
 
 
 
 FORMS    += core/controller.ui \
     console/console.ui \
-    about/about.ui
+    about/about.ui \
+    mesh_import_dialog/meshimport.ui
 
 
 

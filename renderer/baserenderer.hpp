@@ -43,9 +43,8 @@ public:
     /**
      * @brief Render will be used by the renderer to activate its shaders
      * @param parent will be needed for acceses data in the engine
-     * @return
      */
-    virtual bool Render(QObject * parent) = 0;
+    virtual void Render(QObject * parent) = 0;
 
 
 protected:

@@ -47,6 +47,7 @@ AssetLoader::AssetLoader(QObject *parent) : QObject(parent),
 
 
 
+
 }
 
 
@@ -125,17 +126,24 @@ void AssetLoader::LoadStack()
         {
 
 
-
             LoadStackInstance(new_asset);
 
 
-
         }
+
 
         catch(aae::AError &error)
         {
+
+
+            qDebug() << "An error occured while trying to load an Asset!";
             qDebug() << error.what();
+
+
+
         }
+
+
 
 
 
@@ -163,7 +171,7 @@ void AssetLoader::LoadStackInstance(QPair<QString, QString> instance)
     if (assets.contains(instance.second))
     {
 
-        QString msg = "AssetLoader: " + instance.second + " is already in the library!";
+        QString msg = instance.second + " is already in the library!";
         throw aae::AError(msg);
 
     }
@@ -181,7 +189,7 @@ void AssetLoader::LoadStackInstance(QPair<QString, QString> instance)
     if (!QFileInfo(instance.first).exists())
     {
 
-        QString msg = "AssetLoader: " + instance.first + " does not exist!";
+        QString msg = instance.first + " does not exist!";
         throw aae::AError(msg);
 
     }
@@ -206,7 +214,7 @@ void AssetLoader::LoadStackInstance(QPair<QString, QString> instance)
 
     if (!extension_to_loader_map.contains(suffix))
     {
-        QString msg = "AssetLoader: No " + suffix + " loader available!";
+        QString msg = "No " + suffix + " loader available!";
         throw aae::AError(msg);
     }
 
@@ -226,7 +234,7 @@ void AssetLoader::LoadStackInstance(QPair<QString, QString> instance)
 
     if (!loaders.contains(loader_name))
     {
-        QString msg = "AssetLoader: " + loader_name + " was not found in the expected location!";
+        QString msg = loader_name + " was not found in the expected location!";
         throw aae::AError(msg);
     }
 
