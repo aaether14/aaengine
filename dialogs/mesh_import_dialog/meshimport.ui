@@ -102,6 +102,15 @@
    </property>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>lineEdit</tabstop>
+  <tabstop>checkBox_convert_axis</tabstop>
+  <tabstop>checkBox_convert_scale</tabstop>
+  <tabstop>checkBox_split_points</tabstop>
+  <tabstop>checkBox_generate_tangents</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>pushButton_2</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

@@ -20,7 +20,11 @@
 
 
 
-#include <fbx_manager/meshentry.hpp>
+#include <fbx_manager/mesh/mesh_gpu_memory.h>
+#include <fbx_manager/entry/meshentry.hpp>
+
+
+
 
 
 
@@ -30,6 +34,8 @@
  */
 class Mesh
 {
+
+
 
 
 
@@ -65,84 +71,13 @@ class Mesh
 
 
 
-    /**
-     *@brief indirect_buffer_stride_cache stores the stride cache for each
-     *material key
-     */
-    QHash<QString, unsigned int> indirect_buffer_stride_cache;
-    /**
-     *@brief indirect_buffer_size_cache stores the size cache for each material
-     *key
-     */
-    QHash<QString, unsigned int> indirect_buffer_size_cache;
-    /**
-     *@brief per_object_buffer_stride_cache stores the per object buffer cache
-     *for each material key
-     */
-    QHash<QString, unsigned int> per_object_buffer_stride_cache;
 
 
     /**
-     * @brief vao will store the vertex array object id containing the buffers ids
+     *@brief m_gpu will hold the gpu memory pointers for entire mesh data
      */
-    GLuint vao;
+    MeshGPUMemory m_gpu;
 
-
-    /**
-     * @brief ssbo is used to pass per draw id model matrices to the shader
-     */
-    GLuint ssbo;
-    /**
-     *@brief indirect_buffer will store the command information for indirect
-     *drawing in dynamic moder
-     */
-    GLuint indirect_buffer;
-    /**
-     *@brief per_object_buffer is needed to know which draw is the rasterizer
-     *currently handling (dynamic mode)
-     */
-    GLuint per_object_buffer;
-
-
-
-    /**
-     *@brief cached_indirect_buffer will store the command information for
-     *indirect drawing in cached mode
-     */
-    GLuint cached_indirect_buffer;
-    /**
-     *@brief cached_per_object_buffer is needed to know which draw is the
-     *rasterizer currently handling (cached mode)
-     */
-    GLuint cached_per_object_buffer;
-
-
-
-    /**
-     *@brief master_vbo will store in the opengl memory the vertices of the
-     *whole mesh
-     */
-    GLuint master_vbo;
-    /**
-     *@brief master_ibo will store in the opengl memory the indices of the
-     *whole mesh
-     */
-    GLuint master_ibo;
-    /**
-     *@brief master_normals_vbo will store in the opengl memory the normals of
-     *the whole mesh
-     */
-    GLuint master_normals_vbo;
-    /**
-     *@brief master_uvs_vbo will store in the opengl memory the uvs of the
-     *whole mesh
-     */
-    GLuint master_uvs_vbo;
-    /**
-     *@brief master_tangents_vbo will store in the opengl memory the tangents
-     *of the whole mesh
-     */
-    GLuint master_tangents_vbo;
 
 
 
@@ -236,6 +171,25 @@ class Mesh
 
 
 
+
+    /**
+     *@brief is_using_normals will be true if the mesh is using normals for
+     *rendering
+     */
+    bool is_using_normals;
+    /**
+     *@brief is_using_uvs will be true if the mesh is using uvs for rendering
+     *(i.e has diffuse textures)
+     */
+    bool is_using_uvs;
+    /**
+     *@brief is_using_tangents will be true if the mesh using tangents for
+     *rendering (i.e has bump maps)
+     */
+    bool is_using_tangents;
+
+
+
     /**
      * @brief global_transform is the global transform of the mesh
      */
@@ -293,6 +247,16 @@ class Mesh
      */
     void CachedDraw(QOpenGLShaderProgram & shader,
                     QString material_name);
+
+
+
+
+    /**
+     * @brief CheckLayersUsedByMesh will determine if the mesh
+     * is using normals, uvs or tangents
+     * @param scene is the scene on which the check is done
+     */
+    void CheckLayersUsedByMesh(FbxScene * scene);
 
 
 

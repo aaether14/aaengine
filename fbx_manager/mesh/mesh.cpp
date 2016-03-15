@@ -1,4 +1,4 @@
-#include <fbx_manager/mesh.hpp>
+#include <fbx_manager/mesh/mesh.hpp>
 
 
 
@@ -54,11 +54,20 @@ void Mesh::RecursiveLoad(FbxNode * node,
 
     MeshEntry * new_mesh_entry = new MeshEntry();
     new_mesh_entry->LoadMesh(mesh,
+
+
                              master_indices,
                              master_vertices,
                              master_normals,
                              master_uvs,
                              master_tangents,
+
+
+                             is_using_normals,
+                             is_using_uvs,
+                             is_using_tangents,
+
+
                              current_control_point_offset,
                              current_polygon_offset);
 
@@ -117,26 +126,13 @@ void Mesh::CacheDrawCommands(QList<MeshEntry *> &mesh_entries,
 
 
 
-Mesh::Mesh() : vao(0),
+Mesh::Mesh():
 
 
 
-    ssbo(0),
-    indirect_buffer(0),
-    per_object_buffer(0),
-
-
-
-    cached_indirect_buffer(0),
-    cached_per_object_buffer(0),
-
-
-
-    master_vbo(0),
-    master_ibo(0),
-    master_normals_vbo(0),
-    master_uvs_vbo(0),
-    master_tangents_vbo(0),
+    is_using_normals(false),
+    is_using_uvs(false),
+    is_using_tangents(false),
 
 
 
@@ -151,12 +147,12 @@ Mesh::Mesh() : vao(0),
     is_loaded(false),
 
 
-
     draw_method("cached")
 {
 
 
 
+    ResetGPUMemory(m_gpu);
 
 
 
@@ -182,39 +178,39 @@ Mesh::~Mesh()
 
 
 
-    if (vao)
-        f->glDeleteVertexArrays(1, &vao);
-    if (ssbo)
-        f->glDeleteBuffers(1, &ssbo);
+    if (m_gpu.vao)
+        f->glDeleteVertexArrays(1, &m_gpu.vao);
+    if (m_gpu.ssbo)
+        f->glDeleteBuffers(1, &m_gpu.ssbo);
 
 
 
-    if (indirect_buffer)
-        f->glDeleteBuffers(1, &indirect_buffer);
-    if(per_object_buffer)
-        f->glDeleteBuffers(1, &per_object_buffer);
-
-
-
-
-    if (cached_indirect_buffer)
-        f->glDeleteBuffers(1, &cached_indirect_buffer);
-    if (cached_per_object_buffer)
-        f->glDeleteBuffers(1, &cached_per_object_buffer);
+    if (m_gpu.indirect_buffer)
+        f->glDeleteBuffers(1, &m_gpu.indirect_buffer);
+    if(m_gpu.per_object_buffer)
+        f->glDeleteBuffers(1, &m_gpu.per_object_buffer);
 
 
 
 
-    if (master_vbo)
-        f->glDeleteBuffers(1, &master_vbo);
-    if (master_ibo)
-        f->glDeleteBuffers(1, &master_ibo);
-    if (master_normals_vbo)
-        f->glDeleteBuffers(1, &master_normals_vbo);
-    if (master_uvs_vbo)
-        f->glDeleteBuffers(1, &master_uvs_vbo);
-    if (master_tangents_vbo)
-        f->glDeleteBuffers(1, &master_tangents_vbo);
+    if (m_gpu.cached_indirect_buffer)
+        f->glDeleteBuffers(1, &m_gpu.cached_indirect_buffer);
+    if (m_gpu.cached_per_object_buffer)
+        f->glDeleteBuffers(1, &m_gpu.cached_per_object_buffer);
+
+
+
+
+    if (m_gpu.master_vbo)
+        f->glDeleteBuffers(1, &m_gpu.master_vbo);
+    if (m_gpu.master_ibo)
+        f->glDeleteBuffers(1, &m_gpu.master_ibo);
+    if (m_gpu.master_normals_vbo)
+        f->glDeleteBuffers(1, &m_gpu.master_normals_vbo);
+    if (m_gpu.master_uvs_vbo)
+        f->glDeleteBuffers(1, &m_gpu.master_uvs_vbo);
+    if (m_gpu.master_tangents_vbo)
+        f->glDeleteBuffers(1, &m_gpu.master_tangents_vbo);
 
 
 
@@ -233,9 +229,9 @@ Mesh::~Mesh()
 
 
     materials.clear();
-    indirect_buffer_stride_cache.clear();
-    indirect_buffer_size_cache.clear();
-    per_object_buffer_stride_cache.clear();
+    m_gpu.indirect_buffer_stride_cache.clear();
+    m_gpu.indirect_buffer_size_cache.clear();
+    m_gpu.per_object_buffer_stride_cache.clear();
 
 
 
@@ -404,10 +400,12 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
     /**
-    Set the texture sampler for diffuse texture
+    Set the texture sampler for diffuse texture and also if the mesh is using
+    tangents or not
     */
 
     shader.setUniformValue("diffuse_texture", 0);
+    shader.setUniformValue("is_using_tangents", is_using_tangents);
 
 
 
@@ -419,7 +417,7 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
-    f->glBindVertexArray(vao);
+    f->glBindVertexArray(m_gpu.vao);
 
 
 
@@ -443,9 +441,9 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
-    f->glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+    f->glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_gpu.ssbo);
     f->glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(float16) * model_matrix.size(), &model_matrix[0], GL_STATIC_DRAW);
-    f->glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
+    f->glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_gpu.ssbo);
 
 
 

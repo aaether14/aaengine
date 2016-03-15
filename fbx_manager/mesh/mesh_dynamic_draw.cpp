@@ -1,4 +1,4 @@
-#include <fbx_manager/mesh.hpp>
+#include <fbx_manager/mesh/mesh.hpp>
 
 
 
@@ -35,7 +35,7 @@ void Mesh::DynamicDraw(QOpenGLShaderProgram & shader,
 
 
 
-    f->glBindBuffer( GL_DRAW_INDIRECT_BUFFER, indirect_buffer);
+    f->glBindBuffer( GL_DRAW_INDIRECT_BUFFER, m_gpu.indirect_buffer);
     f->glBufferData( GL_DRAW_INDIRECT_BUFFER, sizeof(DrawElementsCommand) * draw_commands.size(), &draw_commands[0], GL_STATIC_DRAW );
 
 
@@ -43,11 +43,11 @@ void Mesh::DynamicDraw(QOpenGLShaderProgram & shader,
 
 
 
-    f->glBindBuffer(GL_ARRAY_BUFFER, per_object_buffer);
+    f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.per_object_buffer);
     f->glBufferData(GL_ARRAY_BUFFER, sizeof(unsigned int) * per_object_index.size(), &per_object_index[0], GL_STATIC_DRAW);
-    f->glEnableVertexAttribArray(3);
-    f->glVertexAttribIPointer(3, 1, GL_UNSIGNED_INT, sizeof(unsigned int), 0);
-    f->glVertexAttribDivisor(3, 1);
+    f->glEnableVertexAttribArray(MESH_PER_OBJECT_ATTRIBUTE_POINTER);
+    f->glVertexAttribIPointer(MESH_PER_OBJECT_ATTRIBUTE_POINTER, 1, GL_UNSIGNED_INT, sizeof(unsigned int), 0);
+    f->glVertexAttribDivisor(MESH_PER_OBJECT_ATTRIBUTE_POINTER, 1);
 
 
 

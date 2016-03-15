@@ -25,12 +25,12 @@ SOURCES += main.cpp\
     script_module/scriptengine.cpp \
     dialogs/console/logger.cpp \
     fbx_manager/fbxmanager.cpp \
-    fbx_manager/meshentry.cpp \
-    fbx_manager/mesh.cpp \
+    fbx_manager/entry/meshentry.cpp \
+    fbx_manager/mesh/mesh.cpp \
     core/fps.cpp \
     core/inputregister.cpp \
     core/main_controller.cpp \
-    fbx_manager/material.cpp \
+    fbx_manager/material/material.cpp \
     dialogs/about/about.cpp \
     renderer/baserenderer.cpp \
     renderer/pipeline.cpp \
@@ -43,14 +43,17 @@ SOURCES += main.cpp\
     core/projectmanager.cpp \
     utils/json.cpp \
     script_module/gameobject.cpp \
-    fbx_manager/mesh_material.cpp \
-    fbx_manager/mesh_buffer_loader.cpp \
-    fbx_manager/mesh_cached_draw.cpp \
-    fbx_manager/mesh_dynamic_draw.cpp \
+    fbx_manager/mesh/mesh_material.cpp \
+    fbx_manager/mesh/mesh_buffer_loader.cpp \
+    fbx_manager/mesh/mesh_cached_draw.cpp \
+    fbx_manager/mesh/mesh_dynamic_draw.cpp \
     error/aerror.cpp \
     dialogs/mesh_import_dialog/meshimport.cpp \
     dialogs/base_dialog.cpp \
-    fbx_manager/mesh_scene_normalize.cpp
+    fbx_manager/mesh/mesh_scene_normalize.cpp \
+    fbx_manager/entry/mesh_entry_normals.cpp \
+    fbx_manager/entry/mesh_entry_uvs.cpp \
+    fbx_manager/entry/mesh_entry_tangent.cpp
 
 
 
@@ -60,12 +63,12 @@ HEADERS  += \
     script_module/scriptengine.hpp \
     dialogs/console/logger.hpp \
     fbx_manager/fbxmanager.hpp \
-    fbx_manager/meshentry.hpp \
-    fbx_manager/mesh.hpp \
+    fbx_manager/entry/meshentry.hpp \
+    fbx_manager/mesh/mesh.hpp \
     core/fps.hpp \
     core/inputregister.hpp \
     core/main_controller.hpp \
-    fbx_manager/material.hpp \
+    fbx_manager/material/material.hpp \
     dialogs/about/about.hpp \
     renderer/baserenderer.hpp \
     renderer/pipeline.hpp \
@@ -80,7 +83,8 @@ HEADERS  += \
     script_module/gameobject.hpp \
     error/aerror.hpp \
     dialogs/mesh_import_dialog/meshimport.hpp \
-    dialogs/base_dialog.hpp
+    dialogs/base_dialog.hpp \
+    fbx_manager/mesh/mesh_gpu_memory.h
 
 
 

@@ -10,7 +10,7 @@
 #include <QVector>
 #include <QMatrix4x4>
 #include <fbxsdk.h>
-#include <fbx_manager/material.hpp>
+#include <fbx_manager/material/material.hpp>
 
 
 
@@ -124,15 +124,31 @@ public:
      * @param master_normals - see mesh.hpp
      * @param master_uvs - see mesh.hpp
      * @param master_tangents - see mesh.hpp
+     * @param load_normals is true if the mesh has normals
+     * to load
+     * @param load_uvs is true if the mesh has uvs to load
+     * @param load_tangents is true if the mesh has tangents
+     * to load
      * @param current_control_point_offset - see mesh.hpp
      * @param current_polygon_offset - see mesh.hpp
      */
     void LoadMesh(FbxMesh * mesh,
+
+
+
                   QVector<unsigned int> &master_indices,
                   QVector<float> &master_vertices,
                   QVector<float> &master_normals,
                   QVector<float> &master_uvs,
                   QVector<float> &master_tangents,
+
+
+                  bool load_normals,
+                  bool load_uvs,
+                  bool load_tangents,
+
+
+
                   int & current_control_point_offset,
                   int & current_polygon_offset);
 
