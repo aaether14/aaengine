@@ -53,7 +53,8 @@ SOURCES += main.cpp\
     fbx_manager/mesh/mesh_scene_normalize.cpp \
     fbx_manager/entry/mesh_entry_normals.cpp \
     fbx_manager/entry/mesh_entry_uvs.cpp \
-    fbx_manager/entry/mesh_entry_tangent.cpp
+    fbx_manager/entry/mesh_entry_tangent.cpp \
+    fbx_manager/mesh_util.cpp
 
 
 
@@ -84,7 +85,8 @@ HEADERS  += \
     error/aerror.hpp \
     dialogs/mesh_import_dialog/meshimport.hpp \
     dialogs/base_dialog.hpp \
-    fbx_manager/mesh/mesh_gpu_memory.h
+    fbx_manager/mesh/mesh_gpu_memory.h \
+    fbx_manager/mesh_util.hpp
 
 
 

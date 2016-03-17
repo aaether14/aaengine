@@ -43,7 +43,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>160</y>
+     <y>220</y>
      <width>241</width>
      <height>27</height>
     </rect>
@@ -53,7 +53,7 @@
    <property name="geometry">
     <rect>
      <x>270</x>
-     <y>160</y>
+     <y>220</y>
      <width>81</width>
      <height>27</height>
     </rect>
@@ -92,13 +92,39 @@
    <property name="geometry">
     <rect>
      <x>160</x>
-     <y>230</y>
+     <y>260</y>
      <width>85</width>
      <height>27</height>
     </rect>
    </property>
    <property name="text">
     <string>Import</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBox_triangulate">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>150</y>
+     <width>111</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Triangulate</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBox_convert_textures">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>180</y>
+     <width>141</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Convert Textures</string>
    </property>
   </widget>
  </widget>
@@ -108,6 +134,8 @@
   <tabstop>checkBox_convert_scale</tabstop>
   <tabstop>checkBox_split_points</tabstop>
   <tabstop>checkBox_generate_tangents</tabstop>
+  <tabstop>checkBox_triangulate</tabstop>
+  <tabstop>checkBox_convert_textures</tabstop>
   <tabstop>pushButton</tabstop>
   <tabstop>pushButton_2</tabstop>
  </tabstops>

@@ -106,7 +106,9 @@ void FBXManager::Load(QString file_name,
                                                            load_options["convert_axis"].toBool(),
             load_options["convert_scale"].toBool(),
             load_options["split_points"].toBool(),
-            load_options["generate_tangents"].toBool());
+            load_options["generate_tangents"].toBool(),
+            load_options["triangulate"].toBool(),
+            load_options["convert_textures"].toBool());
 
 
 }

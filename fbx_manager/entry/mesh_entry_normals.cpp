@@ -49,17 +49,16 @@ void MeshEntry::LoadNormals(FbxMesh * mesh,
     */
 
 
-        switch(vertex_normal->GetMappingMode())
+        if(vertex_normal->GetMappingMode() == FbxGeometryElement::eByControlPoint)
         {
 
 
-        /**
-    *Easy scenario, normal is set by control point
-    */
 
-        case FbxGeometryElement::eByControlPoint:
+
             switch(vertex_normal->GetReferenceMode())
             {
+
+
 
 
 
@@ -82,8 +81,11 @@ void MeshEntry::LoadNormals(FbxMesh * mesh,
 
 
 
-            }
-                break;
+            }break;
+
+
+
+
 
             case FbxGeometryElement::eIndexToDirect:
             {
@@ -93,6 +95,7 @@ void MeshEntry::LoadNormals(FbxMesh * mesh,
 
                 for (int i = 0; i < mesh->GetControlPointsCount(); i++)
                 {
+
 
                     int index = vertex_normal->GetIndexArray().GetAt(i);
                     master_normals << (float)(vertex_normal->GetDirectArray().GetAt(index).mData[0]);
@@ -104,142 +107,41 @@ void MeshEntry::LoadNormals(FbxMesh * mesh,
 
 
 
-            }
-                break;
+            }break;
 
-            default:
-                should_fill_with_0 = true;
-
-
-
-            }
-            break;
-
-
-
-
-            /**
-    *This is the worse scenario where the normals are set by polygon vertex and
-    *not by control point, so we have to loop through each polygon vertex and
-    *add it's contribution to the control point normal we will output
-    */
-
-        case FbxGeometryElement::eByPolygonVertex:
-
-
-            switch(vertex_normal->GetReferenceMode())
-            {
-
-
-
-            case FbxGeometryElement::eDirect:
-            {
-
-
-
-                QVector<float> temp_normals;
-                temp_normals.resize(mesh->GetControlPointsCount() * 3);
-
-
-
-                for (int i = 0; i < mesh->GetPolygonCount(); i++)
-                    for (int j = 0; j < 3; j++)
-                    {
-
-                        int current_polygon_vertex = mesh->GetPolygonVertex(i, j);
-
-                        temp_normals[current_polygon_vertex * 3 + 0] = vertex_normal->GetDirectArray().GetAt(i).mData[0];
-                        temp_normals[current_polygon_vertex * 3 + 1] = vertex_normal->GetDirectArray().GetAt(i).mData[1];
-                        temp_normals[current_polygon_vertex * 3 + 2] = vertex_normal->GetDirectArray().GetAt(i).mData[2];
-                    }
-
-
-
-
-                master_normals << temp_normals;
-                temp_normals.clear();
 
 
 
 
             }
-                break;
 
 
-
-            case FbxGeometryElement::eIndexToDirect:
-            {
-
-
-
-                QVector<float> temp_normals;
-                temp_normals.resize(mesh->GetControlPointsCount() * 3);
-
-
-
-                for (int i = 0; i < mesh->GetPolygonCount(); i++)
-                    for (int j = 0; j < 3; j++)
-                    {
-
-                        int current_polygon_vertex = mesh->GetPolygonVertex(i, j);
-                        int index = vertex_normal->GetIndexArray().GetAt(i);
-
-                        temp_normals[current_polygon_vertex * 3 + 0] = vertex_normal->GetDirectArray().GetAt(index).mData[0];
-                        temp_normals[current_polygon_vertex * 3 + 1] = vertex_normal->GetDirectArray().GetAt(index).mData[1];
-                        temp_normals[current_polygon_vertex * 3 + 2] = vertex_normal->GetDirectArray().GetAt(index).mData[2];
-
-
-                    }
-
-
-
-
-                master_normals << temp_normals;
-                temp_normals.clear();
-
-
-
-
-            }
-                break;
-
-            default:
-                should_fill_with_0 = true;
-
-
-
-            }
-            break;
 
 
 
         }
-
-
-
-
-
+        else
+            should_fill_with_0 = true;
     }
-    else
 
 
-        /**
+    /**
     *If we came across abnormal information we should output an error then go
     *ahead and fill with 0's
     */
 
-        if (should_fill_with_0)
-        {
+    if (should_fill_with_0)
+    {
 
 
-            qDebug() << mesh->GetNode()->GetName() << "had abnormal normal information and we had to fill 0's!";
+        qDebug() << mesh->GetNode()->GetName() << "had abnormal normal information and we had to fill 0's!";
 
 
-            for (int i = 0; i < mesh->GetControlPointsCount(); i++)
-                master_normals << 0.0 << 0.0 << 0.0;
+        for (int i = 0; i < mesh->GetControlPointsCount(); i++)
+            master_normals << 0.0 << 0.0 << 0.0;
 
 
-        }
+    }
 
 
 

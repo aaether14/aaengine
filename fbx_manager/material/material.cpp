@@ -11,6 +11,8 @@ Material::Material() : diffuse_color(QVector3D(0, 0, 0)),
     use_diffuse_texture(false)
 {
 
+
+
 }
 
 
@@ -28,13 +30,76 @@ void Material::SendToShader(QOpenGLShaderProgram &shader)
 
 
 
-QVector3D Material::FbxPropertyToVector3(FbxProperty prop)
+void Material::AddDiffuseProperty(FbxProperty diffuse_property,
+                                  QHash<QString, QOpenGLTexture *> &textures,
+                                  QString fbx_file_name)
 {
 
 
-    return QVector3D(prop.Get<FbxDouble3>().mData[0],
-            prop.Get<FbxDouble3>().mData[1],
-            prop.Get<FbxDouble3>().mData[2]);
+
+
+    /**
+     * Get the diffuse color of the material
+     */
+
+
+    FbxDouble3 diffuse_color = diffuse_property.Get<FbxDouble3>();
+    this->diffuse_color = QVector3D(diffuse_color.mData[0], diffuse_color.mData[1], diffuse_color.mData[2]);
+
+
+
+    if(!diffuse_property.GetSrcObjectCount<FbxFileTexture>() > 0)
+        return;
+
+
+
+    FbxFileTexture * texture = diffuse_property.GetSrcObject<FbxFileTexture>();
+    if (!texture)
+        return;
+
+
+
+    /**
+     *texture_index is the index by which this texture will be stored and it's
+     *the path of the texture
+     */
+
+
+
+    QString texture_index = aae::mesh_util::ComputeTextureFilename(texture->GetFileName(),
+                                                                   fbx_file_name);
+
+
+
+
+    if (!QFileInfo(texture_index).exists())
+    {
+        qDebug() << "Could not find" << texture->GetFileName() <<"!";
+        return;
+    }
+
+
+
+
+    /**
+    *If the texture is not in the library, add it
+    */
+    if (!textures.contains(texture_index))
+        textures[texture_index] = new QOpenGLTexture(QImage(texture_index).mirrored());
+
+
+
+
+    this->difuse_texture_name = texture_index;
+    this->use_diffuse_texture = true;
+
+
+
+
 
 
 }
+
+
+
+

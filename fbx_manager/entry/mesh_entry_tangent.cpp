@@ -11,6 +11,7 @@ void MeshEntry::LoadTangents(FbxMesh *mesh,
 
 
 
+
     /**
      *should_fill_with_0 will be true if we've met an invalid data scenario and
      *we have to fill the vbos with 0's
@@ -34,7 +35,7 @@ void MeshEntry::LoadTangents(FbxMesh *mesh,
 
 
         /**
-     * First we get the vertex tangnet information for the mesh
+     * First we get the vertex tangent information for the mesh
      */
 
         FbxGeometryElementTangent* vertex_tangent = mesh->GetElementTangent(0);
@@ -45,17 +46,16 @@ void MeshEntry::LoadTangents(FbxMesh *mesh,
     */
 
 
-        switch(vertex_tangent->GetMappingMode())
+        if(vertex_tangent->GetMappingMode() == FbxGeometryElement::eByControlPoint)
         {
 
 
-        /**
-    *Easy scenario, tangent is set by control point
-    */
 
-        case FbxGeometryElement::eByControlPoint:
+
             switch(vertex_tangent->GetReferenceMode())
             {
+
+
 
 
 
@@ -78,8 +78,11 @@ void MeshEntry::LoadTangents(FbxMesh *mesh,
 
 
 
-            }
-                break;
+            }break;
+
+
+
+
 
             case FbxGeometryElement::eIndexToDirect:
             {
@@ -90,139 +93,34 @@ void MeshEntry::LoadTangents(FbxMesh *mesh,
                 for (int i = 0; i < mesh->GetControlPointsCount(); i++)
                 {
 
+
                     int index = vertex_tangent->GetIndexArray().GetAt(i);
                     master_tangents << (float)(vertex_tangent->GetDirectArray().GetAt(index).mData[0]);
                     master_tangents << (float)(vertex_tangent->GetDirectArray().GetAt(index).mData[1]);
                     master_tangents << (float)(vertex_tangent->GetDirectArray().GetAt(index).mData[2]);
 
 
+
                 }
 
 
 
-            }
-                break;
-
-            default:
-                should_fill_with_0 = true;
-
-
-
-            }
-            break;
-
-
-
-
-            /**
-    *This is the worse scenario where the tangents are set by polygon vertex and
-    *not by control point, so we have to loop through each polygon vertex and
-    *add it's contribution to the control point normal we will output
-    */
-
-        case FbxGeometryElement::eByPolygonVertex:
-
-
-            switch(vertex_tangent->GetReferenceMode())
-            {
-
-
-
-
-            case FbxGeometryElement::eDirect:
-            {
-
-
-
-                QVector<float> temp_tangents;
-                temp_tangents.resize(mesh->GetControlPointsCount() * 3);
-
-
-
-                for (int i = 0; i < mesh->GetPolygonCount(); i++)
-                    for (int j = 0; j < 3; j++)
-                    {
-
-                        int current_polygon_vertex = mesh->GetPolygonVertex(i, j);
-
-
-                        temp_tangents[current_polygon_vertex * 3 + 0] = vertex_tangent->GetDirectArray().GetAt(i).mData[0];
-                        temp_tangents[current_polygon_vertex * 3 + 1] = vertex_tangent->GetDirectArray().GetAt(i).mData[1];
-                        temp_tangents[current_polygon_vertex * 3 + 2] = vertex_tangent->GetDirectArray().GetAt(i).mData[2];
-
-
-                    }
-
-
-
-
-                master_tangents << temp_tangents;
-                temp_tangents.clear();
-
+            }break;
 
 
 
 
 
             }
-                break;
 
 
-
-            case FbxGeometryElement::eIndexToDirect:
-            {
-
-
-
-                QVector<float> temp_tangents;
-                temp_tangents.resize(mesh->GetControlPointsCount() * 3);
-
-
-
-                for (int i = 0; i < mesh->GetPolygonCount(); i++)
-                    for (int j = 0; j < 3; j++)
-                    {
-
-
-                        int current_polygon_vertex = mesh->GetPolygonVertex(i, j);
-                        int index = vertex_tangent->GetIndexArray().GetAt(i);
-
-                        temp_tangents[current_polygon_vertex * 3 + 0] = vertex_tangent->GetDirectArray().GetAt(index).mData[0];
-                        temp_tangents[current_polygon_vertex * 3 + 1] = vertex_tangent->GetDirectArray().GetAt(index).mData[1];
-                        temp_tangents[current_polygon_vertex * 3 + 2] = vertex_tangent->GetDirectArray().GetAt(index).mData[2];
-
-
-
-                    }
-
-
-
-
-                master_tangents << temp_tangents;
-                temp_tangents.clear();
-
-
-
-
-            }
-                break;
-
-            default:
-                should_fill_with_0 = true;
-
-
-
-            }
-            break;
 
 
 
         }
-
-
+        else
+            should_fill_with_0 = true;
     }
-
-
 
 
     /**
@@ -230,7 +128,7 @@ void MeshEntry::LoadTangents(FbxMesh *mesh,
     *ahead and fill with 0's
     */
 
-    else
+    if (should_fill_with_0)
     {
 
 
@@ -242,6 +140,8 @@ void MeshEntry::LoadTangents(FbxMesh *mesh,
 
 
     }
+
+
 
 
 

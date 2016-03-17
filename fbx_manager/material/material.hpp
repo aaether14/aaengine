@@ -5,6 +5,11 @@
 
 #include <QVector3D>
 #include <QOpenGLShaderProgram>
+#include <QOpenGLTexture>
+#include <QFileInfo>
+
+
+#include <fbx_manager/mesh_util.hpp>
 #include <fbxsdk.h>
 
 
@@ -58,11 +63,14 @@ public:
 
 
     /**
-     * @brief FbxPropertyToVector3 will convert a vec3 from FbxProperty to QVector3D
-     * @param prop is the FbxProperty to be converted
-     * @return
+     * @brief AddDiffuseProperty will add diffuse property to the material
+     * @param diffuse_property is the property to be added
+     * @param textures is the texture hash of the 3d mesh
+     * @param fbx_file_name is the name of the fbx mesh
      */
-    static QVector3D FbxPropertyToVector3(FbxProperty prop);
+    void AddDiffuseProperty(FbxProperty diffuse_property,
+                            QHash<QString, QOpenGLTexture*> & textures,
+                            QString fbx_file_name);
 
 
 

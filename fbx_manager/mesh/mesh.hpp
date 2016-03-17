@@ -8,7 +8,6 @@
 #include <QDebug>
 #include <QOpenGLTexture>
 #include <QImage>
-#include <QFileInfo>
 
 
 
@@ -82,21 +81,6 @@ class Mesh
 
 
     /**
-     * @brief ComputeTextureFilename will compute the filename of the texture
-     * acording the where fbx meshes will look for their textures (.fbm folder
-     * and .fbx folder)
-     * @param texture_name is the name of the texture as
-     * extracted from the fbx file
-     * @param fbx_file_name is the name of the file
-     * we are trying to load
-     * @return will return the required texture filename to load the texture if
-     * it can find the texture, otherwise null string
-     */
-    QString ComputeTextureFilename(QString texture_name, QString fbx_file_name);
-
-
-
-    /**
      * @brief NormalizeScene will take care of the differences of scale and
      * orientation that can occur in the a fbx scene
      * @param scene is the fbx scene to be normalized
@@ -109,12 +93,17 @@ class Mesh
      * there are only per control point vertex atributes (i.e normal,
      * tanget etc.)
      * @param generate_tangent will attempt to generate tangents for the mesh
+     * @param triangulate will attempt to triangulate the mesh
+     * @param convert_textures will attempt to convert the textures
+     * from tga to other format (i.e png)
      */
     void NormalizeScene(FbxScene * scene, FbxManager * fbx_manager,
                         bool convert_axis,
                         bool convert_scale,
                         bool split_points,
-                        bool generate_tangents);
+                        bool generate_tangents,
+                        bool triangulate,
+                        bool convert_textures);
 
 
     /**
@@ -202,17 +191,6 @@ class Mesh
 
 
 
-    /**
-     *@brief current_polygon_offset is used to know how to fill the mesh entry
-     *draw command
-     */
-    int current_polygon_offset;
-    /**
-     *@brief current_control_point_offset is used to know how to fill the mesh
-     *entry draw command
-     */
-    int current_control_point_offset;
-
 
     /**
      * @brief is_loaded - know at any instance if we succesfully loaded the 3d model
@@ -293,6 +271,9 @@ public:
      * there are only per control point vertex atributes (i.e normal,
      * tanget etc.)
      * @param generate_tangent will attempt to generate tangents for the mesh
+     * @param triangulate will attempt to triangulate the mesh
+     * @param convert_textures will attempt to convert the textures
+     * from tga to other format (i.e png)
      */
     void LoadFromFBX(FbxManager * fbx_manager,
                      QString file_name,
@@ -300,7 +281,9 @@ public:
                      bool convert_axis = false,
                      bool convert_scale = false,
                      bool split_points = false,
-                     bool generate_tangents = false);
+                     bool generate_tangents = false,
+                     bool triangulate = false,
+                     bool convert_textures = false);
 
 
     /**

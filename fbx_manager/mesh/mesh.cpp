@@ -68,8 +68,8 @@ void Mesh::RecursiveLoad(FbxNode * node,
                              is_using_tangents,
 
 
-                             current_control_point_offset,
-                             current_polygon_offset);
+                             m_gpu.current_control_point_offset,
+                             m_gpu.current_polygon_offset);
 
 
 
@@ -137,16 +137,7 @@ Mesh::Mesh():
 
 
     should_save_scene_after_load(false),
-
-
-    current_polygon_offset(0),
-    current_control_point_offset(0),
-
-
-
     is_loaded(false),
-
-
     draw_method("cached")
 {
 
@@ -249,7 +240,9 @@ void Mesh::LoadFromFBX(FbxManager *fbx_manager,
                        bool convert_axis,
                        bool convert_scale,
                        bool split_points,
-                       bool generate_tangents)
+                       bool generate_tangents,
+                       bool triangulate,
+                       bool convert_textures)
 {
 
 
@@ -305,7 +298,9 @@ void Mesh::LoadFromFBX(FbxManager *fbx_manager,
                        convert_axis,
                        convert_scale,
                        split_points,
-                       generate_tangents);
+                       generate_tangents,
+                       triangulate,
+                       convert_textures);
 
 
 
@@ -506,85 +501,6 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
-
-QString Mesh::ComputeTextureFilename(QString texture_name, QString fbx_file_name)
-{
-
-
-
-    QString texture_file_name;
-
-
-    /**
-    *first put the name of the texture in a standard form, then get just from
-    *it
-    */
-
-
-    texture_name.replace("\\", "/");
-    texture_name = texture_name.mid(texture_name.lastIndexOf("/") + 1, texture_name.length());
-
-
-
-
-    QString directory;
-
-
-
-    /**
-    *get the directory for the texture
-    */
-
-
-    if (QString(fbx_file_name).lastIndexOf("/") > 0)
-    {
-        directory = QString(fbx_file_name).mid(0, QString(fbx_file_name).lastIndexOf("/"));
-    }
-
-
-
-
-    if (directory.length() > 0)
-    {
-        texture_file_name = directory + "/" + texture_name;
-    }
-
-
-
-
-    /**
-    Check if the texture exists in the folder of the fbx model. If so, return
-    the computed texture name, otherwise try in the .fbm folder in the same
-    location
-    */
-    if (QFileInfo(texture_file_name).exists())
-    {
-        return texture_file_name;
-    }
-    else
-    {
-
-
-        texture_file_name = directory + "/" + QFileInfo(fbx_file_name).baseName() + ".fbm/" + texture_name;
-
-
-
-        if (QFileInfo(texture_file_name).exists())
-        {
-            return texture_file_name;
-        }
-        else
-        {
-            return QString();
-        }
-
-
-
-    }
-
-
-
-}
 
 
 

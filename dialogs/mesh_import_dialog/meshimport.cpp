@@ -47,6 +47,8 @@ void MeshImport::Reset()
     ui->checkBox_convert_scale->setChecked(false);
     ui->checkBox_split_points->setChecked(false);
     ui->checkBox_generate_tangents->setChecked(false);
+    ui->checkBox_triangulate->setChecked(false);
+    ui->checkBox_convert_textures->setChecked(false);
 
 
     ui->lineEdit->clear();
@@ -133,6 +135,8 @@ void MeshImport::on_pushButton_2_clicked()
     load_options["convert_scale"] = ui->checkBox_convert_scale->isChecked();
     load_options["split_points"] = ui->checkBox_split_points->isChecked();
     load_options["generate_tangents"] = ui->checkBox_generate_tangents->isChecked();
+    load_options["triangulate"] = ui->checkBox_triangulate->isChecked();
+    load_options["convert_textures"] = ui->checkBox_convert_textures->isChecked();
 
 
 
