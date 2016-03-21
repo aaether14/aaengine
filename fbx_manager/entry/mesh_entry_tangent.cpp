@@ -71,6 +71,7 @@ void MeshEntry::LoadTangents(FbxMesh *mesh,
                     master_tangents << (float)(vertex_tangent->GetDirectArray().GetAt(i).mData[0]);
                     master_tangents << (float)(vertex_tangent->GetDirectArray().GetAt(i).mData[1]);
                     master_tangents << (float)(vertex_tangent->GetDirectArray().GetAt(i).mData[2]);
+                    master_tangents << (float)(vertex_tangent->GetDirectArray().GetAt(i).mData[3]);
 
 
                 }
@@ -98,6 +99,8 @@ void MeshEntry::LoadTangents(FbxMesh *mesh,
                     master_tangents << (float)(vertex_tangent->GetDirectArray().GetAt(index).mData[0]);
                     master_tangents << (float)(vertex_tangent->GetDirectArray().GetAt(index).mData[1]);
                     master_tangents << (float)(vertex_tangent->GetDirectArray().GetAt(index).mData[2]);
+                    master_tangents << (float)(vertex_tangent->GetDirectArray().GetAt(index).mData[3]);
+
 
 
 
@@ -136,7 +139,7 @@ void MeshEntry::LoadTangents(FbxMesh *mesh,
 
 
         for (int i = 0; i < mesh->GetControlPointsCount(); i++)
-            master_tangents << 0.0 << 0.0 << 0.0;
+            master_tangents << 0.0 << 0.0 << 0.0 << 0.0;
 
 
     }

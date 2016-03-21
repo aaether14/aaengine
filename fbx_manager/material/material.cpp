@@ -5,10 +5,11 @@
 
 
 Material::Material() : diffuse_color(QVector3D(0, 0, 0)),
-    ambient_color(QVector3D(0, 0, 0)),
     emissive_color(QVector3D(0, 0, 0)),
     difuse_texture_name(QString()),
-    use_diffuse_texture(false)
+    use_diffuse_texture(false),
+    normal_map_name(QString()),
+    use_normal_map(false)
 {
 
 
@@ -44,7 +45,7 @@ void Material::AddDiffuseProperty(FbxProperty diffuse_property,
 
 
     FbxDouble3 diffuse_color = diffuse_property.Get<FbxDouble3>();
-    this->diffuse_color = QVector3D(diffuse_color.mData[0], diffuse_color.mData[1], diffuse_color.mData[2]);
+    this->diffuse_color = aae::mesh_util::QVector3DFromFbxVector3D(diffuse_color);
 
 
 
@@ -93,6 +94,68 @@ void Material::AddDiffuseProperty(FbxProperty diffuse_property,
     this->difuse_texture_name = texture_index;
     this->use_diffuse_texture = true;
 
+
+
+
+
+
+}
+
+
+
+
+
+void Material::AddNormalProperty(FbxProperty normal_property,
+                                 QHash<QString, QOpenGLTexture *> &textures,
+                                 QString fbx_file_name)
+{
+
+
+
+    if(!normal_property.GetSrcObjectCount<FbxFileTexture>() > 0)
+        return;
+
+
+
+    FbxFileTexture * texture = normal_property.GetSrcObject<FbxFileTexture>();
+    if (!texture)
+        return;
+
+
+
+    /**
+     *texture_index is the index by which this texture will be stored and it's
+     *the path of the texture
+     */
+
+
+
+    QString texture_index = aae::mesh_util::ComputeTextureFilename(texture->GetFileName(),
+                                                                   fbx_file_name);
+
+
+
+
+    if (!QFileInfo(texture_index).exists())
+    {
+        qDebug() << "Could not find" << texture->GetFileName() <<"!";
+        return;
+    }
+
+
+
+
+    /**
+    *If the texture is not in the library, add it
+    */
+    if (!textures.contains(texture_index))
+        textures[texture_index] = new QOpenGLTexture(QImage(texture_index).mirrored());
+
+
+
+
+    this->normal_map_name = texture_index;
+    this->use_normal_map = true;
 
 
 

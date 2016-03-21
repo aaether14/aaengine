@@ -8,19 +8,41 @@ layout(location = 0, index = 0) out vec4 fragColor;
 
 
 
+/**
+*Information from vertex shader
+*/
 in vec3 M_space_normal;
+in vec4 M_space_tangent;
 in vec2 interpolated_uv;
 
 
 
 
+/**
+*Material Information
+*/
 uniform vec3 diffuse_color;
-uniform sampler2D diffuse_texture;
 uniform bool use_diffuse_texture;
 
 
 
+uniform sampler2D diffuse_texture;
+uniform sampler2D normal_map;
 
+
+
+
+/**
+*True if the mesh will use normal mapping
+*/
+uniform bool is_using_tangents;
+
+
+
+
+/**
+*This is how light information is structured
+*/
 struct light
 {
     vec4 ambient_color;
@@ -40,8 +62,54 @@ layout(std430, binding = 1) buffer scene
 
 
 
+
+vec3 ComputeNormal()
+{
+
+
+
+    if (is_using_tangents)
+    {
+
+
+
+        vec3 normal = normalize(M_space_normal);
+        vec3 tangent = normalize(M_space_tangent.xyz);
+        tangent = normalize(tangent - dot(tangent, normal) * normal);
+        vec3 binormal = cross(normal, tangent.xyz) * M_space_tangent.w;
+
+
+        mat3 TBN = mat3(tangent, binormal, normal);
+        vec3 bump_normal = texture2D(normal_map, interpolated_uv).xyz;
+        bump_normal = 2.0 * bump_normal - 1.0;
+
+
+
+        return normalize(TBN * bump_normal);
+
+
+
+    }
+    else
+    {
+        return normalize(M_space_normal);
+    }
+
+
+
+}
+
+
+
+
+
 vec4 ComputeLightColor()
 {
+
+
+
+    vec3 normal = ComputeNormal();
+
 
 
     vec4 color;
@@ -52,10 +120,13 @@ vec4 ComputeLightColor()
 
         if (lights[i].type_data.x == 0)
         {
-            //Directional light
+
+            /**
+            *Directional ligtht
+            */
 
 
-            color += (lights[i].diffuse_color * max(0.0, dot(vec3(lights[i].position), M_space_normal)) +
+            color += (lights[i].diffuse_color * max(0.0, dot(vec3(lights[i].position), normal)) +
                       lights[i].ambient_color);
 
 
@@ -109,6 +180,8 @@ vec4 ComputeMaterialColor()
 void main( void )
 {
 
+
     fragColor = ComputeLightColor() * ComputeMaterialColor();
+
 
 }

@@ -400,6 +400,7 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
     */
 
     shader.setUniformValue("diffuse_texture", 0);
+    shader.setUniformValue("normal_map", 1);
     shader.setUniformValue("is_using_tangents", is_using_tangents);
 
 
@@ -448,15 +449,39 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
-
     /**
     *For each material, depending on the draw method selected by the mesh,
     attempt to draw the model
     */
 
 
+
+
     foreach(auto it, materials.keys())
     {
+
+
+
+        /**
+        *Send material information to shader
+        */
+
+
+
+        materials[it].SendToShader(shader);
+
+
+
+
+        if (materials[it].use_diffuse_texture)
+            textures[materials[it].difuse_texture_name]->bind(0);
+
+
+
+        if (materials[it].use_normal_map)
+            textures[materials[it].normal_map_name]->bind(1);
+
+
 
 
         if (draw_method == "cached")
@@ -479,7 +504,20 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
         }
 
 
+
+
+        if (materials[it].use_diffuse_texture)
+            textures[materials[it].difuse_texture_name]->release(0);
+
+
+
+        if (materials[it].use_normal_map)
+            textures[materials[it].normal_map_name]->release(1);
+
+
+
     }
+
 
 
 

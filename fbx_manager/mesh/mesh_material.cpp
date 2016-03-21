@@ -63,6 +63,13 @@ void Mesh::LoadMaterials(FbxScene *scene, QString fbx_file_name)
 
 
 
+        new_mat.AddNormalProperty(material->FindProperty(FbxSurfaceMaterial::sNormalMap),
+                                  textures,
+                                  fbx_file_name);
+
+
+
+
 
         materials[material->GetName()] = new_mat;
 

@@ -53,19 +53,6 @@ void Mesh::DynamicDraw(QOpenGLShaderProgram & shader,
 
 
 
-    materials[material_name].SendToShader(shader);
-
-
-
-
-
-
-    if (materials[material_name].use_diffuse_texture)
-        textures[materials[material_name].difuse_texture_name]->bind();
-
-
-
-
     f->glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, draw_commands.size(), 0);
 
 
@@ -73,14 +60,6 @@ void Mesh::DynamicDraw(QOpenGLShaderProgram & shader,
 
     draw_commands.clear();
     per_object_index.clear();
-
-
-
-
-
-    if (materials[material_name].use_diffuse_texture)
-        textures[materials[material_name].difuse_texture_name]->release();
-
 
 
 

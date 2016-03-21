@@ -268,9 +268,9 @@ void Mesh::LoadBufferObjects(FbxNode *root)
 
         f->glGenBuffers(1, &m_gpu.master_tangents_vbo);
         f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.master_tangents_vbo);
-        f->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * master_tangents.size(), &master_uvs[0], GL_STATIC_DRAW);
+        f->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * master_tangents.size(), &master_tangents[0], GL_STATIC_DRAW);
         f->glEnableVertexAttribArray(MESH_TANGENT_ATTRIBUTE_POINTER);
-        f->glVertexAttribPointer(MESH_TANGENT_ATTRIBUTE_POINTER, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        f->glVertexAttribPointer(MESH_TANGENT_ATTRIBUTE_POINTER, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
 
 

@@ -37,10 +37,6 @@ public:
      */
     QVector3D diffuse_color;
     /**
-     *@brief ambient_color is the ambient component of the material
-     */
-    QVector3D ambient_color;
-    /**
      *@brief emissive_color is the emissive component of the material
      */
     QVector3D emissive_color;
@@ -50,10 +46,21 @@ public:
      */
     QString difuse_texture_name;
     /**
-     *@brief use_diffuse_texture true if the material will use a diffuse
+     *@brief use_diffuse_texture is true if the material will use a diffuse
      *texture, fasle otherwise
      */
     bool use_diffuse_texture;
+    /**
+     *@brief normal_map_name is the name of the normal map the material is
+     *using
+     */
+    QString normal_map_name;
+    /**
+     *@brief use_normal_map is true if the material will use a normal map,
+     *false otherwise
+     */
+    bool use_normal_map;
+
 
     /**
      * @brief SendToShader will send the material data to the shader
@@ -71,6 +78,18 @@ public:
     void AddDiffuseProperty(FbxProperty diffuse_property,
                             QHash<QString, QOpenGLTexture*> & textures,
                             QString fbx_file_name);
+
+
+
+    /**
+     * @brief AddNormalProperty will add normal property to the material
+     * @param normal_property is the property to be added
+     * @param textures is the texture hash of the 3d mesh
+     * @param fbx_file_name is the name of the fbx mesh
+     */
+    void AddNormalProperty(FbxProperty normal_property,
+                           QHash<QString, QOpenGLTexture*> & textures,
+                           QString fbx_file_name);
 
 
 
