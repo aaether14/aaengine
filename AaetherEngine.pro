@@ -46,7 +46,6 @@ SOURCES += main.cpp\
     fbx_manager/mesh/mesh_material.cpp \
     fbx_manager/mesh/mesh_buffer_loader.cpp \
     fbx_manager/mesh/mesh_cached_draw.cpp \
-    fbx_manager/mesh/mesh_dynamic_draw.cpp \
     error/aerror.cpp \
     dialogs/mesh_import_dialog/meshimport.cpp \
     dialogs/base_dialog.cpp \
@@ -54,7 +53,8 @@ SOURCES += main.cpp\
     fbx_manager/entry/mesh_entry_normals.cpp \
     fbx_manager/entry/mesh_entry_uvs.cpp \
     fbx_manager/entry/mesh_entry_tangent.cpp \
-    fbx_manager/mesh_util.cpp
+    fbx_manager/mesh_util.cpp \
+    fbx_manager/mesh/mesh_accelerated_draw.cpp
 
 
 

@@ -57,20 +57,6 @@ public:
 
 
 
-
-    Q_INVOKABLE QMatrix4x4 scale(float x, float y, float z){return scale(QVector3D(x,y,z));}
-
-
-
-    Q_INVOKABLE QMatrix4x4 scale(float factor){return scale(QVector3D(factor, factor, factor));}
-
-
-
-    Q_INVOKABLE QMatrix4x4 translate(float x, float y, float z){return translate(QVector3D(x, y, z)); }
-
-
-
-
     Q_INVOKABLE QMatrix4x4 camera(QVector3D position,
                                   QVector3D target,
                                   QVector3D up,

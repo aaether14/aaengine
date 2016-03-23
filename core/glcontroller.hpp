@@ -116,12 +116,6 @@ public:
     void Unpause();
 
 
-    /**
-     * @brief SetPlaying will set whether the game is playing or not
-     * @param playing is the value that is_playing will be set to
-     */
-    void SetPlaying(bool playing);
-
 
     /**
      * @brief IsPlaying will return whether the game is paused or not
@@ -148,6 +142,15 @@ public:
 
 signals:
 
+
+public slots:
+
+
+    /**
+     * @brief SetPlaying will set whether the game is playing or not
+     * @param playing is the value that is_playing will be set to
+     */
+    void SetPlaying(bool playing);
 
 
 private slots:

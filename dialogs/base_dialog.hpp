@@ -40,14 +40,14 @@ public:
 
 
 
+public slots:
+
+
     /**
      *@brief onAction will determine what the dialog will do when the action
      *regarding it will be triggered
      */
     virtual void onAction();
-
-
-
 
 
 

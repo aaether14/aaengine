@@ -36,11 +36,7 @@ class Controller : public QMainWindow
 {
 
 
-
     Q_OBJECT
-
-
-
 
 
 public:
@@ -61,43 +57,6 @@ public:
 private slots:
 
 
-    /**
-     *@brief on_actionConsole_triggered will determine what happens when
-     *console action is triggered
-     */
-    void on_actionConsole_triggered();
-    /**
-     *@brief on_actionAbout_triggered will determine what happens when about
-     *action is triggered
-     */
-    void on_actionAbout_triggered();
-    /**
-     *@brief on_actionProject_triggered will determine what happens when
-     *project action is triggered
-     */
-    void on_actionProject_triggered();
-    /**
-     *@brief on_actionExit_triggered will determine what happens when exit
-     *action is triggered
-     */
-    void on_actionExit_triggered();
-    /**
-     *@brief on_actionRebuild_triggered will determine what happens when
-     *rebuild action is triggered
-     */
-    void on_actionRebuild_triggered();
-    /**
-    * @brief on_actionPlay_toggled will toggle whether the game is playing or not
-    * @param arg1 is the value of play action (checkable)
-    */
-    void on_actionPlay_toggled(bool arg1);
-
-    /**
-     *@brief on_actionImport_triggered will determine what happens when import
-     *action is triggered
-     */
-    void on_actionImport_triggered();
-
 
     /**
      *@brief ResetScriptEngine will delete and reinitialize ScriptEngine
@@ -106,7 +65,25 @@ private slots:
 
 
 
+    /**
+     *@brief TogglePlayOnProjectLoad will make sure whenever you load a project
+     *the engine is not paused
+     */
+    void TogglePlayOnProjectLoad();
+
+
+
+    /**
+     *@brief on_actionProject_triggered will determine what happens when
+     *project action is triggered
+     */
+    void on_actionProject_triggered();
+
+
+
 private:
+
+
     Ui::Controller *ui;
 
 

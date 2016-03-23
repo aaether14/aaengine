@@ -52,6 +52,10 @@ void ProjectManager::LoadProject()
 
 
 
+    emit hasLoadedProject();
+
+
+
 
 
 }
@@ -78,7 +82,7 @@ void ProjectManager::UnloadProject()
 
 
 
-    emit resetScriptEngine();
+    emit shouldResetScriptEngine();
 
 
 

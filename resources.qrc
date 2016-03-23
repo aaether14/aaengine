@@ -7,6 +7,7 @@
         <file>__data/icons/reload.ico</file>
         <file>__data/icons/play.ico</file>
         <file>__data/icons/import.ico</file>
+        <file>__data/icons/dialog_close.ico</file>
     </qresource>
     <qresource prefix="/shaders">
         <file>__data/shaders/fbx_render.frag</file>

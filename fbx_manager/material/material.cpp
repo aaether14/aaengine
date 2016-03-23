@@ -38,6 +38,15 @@ void Material::AddDiffuseProperty(FbxProperty diffuse_property,
 
 
 
+    /**
+    *If we are dealing with an invalid property, return;
+    */
+
+
+    if (!diffuse_property.IsValid())
+        return;
+
+
 
     /**
      * Get the diffuse color of the material
@@ -47,6 +56,11 @@ void Material::AddDiffuseProperty(FbxProperty diffuse_property,
     FbxDouble3 diffuse_color = diffuse_property.Get<FbxDouble3>();
     this->diffuse_color = aae::mesh_util::QVector3DFromFbxVector3D(diffuse_color);
 
+
+
+    /**
+    *If there are no textures attached to the property, return
+    */
 
 
     if(!diffuse_property.GetSrcObjectCount<FbxFileTexture>() > 0)
@@ -109,6 +123,22 @@ void Material::AddNormalProperty(FbxProperty normal_property,
                                  QHash<QString, QOpenGLTexture *> &textures,
                                  QString fbx_file_name)
 {
+
+
+
+    /**
+    *If we are dealing with an invalid property, return;
+    */
+
+
+    if (!normal_property.IsValid())
+        return;
+
+
+
+    /**
+    *If there are no textures attached to the property, return
+    */
 
 
 

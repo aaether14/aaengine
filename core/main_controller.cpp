@@ -21,11 +21,26 @@ Controller::Controller(QWidget *parent) :
 
 
     /**
+    Toggle playing state when prompted
+    */
+    connect(ui->actionPlay, SIGNAL(toggled(bool)), findChild<GLController*>("GL"), SLOT(SetPlaying(bool)));
+
+
+
+    /**
      *Initialize ui dialogs
      */
     Console * console = new Console(this);
     About * about = new About(this);
     MeshImport * mesh_import = new MeshImport(this);
+
+
+    /**
+     * Connect dialogs to corresponding actions
+     */
+    connect(ui->actionConsole, SIGNAL(triggered(bool)), console, SLOT(onAction()));
+    connect(ui->actionAbout, SIGNAL(triggered(bool)), about , SLOT(onAction()));
+    connect(ui->actionImport, SIGNAL(triggered(bool)), mesh_import, SLOT(onAction()));
 
 
 
@@ -34,6 +49,14 @@ Controller::Controller(QWidget *parent) :
      * Initialize project manager
      */
     ProjectManager * project_manager = new ProjectManager(this);
+    /**
+    *Whenever loading a project, unpase engine
+    */
+    connect(project_manager, SIGNAL(hasLoadedProject()), this, SLOT(TogglePlayOnProjectLoad()));
+    /**
+    *When prompted, reload project
+    */
+    connect(ui->actionRebuild, SIGNAL(triggered(bool)), project_manager, SLOT(LoadProject()));
 
 
     /**
@@ -41,24 +64,24 @@ Controller::Controller(QWidget *parent) :
      */
     ResetScriptEngine();
     project_manager->LoadProject();
-    connect(project_manager, SIGNAL(resetScriptEngine()), this, SLOT(ResetScriptEngine()));
-
-
 
 
     /**
-    *Check if Play QAction is checked, if not toggle it in order to send a
-    *signal to start game loop
+    *Every time MainController recieves a signal to reset the script engine, it
+    *will do so
     */
-    if(!ui->actionPlay->isChecked())
-        ui->actionPlay->toggle();
+    connect(project_manager, SIGNAL(shouldResetScriptEngine()), this, SLOT(ResetScriptEngine()));
+    /**
+     *Call project_manager->UnloadProject() when close project action is
+     *triggered
+     */
+    connect(ui->actionClose_Project, SIGNAL(triggered(bool)), project_manager, SLOT(UnloadProject()));
 
 
-
-
-    Q_UNUSED(console)
-    Q_UNUSED(about)
-    Q_UNUSED(mesh_import)
+    /**
+    *Exit when prompted
+    */
+    connect(ui->actionExit, SIGNAL(triggered(bool)), this, SLOT(close()));
 
 
 
@@ -71,18 +94,37 @@ Controller::Controller(QWidget *parent) :
 
 Controller::~Controller()
 {
+
     delete ui;
+
 }
 
 
 
 
-void Controller::on_actionConsole_triggered()
+
+void Controller::ResetScriptEngine()
 {
 
 
-    if (findChild<baseDialog*>("Console"))
-        findChild<baseDialog*>("Console")->onAction();
+
+    if (findChild<ScriptEngine*>("ScriptEngine"))
+        delete findChild<ScriptEngine*>("ScriptEngine");
+
+
+
+    ScriptEngine * script_engine = new ScriptEngine(this);
+
+
+    /**
+    *Add required objects to QML context
+    */
+
+    script_engine->ConnectToTimer(findChild<QObject*>("GL")->findChild<QTimer*>("gTimer"));
+    script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<FPS*>("gFPS"));
+    script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<InputRegister*>("gInput"));
+    script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<AssetLoader*>("AssetLoader"));
+    script_engine->RegisterQObject(new aae::Math(script_engine));
 
 
 
@@ -91,14 +133,21 @@ void Controller::on_actionConsole_triggered()
 
 
 
-void Controller::on_actionAbout_triggered()
+void Controller::TogglePlayOnProjectLoad()
 {
 
-    if (findChild<baseDialog*>("About"))
-        findChild<baseDialog*>("About")->onAction();
+
+    /**
+    *Check if Play QAction is checked, if not toggle it in order to send a
+    *signal to start game loop
+    */
+    if(!ui->actionPlay->isChecked())
+        ui->actionPlay->toggle();
 
 
 }
+
+
 
 
 
@@ -119,11 +168,7 @@ void Controller::on_actionProject_triggered()
 
 
 
-
-
     QString project_name = findChild<GLController*>("GL")->OpenFileDialog("Open Project", "*.qml");
-
-
 
 
 
@@ -154,111 +199,8 @@ void Controller::on_actionProject_triggered()
 
 
 
-void Controller::on_actionExit_triggered()
-{
 
 
-    close();
 
-
-}
-
-
-
-
-void Controller::on_actionRebuild_triggered()
-{
-
-
-
-    if (!findChild<ProjectManager*>("ProjectManager"))
-    {
-        qDebug() << "MainController: Could not find ProjectManager in order to reload project!";
-        return;
-    }
-
-
-
-    if (!ui->actionPlay->isChecked())
-        ui->actionPlay->toggle();
-
-
-
-    findChild<ProjectManager*>("ProjectManager")->LoadProject();
-
-
-
-}
-
-
-
-
-void Controller::on_actionPlay_toggled(bool arg1)
-{
-
-
-
-    if (!findChild<GLController*>("GL"))
-    {
-        qDebug() << "MainController: No GL controller detected! (play toggle)";
-        return;
-    }
-
-
-
-    findChild<GLController*>("GL")->SetPlaying(arg1);
-
-
-
-
-}
-
-
-
-
-
-
-
-void Controller::on_actionImport_triggered()
-{
-
-
-
-    if (findChild<baseDialog*>("MeshImport"))
-        findChild<baseDialog*>("MeshImport")->onAction();
-
-
-
-
-}
-
-
-
-
-
-
-
-void Controller::ResetScriptEngine()
-{
-
-
-
-    if (findChild<ScriptEngine*>("ScriptEngine"))
-        delete findChild<ScriptEngine*>("ScriptEngine");
-
-
-
-    ScriptEngine * script_engine = new ScriptEngine(this);
-
-
-    script_engine->ConnectToTimer(findChild<QObject*>("GL")->findChild<QTimer*>("gTimer"));
-    script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<FPS*>("gFPS"));
-    script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<InputRegister*>("gInput"));
-    script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<AssetLoader*>("AssetLoader"));
-    script_engine->RegisterQObject(new aae::Math(script_engine));
-
-
-
-}
 
 

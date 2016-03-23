@@ -5,8 +5,7 @@
 
 
 
-void Mesh::DynamicDraw(QOpenGLShaderProgram & shader,
-                       QString material_name)
+void Mesh::AcceleratedDraw(QString material_name)
 {
 
 

@@ -89,42 +89,6 @@ void Mesh::RecursiveLoad(FbxNode * node,
 
 
 
-void Mesh::CacheDrawCommands(QList<MeshEntry *> &mesh_entries,
-                             QVector<DrawElementsCommand> &draw_commands,
-                             QVector<unsigned int> &per_object_index,
-                             QString key)
-{
-
-
-
-    for(int i = 0; i < mesh_entries.size(); i++)
-    {
-
-        if (mesh_entries[i]->DoesMaterialExist(key))
-        {
-
-            DrawElementsCommand c;
-            c = mesh_entries[i]->GetDrawCommand(key);
-            c.baseInstance = draw_commands.size();
-            draw_commands << c;
-
-
-            per_object_index << i;
-
-
-        }
-
-    }
-
-
-
-}
-
-
-
-
-
-
 
 Mesh::Mesh():
 
@@ -471,11 +435,8 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
         materials[it].SendToShader(shader);
 
 
-
-
         if (materials[it].use_diffuse_texture)
             textures[materials[it].difuse_texture_name]->bind(0);
-
 
 
         if (materials[it].use_normal_map)
@@ -487,13 +448,13 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
         if (draw_method == "cached")
         {
 
-            CachedDraw(shader, it);
+            CachedDraw(it);
 
         }
-        else if (draw_method == "dynamic")
+        else if (draw_method == "accelerated")
         {
 
-            DynamicDraw(shader, it);
+            AcceleratedDraw(it);
 
         }
         else
@@ -505,10 +466,8 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
-
         if (materials[it].use_diffuse_texture)
             textures[materials[it].difuse_texture_name]->release(0);
-
 
 
         if (materials[it].use_normal_map)

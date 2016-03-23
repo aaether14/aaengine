@@ -206,14 +206,13 @@ class Mesh
 
 
     /**
-     * @brief DynamicDraw will draw the scene computing the draw commands on the
+     * @brief AcceleratedDraw will draw the scene computing the draw commands on the
      *  fly this will allow for kd tree frustum culling inside the mesh but will
      * also be a bit slow in some cases
      * @param shader is the shader used by the engine to render this kind of components
      * @param material_name determines which material based commands are we taking for this render
      */
-    void DynamicDraw(QOpenGLShaderProgram & shader,
-                     QString material_name);
+    void AcceleratedDraw(QString material_name);
 
 
 
@@ -223,8 +222,7 @@ class Mesh
      * @param shader is the shader used by the engine to render this kind of components
      * @param material_name determines which material based commands are we taking for this render
      */
-    void CachedDraw(QOpenGLShaderProgram & shader,
-                    QString material_name);
+    void CachedDraw(QString material_name);
 
 
 

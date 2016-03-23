@@ -4,8 +4,7 @@
 
 
 
-void Mesh::CachedDraw(QOpenGLShaderProgram &shader,
-                      QString material_name)
+void Mesh::CachedDraw(QString material_name)
 {
 
 
@@ -43,4 +42,59 @@ void Mesh::CachedDraw(QOpenGLShaderProgram &shader,
 
 
 }
+
+
+
+
+
+
+
+
+
+void Mesh::CacheDrawCommands(QList<MeshEntry *> &mesh_entries,
+                             QVector<DrawElementsCommand> &draw_commands,
+                             QVector<unsigned int> &per_object_index,
+                             QString key)
+{
+
+
+
+    for(int i = 0; i < mesh_entries.size(); i++)
+    {
+
+        if (mesh_entries[i]->DoesMaterialExist(key))
+        {
+
+
+            DrawElementsCommand c;
+            c = mesh_entries[i]->GetDrawCommand(key);
+            c.baseInstance = draw_commands.size();
+
+
+            draw_commands << c;
+            per_object_index << i;
+
+
+
+        }
+
+    }
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

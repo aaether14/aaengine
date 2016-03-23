@@ -67,17 +67,6 @@ public:
 
 
     /**
-     * @brief LoadProject will unload the currently loaded project and load a new one
-     */
-    void LoadProject();
-    /**
-     *@brief UnloadProject will unload a project deleting the Settings object
-     *in the ScriptEngine
-     */
-    void UnloadProject();
-
-
-    /**
      *@brief LoadProjectAndModifyConfig will, aside from loading the project
      *from config json, modify the config json with the new path
      *@param project_path is the path of the project to be loaded
@@ -92,10 +81,36 @@ signals:
     /**
      * @brief resetScriptEngine - upon project reloading the script engine needs to be reset
      */
-    void resetScriptEngine();
+    void shouldResetScriptEngine();
+
+
+    /**
+     *@brief hasLoadedProject will send a signal upon project loading
+     */
+    void hasLoadedProject();
+
+
 
 
 public slots:
+
+
+
+    /**
+     * @brief LoadProject will unload the currently loaded project and load a new one
+     */
+    void LoadProject();
+
+
+
+    /**
+     *@brief UnloadProject will unload a project deleting the Settings object
+     *in the ScriptEngine
+     */
+    void UnloadProject();
+
+
+
 };
 
 #endif // PROJECTMANAGER_H

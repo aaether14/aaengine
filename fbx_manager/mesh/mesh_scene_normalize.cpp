@@ -87,6 +87,38 @@ void Mesh::NormalizeScene(FbxScene *scene, FbxManager *fbx_manager,
 
 
 
+    /**
+    *Splitting points will attempt to convert from PerPolygon normals and uvs to
+    *PerControlPoint ones
+    */
+
+    if (split_points)
+    {
+
+
+        for (int i = 0; i < scene->GetGeometryCount(); i++)
+        {
+
+
+            FbxMesh * current_mesh = FbxCast<FbxMesh>(scene->GetGeometry(i));
+            if (!current_mesh)
+                continue;
+
+
+            current_mesh->SplitPoints();
+
+        }
+
+
+
+
+    }
+
+
+
+
+
+
 
     /**
     *Generate tangent data for all meshes in the scene
@@ -306,34 +338,6 @@ void Mesh::NormalizeScene(FbxScene *scene, FbxManager *fbx_manager,
     }
 
 
-
-
-    /**
-    *Splitting points will attempt to convert from PerPolygon normals and uvs to
-    *PerControlPoint ones
-    */
-
-    if (split_points)
-    {
-
-
-        for (int i = 0; i < scene->GetGeometryCount(); i++)
-        {
-
-
-            FbxMesh * current_mesh = FbxCast<FbxMesh>(scene->GetGeometry(i));
-            if (!current_mesh)
-                continue;
-
-
-            current_mesh->SplitPoints();
-
-        }
-
-
-
-
-    }
 
 
 
