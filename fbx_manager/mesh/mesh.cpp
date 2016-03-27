@@ -6,90 +6,6 @@
 
 
 
-void Mesh::RecursiveLoad(FbxNode * node,
-                         QVector<unsigned int> & master_indices,
-                         QVector<float> & master_vertices,
-                         QVector<float> &master_normals,
-                         QVector<float> &master_uvs,
-                         QVector<float> &master_tangents)
-{
-
-
-
-
-
-
-    for (int i = 0; i < node->GetChildCount(); i++)
-        RecursiveLoad(node->GetChild(i),
-                      master_indices,
-                      master_vertices,
-                      master_normals,
-                      master_uvs,
-                      master_tangents);
-
-
-
-
-
-
-    if(!node->GetNodeAttribute())
-        return;
-
-
-
-
-
-    FbxNodeAttribute::EType AttributeType = node->GetNodeAttribute()->GetAttributeType();
-    if(AttributeType != FbxNodeAttribute::eMesh)
-        return;
-
-
-
-
-    FbxMesh * mesh = node->GetMesh();
-
-
-
-
-
-    MeshEntry * new_mesh_entry = new MeshEntry();
-    new_mesh_entry->LoadMesh(mesh,
-
-
-                             master_indices,
-                             master_vertices,
-                             master_normals,
-                             master_uvs,
-                             master_tangents,
-
-
-                             is_using_normals,
-                             is_using_uvs,
-                             is_using_tangents,
-
-
-                             m_gpu.current_control_point_offset,
-                             m_gpu.current_polygon_offset);
-
-
-
-
-
-    mesh_entries << new_mesh_entry;
-
-
-
-
-}
-
-
-
-
-
-
-
-
-
 Mesh::Mesh():
 
 
@@ -274,7 +190,7 @@ void Mesh::LoadFromFBX(FbxManager *fbx_manager,
      */
 
     LoadMaterials(scene, file_name);
-    LoadBufferObjects(scene->GetRootNode());
+    CommandLoadingBufferObjects(scene->GetRootNode());
 
 
 
@@ -323,13 +239,6 @@ void Mesh::LoadFromFBX(FbxManager *fbx_manager,
 
 
 
-    /**
-    *Mark the mesh as successfully loaded and release FbxScene memory
-    */
-
-
-    is_loaded = true;
-    scene->Destroy();
 
 
 

@@ -49,6 +49,13 @@ class FPS : public QObject
 
 
 
+    /**
+     *@brief total_time is the time that has passed since the engine started (msecs)
+     */
+    long long total_time;
+
+
+
 
 public:
 
@@ -83,16 +90,6 @@ public slots:
      * @brief Update will compute fps
      */
     void Update();
-    /**
-     * @brief Get will return fps
-     * @return fps
-     */
-    int Get();
-    /**
-     * @brief Delta will return r_delta
-     * @return r_delta
-     */
-    float Delta();
 
 
 
@@ -100,10 +97,24 @@ public:
 
 
 
-    Q_INVOKABLE int get() {return Get(); }
+    /**
+     * @brief get will return fps
+     * @return fps
+     */
+    Q_INVOKABLE int get();
+
+    /**
+     * @brief delta will return r_delta
+     * @return r_delta
+     */
+    Q_INVOKABLE float delta();
 
 
-    Q_INVOKABLE float delta() {return Delta(); }
+    /**
+    * @brief totalTime will return total_time
+    * @return total_time
+    */
+    Q_INVOKABLE long long totalTime();
 
 
 

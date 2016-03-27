@@ -5,14 +5,15 @@
 
 
 FPS::FPS(QObject *parent) : QObject(parent),
-    frame_counter(0), fps(0), r_delta(0.0)
+    frame_counter(0),
+    fps(0),
+    r_delta(0.0),
+    total_time(0)
 {
 
 
 
     setObjectName("gFPS");
-
-
     elapsed_timer = new QTime();
 
 
@@ -77,6 +78,9 @@ void FPS::Update()
         */
 
         r_delta = 1.0 / (float)(fps);
+
+
+        total_time += elapsed_timer->elapsed();
         elapsed_timer->restart();
 
 
@@ -94,7 +98,7 @@ void FPS::Update()
 
 
 
-int FPS::Get()
+int FPS::get()
 {
 
     return fps;
@@ -104,10 +108,22 @@ int FPS::Get()
 
 
 
-float FPS::Delta()
+float FPS::delta()
 {
 
     return r_delta;
+
+}
+
+
+
+
+long long FPS::totalTime()
+{
+
+
+    return total_time;
+
 
 }
 

@@ -9,9 +9,12 @@
 #include <QHash>
 #include <QVector>
 #include <QMatrix4x4>
+
+
+
 #include <fbxsdk.h>
 #include <fbx_manager/material/material.hpp>
-
+#include <QMutex>
 
 
 
@@ -100,6 +103,13 @@ class MeshEntry
      * @param mesh is the mesh whose transform we will load
      */
     void LoadTransform(FbxMesh * mesh);
+
+
+    /**
+     * @brief LoadBoundingBox will load the bounding box of the mesh entry
+     * @param mesh is the mesh whose bounding box we will load
+     */
+    void LoadBoundingBox(FbxMesh * mesh);
 
 
 

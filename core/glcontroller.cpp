@@ -14,9 +14,24 @@ GLController::GLController(QWidget *parent)
 
 
 
+    /**
+     *Initialize default timer
+     */
+
     QTimer * timer = new QTimer(this);
     timer->setObjectName("gTimer");
     timer->setInterval(0);
+
+
+
+    /**
+     *Initialize backup timer that will only be active when the default timer
+     *is paused
+     */
+
+    QTimer * backup_timer = new QTimer(this);
+    backup_timer->setObjectName("gBackupTimer");
+    backup_timer->setInterval(0);
 
 
 
@@ -35,6 +50,7 @@ GLController::GLController(QWidget *parent)
 
     connect(timer, &QTimer::timeout, fps, &FPS::Update);
     connect(timer, &QTimer::timeout, this, &GLController::Update);
+    connect(backup_timer, &QTimer::timeout, fps, &FPS::Update);
 
 
 
@@ -198,6 +214,10 @@ void GLController::Pause()
         findChild<QTimer*>("gTimer")->stop();
 
 
+    if (findChild<QTimer*>("gBackupTimer"))
+        findChild<QTimer*>("gBackupTimer")->start();
+
+
 
     is_playing = false;
 
@@ -214,6 +234,10 @@ void GLController::Unpause()
 
     if (findChild<QTimer*>("gTimer"))
         findChild<QTimer*>("gTimer")->start();
+
+
+    if (findChild<QTimer*>("gBackupTimer"))
+        findChild<QTimer*>("gBackupTimer")->stop();
 
 
     is_playing = true;

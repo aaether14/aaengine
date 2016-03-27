@@ -1,4 +1,5 @@
 
+
 #-------------------------------------------------
 #
 # Project created by QtCreator 2016-01-29T16:11:49
@@ -54,7 +55,8 @@ SOURCES += main.cpp\
     fbx_manager/entry/mesh_entry_uvs.cpp \
     fbx_manager/entry/mesh_entry_tangent.cpp \
     fbx_manager/mesh_util.cpp \
-    fbx_manager/mesh/mesh_accelerated_draw.cpp
+    fbx_manager/mesh/mesh_accelerated_draw.cpp \
+    fbx_manager/mesh/geometryloader.cpp
 
 
 
@@ -86,7 +88,8 @@ HEADERS  += \
     dialogs/mesh_import_dialog/meshimport.hpp \
     dialogs/base_dialog.hpp \
     fbx_manager/mesh/mesh_gpu_memory.h \
-    fbx_manager/mesh_util.hpp
+    fbx_manager/mesh_util.hpp \
+    fbx_manager/mesh/geometryloader.hpp
 
 
 
@@ -100,6 +103,7 @@ FORMS    += core/controller.ui \
 
 
 CONFIG += c++11
+
 
 
 

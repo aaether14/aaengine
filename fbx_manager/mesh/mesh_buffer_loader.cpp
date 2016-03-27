@@ -113,7 +113,7 @@ void Mesh::CheckLayersUsedByMesh(FbxScene *scene)
 
 
 
-void Mesh::LoadBufferObjects(FbxNode *root)
+void Mesh::CommandLoadingBufferObjects(FbxNode *root)
 {
 
 
@@ -123,6 +123,51 @@ void Mesh::LoadBufferObjects(FbxNode *root)
      */
 
     CheckLayersUsedByMesh(root->GetScene());
+    connect(this, &Mesh::ShouldPassGeometryDataToOpenGL, this, &Mesh::PassGeometryDataToOpenGL);
+
+
+
+
+    /**
+     *Commence recursive load on all submeshes
+     */
+
+
+
+    GeometryLoader * geometry_loader = new GeometryLoader(mesh_entries,
+                                                          master_indices,
+                                                          master_vertices,
+                                                          master_normals,
+                                                          master_uvs,
+                                                          master_tangents,
+
+                                                          is_using_normals,
+                                                          is_using_uvs,
+                                                          is_using_tangents,
+                                                          root);
+
+
+
+    geometry_loading_watcher.connect(geometry_loader, &GeometryLoader::HasFinishedLoading, this, [=]{
+        emit ShouldPassGeometryDataToOpenGL();
+    });
+    geometry_loading_procces = QtConcurrent::run(geometry_loader, &GeometryLoader::Load);
+    geometry_loading_watcher.setFuture(geometry_loading_procces);
+
+
+
+
+
+
+
+
+}
+
+
+
+
+void Mesh::PassGeometryDataToOpenGL()
+{
 
 
 
@@ -131,7 +176,6 @@ void Mesh::LoadBufferObjects(FbxNode *root)
      */
 
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
-
 
 
 
@@ -145,39 +189,6 @@ void Mesh::LoadBufferObjects(FbxNode *root)
 
 
 
-
-    /**
-     *Create the lists that will be filled with mesh data
-     */
-
-
-    QVector<unsigned int> master_indices;
-    QVector<float> master_vertices;
-    QVector<float> master_normals;
-    QVector<float> master_uvs;
-    QVector<float> master_tangents;
-
-
-
-
-
-    /**
-     *Commence recursive load on all submeshes
-     */
-
-
-    RecursiveLoad(root,
-                  master_indices,
-                  master_vertices,
-                  master_normals,
-                  master_uvs,
-                  master_tangents);
-
-
-
-
-
-
     /**
     *Create and bind the vertex array object
     */
@@ -185,7 +196,6 @@ void Mesh::LoadBufferObjects(FbxNode *root)
 
     f->glGenVertexArrays(1, &m_gpu.vao);
     f->glBindVertexArray(m_gpu.vao);
-
 
 
 
@@ -278,17 +288,13 @@ void Mesh::LoadBufferObjects(FbxNode *root)
 
 
 
-    /**
-    *Clear the data lists
-    */
+
 
     master_indices.clear();
     master_vertices.clear();
     master_normals.clear();
     master_uvs.clear();
     master_tangents.clear();
-
-
 
 
 
@@ -374,10 +380,25 @@ void Mesh::LoadBufferObjects(FbxNode *root)
     f->glBindVertexArray(0);
 
 
-
+    is_loaded = true;
 
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

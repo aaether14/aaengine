@@ -20,6 +20,8 @@ class FBXManager : public BaseAssetLoader
 {
 
 
+
+
     /**
      * @brief manager is the manager of the fbx sdk
      */
@@ -35,8 +37,10 @@ public:
      * @brief FBXManager will initialize the fbx sdk
      */
     FBXManager();
+
+
     /**
-    @brief ~FBXManager will release the fbx sdk when no longer needed
+    *~FBXManager will destroy the fbx sdk mananger
     */
     ~FBXManager();
 
@@ -64,6 +68,7 @@ public:
      * @return returns a pointer to the newly created MeshAsset
      */
     BaseAsset *CreateAsset();
+
 
 
 

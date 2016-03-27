@@ -14,7 +14,6 @@ FBXManager::FBXManager()
 
 
 
-
     if (!manager)
     {
 
@@ -27,10 +26,7 @@ FBXManager::FBXManager()
     else
     {
 
-
-
         qDebug() << "Autodesk FBX SDK version: " << manager->GetVersion();
-
 
         FbxIOSettings* io_settings = FbxIOSettings::Create(manager, IOSROOT);
         manager->SetIOSettings(io_settings);
@@ -47,10 +43,15 @@ FBXManager::FBXManager()
 
 
 
+
 FBXManager::~FBXManager()
 {
 
+
+
     manager->Destroy();
+
+
 
 }
 
@@ -124,6 +125,10 @@ BaseAsset *FBXManager::CreateAsset()
 
 
 }
+
+
+
+
 
 
 

@@ -15,14 +15,13 @@
 #include <QOpenGLFunctions_4_3_Core>
 #include <QOpenGLShaderProgram>
 #include <QList>
+#include <QThread>
 
 
 
 
 #include <fbx_manager/mesh/mesh_gpu_memory.h>
-#include <fbx_manager/entry/meshentry.hpp>
-
-
+#include <fbx_manager/mesh/geometryloader.hpp>
 
 
 
@@ -31,10 +30,12 @@
 /**
  * @brief The Mesh class handles loading, normalizing and rendering of the fbx 3d meshes
  */
-class Mesh
+class Mesh : public QObject
 {
 
 
+
+    Q_OBJECT
 
 
 
@@ -107,31 +108,12 @@ class Mesh
 
 
     /**
-     * @brief LoadBufferObjects will load the opengl memory from the fbx file
+     * @brief CommandLoadingBufferObjects will start the thread where GeometryLoader will work
      * @param root is the root in the fbx scene
      */
-    void LoadBufferObjects(FbxNode * root);
+    void CommandLoadingBufferObjects(FbxNode * root);
 
 
-
-    /**
-     * @brief RecursiveLoad will recursively look through all the nodes in the scene and load data acordingly
-     * @param node is the current node we're looking into
-     * @param master_indices is a reference to the index buffer which
-     *  will be uploaded to the opengl memory
-     * @param master_vertices is a reference to the vertex buffer which
-     *  will be uploaded to the opengl memory
-     * @param master_normals is a reference to the normal buffer which
-     *  will be uploaded to the opengl memory
-     * @param master_uvs is a reference to the uv buffer which
-     *  will be uploaded to the opengl memory
-     */
-    void RecursiveLoad(FbxNode * node,
-                       QVector<unsigned int> & master_indices,
-                       QVector<float> & master_vertices,
-                       QVector<float> & master_normals,
-                       QVector<float> & master_uvs,
-                       QVector<float> & master_tangents);
 
 
 
@@ -235,6 +217,38 @@ class Mesh
     void CheckLayersUsedByMesh(FbxScene * scene);
 
 
+
+
+
+    QFuture<void> geometry_loading_procces;
+    QFutureWatcher<void> geometry_loading_watcher;
+
+
+
+    /**
+     *Create the lists that will be filled with mesh data
+     */
+
+
+    QVector<unsigned int> master_indices;
+    QVector<float> master_vertices;
+    QVector<float> master_normals;
+    QVector<float> master_uvs;
+    QVector<float> master_tangents;
+
+
+
+private slots:
+    /**
+     * @brief PassGeometryDataToOpenGL will use the data harvested by GeometryLoader
+     * and pass it to opengl data buffers
+     */
+    void PassGeometryDataToOpenGL();
+
+
+
+signals:
+   void ShouldPassGeometryDataToOpenGL();
 
 
 
