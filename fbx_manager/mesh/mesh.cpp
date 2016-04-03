@@ -9,6 +9,8 @@
 Mesh::Mesh():
 
 
+    m_scene(NULL),
+
 
     is_using_normals(false),
     is_using_uvs(false),
@@ -17,8 +19,14 @@ Mesh::Mesh():
 
 
     should_save_scene_after_load(false),
-    is_loaded(false),
-    draw_method("cached")
+    should_pass_geometry_to_opengl(false),
+    should_pass_textures_to_opengl(false),
+
+
+
+    has_loaded_geometry(false),
+    has_loaded_textures(false),
+    m_draw_method("cached")
 {
 
 
@@ -87,19 +95,19 @@ Mesh::~Mesh()
 
 
 
-    qDeleteAll(textures);
-    qDeleteAll(mesh_entries);
+    qDeleteAll(m_textures);
+    qDeleteAll(m_mesh_entries);
 
 
 
 
-    textures.clear();
-    mesh_entries.clear();
+    m_textures.clear();
+    m_mesh_entries.clear();
 
 
 
 
-    materials.clear();
+    m_materials.clear();
     m_gpu.indirect_buffer_stride_cache.clear();
     m_gpu.indirect_buffer_size_cache.clear();
     m_gpu.per_object_buffer_stride_cache.clear();
@@ -129,52 +137,11 @@ void Mesh::LoadFromFBX(FbxManager *fbx_manager,
 
 
     /**
-     *First, create a fbx importer using the FbxManager
-     */
-
-    FbxImporter* importer = FbxImporter::Create(fbx_manager, "default_importer");
-
-
-    /**
-     *Initialize importer on the mesh you want to load
-     */
-
-    bool importer_status = importer->Initialize(file_name.toStdString().c_str(),
-                                                -1,
-                                                fbx_manager->GetIOSettings());
-
-
-    /**
-    *Catch any importer error that have might occured
-    */
-
-    if(!importer_status)
-    {
-        qDebug() << "Call to FbxImporter::Initialize() failed";
-        qDebug() << "Error returned: " << importer->GetStatus().GetErrorString();
-        return;
-    }
-
-
-
-    /**
-     * Load the scene using the importer
-     */
-
-
-    FbxScene * scene = FbxScene::Create(fbx_manager, "default_scene");
-    importer->Import(scene);
-    importer->Destroy();
-
-
-
-
-    /**
     *If requested, normalize the scene with the provided parameters
     */
 
     if(normalize_scene)
-        NormalizeScene(scene, fbx_manager,
+        NormalizeScene(fbx_manager,
                        convert_axis,
                        convert_scale,
                        split_points,
@@ -184,13 +151,13 @@ void Mesh::LoadFromFBX(FbxManager *fbx_manager,
 
 
 
-
     /**
      *Load materials and buffer objects
      */
 
-    LoadMaterials(scene, file_name);
-    CommandLoadingBufferObjects(scene->GetRootNode());
+    //CommandLoadingMaterials(file_name);
+    //CommandLoadingBufferObjects();
+
 
 
 
@@ -231,7 +198,7 @@ void Mesh::LoadFromFBX(FbxManager *fbx_manager,
         *If everything went well, proceed to exporting the scene
         */
 
-        exporter->Export(scene);
+        exporter->Export(m_scene);
         exporter->Destroy();
 
 
@@ -257,13 +224,44 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
+
+    /**
+     *If the mesh has successfully computed geometry data but has not yet sent
+     *it to opengl memory do so
+     */
+
+
+    if (should_pass_geometry_to_opengl)
+    {
+        PassGeometryDataToOpenGL();
+        should_pass_geometry_to_opengl = false;
+    }
+
+
+
+    /**
+    *If the mesh has successfully computed texture data but has not yet sent it
+    *to opengl memory do so
+    */
+
+
+    if (should_pass_textures_to_opengl)
+    {
+        PassTextureDataToOpenGL();
+        should_pass_textures_to_opengl = false;
+    }
+
+
+
+
     /**
     *If the mesh wasn't successfully loaded, don't bother to try drawing it
     */
 
 
-    if (!is_loaded)
+    if (!has_loaded_geometry || !has_loaded_textures)
         return;
+
 
 
 
@@ -290,35 +288,11 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
+
     /**
-     *the model matrix vector will be filled with the model matrices of the
-     *mesh entries of the mesh
+     *First send model matrices to shader
      */
-    QVector<float16> model_matrix;
-
-
-
-    foreach(auto it, mesh_entries)
-        model_matrix << toFloat16((global_transform * it->GetLocalTransform()).constData());
-
-
-
-
-    /**
-    *Send the model matrices to the shader via ssbo binding
-    */
-
-
-
-    f->glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_gpu.ssbo);
-    f->glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(float16) * model_matrix.size(), &model_matrix[0], GL_STATIC_DRAW);
-    f->glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_gpu.ssbo);
-
-
-
-
-    model_matrix.clear();
-
+    SendModelMatrixToShader();
 
 
 
@@ -330,7 +304,7 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
-    foreach(auto it, materials.keys())
+    foreach(auto it, m_materials.keys())
     {
 
 
@@ -341,26 +315,30 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
-        materials[it].SendToShader(shader);
-
-
-        if (materials[it].use_diffuse_texture)
-            textures[materials[it].difuse_texture_name]->bind(0);
-
-
-        if (materials[it].use_normal_map)
-            textures[materials[it].normal_map_name]->bind(1);
+        m_materials[it].SendToShader(shader);
 
 
 
+        if (m_materials[it].use_diffuse_texture)
+            if (m_textures[m_materials[it].difuse_texture_name])
+                m_textures[m_materials[it].difuse_texture_name]->bind(0);
 
-        if (draw_method == "cached")
+
+
+        if (m_materials[it].use_normal_map)
+            if (m_textures[m_materials[it].normal_map_name])
+                m_textures[m_materials[it].normal_map_name]->bind(1);
+
+
+
+
+        if (m_draw_method == "cached")
         {
 
             CachedDraw(it);
 
         }
-        else if (draw_method == "accelerated")
+        else if (m_draw_method == "accelerated")
         {
 
             AcceleratedDraw(it);
@@ -375,12 +353,15 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
-        if (materials[it].use_diffuse_texture)
-            textures[materials[it].difuse_texture_name]->release(0);
+        if (m_materials[it].use_diffuse_texture)
+            if (m_textures[m_materials[it].difuse_texture_name])
+                m_textures[m_materials[it].difuse_texture_name]->release(0);
 
 
-        if (materials[it].use_normal_map)
-            textures[materials[it].normal_map_name]->release(1);
+
+        if (m_materials[it].use_normal_map)
+            if (m_textures[m_materials[it].normal_map_name])
+                m_textures[m_materials[it].normal_map_name]->release(1);
 
 
 

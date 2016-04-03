@@ -8,7 +8,7 @@
 
 
 
-void Mesh::NormalizeScene(FbxScene *scene, FbxManager *fbx_manager,
+void Mesh::NormalizeScene(FbxManager *fbx_manager,
                           bool convert_axis,
                           bool convert_scale,
                           bool split_points,
@@ -34,7 +34,7 @@ void Mesh::NormalizeScene(FbxScene *scene, FbxManager *fbx_manager,
 
 
         FbxGeometryConverter geometry_converter(fbx_manager);
-        geometry_converter.Triangulate(scene, true);
+        geometry_converter.Triangulate(m_scene, true);
 
 
     }
@@ -53,10 +53,10 @@ void Mesh::NormalizeScene(FbxScene *scene, FbxManager *fbx_manager,
     {
 
 
-        FbxAxisSystem SceneAxisSystem = scene->GetGlobalSettings().GetAxisSystem();
+        FbxAxisSystem SceneAxisSystem = m_scene->GetGlobalSettings().GetAxisSystem();
         if (SceneAxisSystem != FbxAxisSystem::OpenGL)
         {
-            FbxAxisSystem::OpenGL.ConvertScene(scene);
+            FbxAxisSystem::OpenGL.ConvertScene(m_scene);
         }
 
 
@@ -73,10 +73,10 @@ void Mesh::NormalizeScene(FbxScene *scene, FbxManager *fbx_manager,
     {
 
 
-        FbxSystemUnit SceneSystemUnit = scene->GetGlobalSettings().GetSystemUnit();
+        FbxSystemUnit SceneSystemUnit = m_scene->GetGlobalSettings().GetSystemUnit();
         if( SceneSystemUnit.GetScaleFactor() != 1.0 )
         {
-            FbxSystemUnit::cm.ConvertScene(scene);
+            FbxSystemUnit::cm.ConvertScene(m_scene);
         }
 
 
@@ -96,11 +96,11 @@ void Mesh::NormalizeScene(FbxScene *scene, FbxManager *fbx_manager,
     {
 
 
-        for (int i = 0; i < scene->GetGeometryCount(); i++)
+        for (int i = 0; i < m_scene->GetGeometryCount(); i++)
         {
 
 
-            FbxMesh * current_mesh = FbxCast<FbxMesh>(scene->GetGeometry(i));
+            FbxMesh * current_mesh = FbxCast<FbxMesh>(m_scene->GetGeometry(i));
             if (!current_mesh)
                 continue;
 
@@ -129,7 +129,7 @@ void Mesh::NormalizeScene(FbxScene *scene, FbxManager *fbx_manager,
     {
 
 
-        for (int i = 0; i < scene->GetGeometryCount(); i++)
+        for (int i = 0; i < m_scene->GetGeometryCount(); i++)
         {
 
 
@@ -137,7 +137,7 @@ void Mesh::NormalizeScene(FbxScene *scene, FbxManager *fbx_manager,
              *Skip through invalid meshes
              */
 
-            FbxMesh * current_mesh = FbxCast<FbxMesh>(scene->GetGeometry(i));
+            FbxMesh * current_mesh = FbxCast<FbxMesh>(m_scene->GetGeometry(i));
             if (!current_mesh)
                 continue;
 
@@ -352,12 +352,12 @@ void Mesh::NormalizeScene(FbxScene *scene, FbxManager *fbx_manager,
     if (convert_textures)
     {
 
-        for (int i = 0; i < scene->GetTextureCount(); i++)
+        for (int i = 0; i < m_scene->GetTextureCount(); i++)
         {
 
 
 
-            FbxFileTexture * texture = FbxCast<FbxFileTexture>(scene->GetTexture(i));
+            FbxFileTexture * texture = FbxCast<FbxFileTexture>(m_scene->GetTexture(i));
             if (!texture)
                 continue;
 

@@ -73,6 +73,18 @@ public:
 
 
 
+    /**
+     * @brief ImportScene will import the data from the fbx file to the scene
+     * @param fbx_file_name is the name of the fbx file
+     * @param mesh is the mesh whose scene will be imported
+     */
+    void ImportScene(QString fbx_file_name,
+                     Mesh * mesh);
+
+
+
+
+
 
 };
 

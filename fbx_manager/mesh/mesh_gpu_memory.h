@@ -114,18 +114,6 @@ struct MeshGPUMemory
 
 
 
-    /**
-     *@brief current_polygon_offset is used to know how to fill the mesh entry
-     *draw command
-     */
-    int current_polygon_offset;
-    /**
-     *@brief current_control_point_offset is used to know how to fill the mesh
-     *entry draw command
-     */
-    int current_control_point_offset;
-
-
 
 };
 
@@ -159,10 +147,6 @@ inline void ResetGPUMemory(MeshGPUMemory & m_gpu)
 
     m_gpu.cached_indirect_buffer = 0;
     m_gpu.cached_per_object_buffer = 0;
-
-
-    m_gpu.current_control_point_offset = 0;
-    m_gpu.current_polygon_offset = 0;
 
 
 

@@ -77,15 +77,6 @@ void FBXManager::Load(QString file_name,
 
 
 
-
-    if(!static_cast<MeshAsset*>(asset)->isLoaded())
-    {
-        qDebug() << "FbxManager: MeshAsset not loaded!";
-        return;
-    }
-
-
-
     if (!dynamic_cast<MeshAsset*>(asset))
     {
         qDebug() << "FbxManager: Could not convert to MeshAsset!";
@@ -95,16 +86,28 @@ void FBXManager::Load(QString file_name,
 
 
 
+    if(!static_cast<MeshAsset*>(asset)->isLoaded())
+    {
+        qDebug() << "FbxManager: MeshAsset not loaded!";
+        return;
+    }
 
-    bool should_normalize = load_options.size() > 0 ? true : false;
 
 
 
+    Mesh* mesh = static_cast<MeshAsset*>(asset)->GetMesh();
+    ImportScene(file_name, mesh);
 
-    static_cast<MeshAsset*>(asset)->GetMesh()->LoadFromFBX(GetManager(),
-                                                           file_name,
-                                                           should_normalize,
-                                                           load_options["convert_axis"].toBool(),
+
+
+    mesh->LoadFromFBX(GetManager(),
+                      file_name,
+
+
+                      load_options.size() > 0 ? true : false,
+                      load_options["convert_axis"].toBool(),
+
+
             load_options["convert_scale"].toBool(),
             load_options["split_points"].toBool(),
             load_options["generate_tangents"].toBool(),
@@ -122,6 +125,65 @@ BaseAsset *FBXManager::CreateAsset()
 
 
     return new MeshAsset();
+
+
+}
+
+
+
+
+void FBXManager::ImportScene(QString fbx_file_name,
+                             Mesh * mesh)
+{
+
+
+
+    /**
+     *First, create a fbx importer using the FbxManager
+     */
+
+    FbxImporter* importer = FbxImporter::Create(GetManager(), "Aaether Engine Importer");
+
+
+    /**
+     *Initialize importer on the mesh you want to load
+     */
+
+    bool importer_status = importer->Initialize(fbx_file_name.toStdString().c_str(),
+                                                -1,
+                                                GetManager()->GetIOSettings());
+
+
+    /**
+    *Catch any importer error that have might occured
+    */
+
+    if(!importer_status)
+    {
+        qDebug() << "Tried to load:" << fbx_file_name << "!";
+        qDebug() << "Call to FbxImporter::Initialize() failed";
+        qDebug() << "Error returned: " << importer->GetStatus().GetErrorString();
+        qDebug() << "";
+        return;
+    }
+
+
+
+    /**
+     * Load the scene using the importer
+     */
+
+
+    FbxScene * scene = FbxScene::Create(GetManager(), "default_scene");
+    importer->Import(scene);
+    importer->Destroy();
+
+
+
+
+    mesh->SetFbxScene(scene);
+
+
 
 
 }

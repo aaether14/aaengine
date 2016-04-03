@@ -1,14 +1,29 @@
-#include <fbx_manager/mesh/mesh.hpp>
+#include <fbx_manager/mesh/materialloader.hpp>
 
 
 
 
 
 
+MaterialLoader::MaterialLoader(QHash<QString, Material> &materials,
+                               QHash<QString, QImage> &images,
+                               FbxScene *scene,
+                               QString fbx_file_name) :
+    materials(materials),
+    images(images),
+    scene(scene),
+    fbx_file_name(fbx_file_name)
 
-void Mesh::LoadMaterials(FbxScene *scene, QString fbx_file_name)
 {
 
+
+
+
+
+}
+
+void MaterialLoader::Load()
+{
 
 
     materials.clear();
@@ -17,6 +32,7 @@ void Mesh::LoadMaterials(FbxScene *scene, QString fbx_file_name)
 
     for (int i = 0; i < scene->GetMaterialCount(); i++)
     {
+
 
 
         /**
@@ -46,6 +62,7 @@ void Mesh::LoadMaterials(FbxScene *scene, QString fbx_file_name)
 
 
 
+
         /**
          *Create a new material and add properties to it
          */
@@ -57,14 +74,14 @@ void Mesh::LoadMaterials(FbxScene *scene, QString fbx_file_name)
 
 
         new_mat.AddDiffuseProperty(material->FindProperty(FbxSurfaceMaterial::sDiffuse),
-                                   textures,
+                                   images,
                                    fbx_file_name);
 
 
 
 
         new_mat.AddNormalProperty(material->FindProperty(FbxSurfaceMaterial::sNormalMap),
-                                  textures,
+                                  images,
                                   fbx_file_name);
 
 
@@ -74,13 +91,17 @@ void Mesh::LoadMaterials(FbxScene *scene, QString fbx_file_name)
         materials[material->GetName()] = new_mat;
 
 
+
     }
 
 
 
 
+    emit HasLoadedMaterials();
+
 
 
 
 }
+
 

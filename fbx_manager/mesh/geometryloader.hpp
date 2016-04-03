@@ -19,8 +19,8 @@
 class GeometryLoader : public QObject
 {
 
-    Q_OBJECT
 
+    Q_OBJECT
 
 
     /**
@@ -81,9 +81,6 @@ class GeometryLoader : public QObject
      *rendering (i.e has bump maps)
      */
     bool is_using_tangents;
-
-
-
 
 
 

@@ -112,8 +112,7 @@ void Mesh::CheckLayersUsedByMesh(FbxScene *scene)
 
 
 
-
-void Mesh::CommandLoadingBufferObjects(FbxNode *root)
+void Mesh::CommandLoadingBufferObjects()
 {
 
 
@@ -122,8 +121,7 @@ void Mesh::CommandLoadingBufferObjects(FbxNode *root)
      *Check if the mesh is using normals, uvs or tangents
      */
 
-    CheckLayersUsedByMesh(root->GetScene());
-    connect(this, &Mesh::ShouldPassGeometryDataToOpenGL, this, &Mesh::PassGeometryDataToOpenGL);
+    CheckLayersUsedByMesh(m_scene);
 
 
 
@@ -134,26 +132,39 @@ void Mesh::CommandLoadingBufferObjects(FbxNode *root)
 
 
 
-    GeometryLoader * geometry_loader = new GeometryLoader(mesh_entries,
-                                                          master_indices,
-                                                          master_vertices,
-                                                          master_normals,
-                                                          master_uvs,
-                                                          master_tangents,
+    GeometryLoader * geometry_loader = new GeometryLoader(m_mesh_entries,
+                                                          d_master_indices,
+                                                          d_master_vertices,
+                                                          d_master_normals,
+                                                          d_master_uvs,
+                                                          d_master_tangents,
 
                                                           is_using_normals,
                                                           is_using_uvs,
                                                           is_using_tangents,
-                                                          root);
+                                                          m_scene->GetRootNode());
 
 
 
-    geometry_loading_watcher.connect(geometry_loader, &GeometryLoader::HasFinishedLoading, this, [=]{
-        emit ShouldPassGeometryDataToOpenGL();
+    QFuture<void> geometry_loading_procces = QtConcurrent::run(geometry_loader, &GeometryLoader::Load);
+    Q_UNUSED(geometry_loading_procces)
+
+
+
+    geometry_loader->connect(geometry_loader, &GeometryLoader::HasFinishedLoading, [=](){
+
+
+        QMutex mutex;
+        mutex.lock();
+        should_pass_geometry_to_opengl = true;
+        mutex.unlock();
+
+
+        delete geometry_loader;
+
+
+
     });
-    geometry_loading_procces = QtConcurrent::run(geometry_loader, &GeometryLoader::Load);
-    geometry_loading_watcher.setFuture(geometry_loading_procces);
-
 
 
 
@@ -194,9 +205,11 @@ void Mesh::PassGeometryDataToOpenGL()
     */
 
 
-    f->glGenVertexArrays(1, &m_gpu.vao);
-    f->glBindVertexArray(m_gpu.vao);
-
+    if (!m_gpu.vao)
+    {
+        f->glGenVertexArrays(1, &m_gpu.vao);
+        f->glBindVertexArray(m_gpu.vao);
+    }
 
 
 
@@ -206,7 +219,7 @@ void Mesh::PassGeometryDataToOpenGL()
 
     f->glGenBuffers(1, &m_gpu.master_ibo);
     f->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_gpu.master_ibo);
-    f->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * master_indices.size(), &master_indices[0], GL_STATIC_DRAW);
+    f->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * d_master_indices.size(), &d_master_indices[0], GL_STATIC_DRAW);
 
 
 
@@ -219,7 +232,7 @@ void Mesh::PassGeometryDataToOpenGL()
 
     f->glGenBuffers(1, &m_gpu.master_vbo);
     f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.master_vbo);
-    f->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * master_vertices.size(), &master_vertices[0], GL_STATIC_DRAW);
+    f->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * d_master_vertices.size(), &d_master_vertices[0], GL_STATIC_DRAW);
     f->glEnableVertexAttribArray(MESH_VERTEX_ATTRIBUTE_POINTER);
     f->glVertexAttribPointer(MESH_VERTEX_ATTRIBUTE_POINTER, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
@@ -236,7 +249,7 @@ void Mesh::PassGeometryDataToOpenGL()
 
         f->glGenBuffers(1, &m_gpu.master_normals_vbo);
         f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.master_normals_vbo);
-        f->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * master_normals.size(), &master_normals[0], GL_STATIC_DRAW);
+        f->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * d_master_normals.size(), &d_master_normals[0], GL_STATIC_DRAW);
         f->glEnableVertexAttribArray(MESH_NORMAL_ATTRIBUTE_POINTER);
         f->glVertexAttribPointer(MESH_NORMAL_ATTRIBUTE_POINTER, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
@@ -256,7 +269,7 @@ void Mesh::PassGeometryDataToOpenGL()
 
         f->glGenBuffers(1, &m_gpu.master_uvs_vbo);
         f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.master_uvs_vbo);
-        f->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * master_uvs.size(), &master_uvs[0], GL_STATIC_DRAW);
+        f->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * d_master_uvs.size(), &d_master_uvs[0], GL_STATIC_DRAW);
         f->glEnableVertexAttribArray(MESH_UV_ATTRIBUTE_POINTER);
         f->glVertexAttribPointer(MESH_UV_ATTRIBUTE_POINTER, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
@@ -278,7 +291,7 @@ void Mesh::PassGeometryDataToOpenGL()
 
         f->glGenBuffers(1, &m_gpu.master_tangents_vbo);
         f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.master_tangents_vbo);
-        f->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * master_tangents.size(), &master_tangents[0], GL_STATIC_DRAW);
+        f->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * d_master_tangents.size(), &d_master_tangents[0], GL_STATIC_DRAW);
         f->glEnableVertexAttribArray(MESH_TANGENT_ATTRIBUTE_POINTER);
         f->glVertexAttribPointer(MESH_TANGENT_ATTRIBUTE_POINTER, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
@@ -290,88 +303,11 @@ void Mesh::PassGeometryDataToOpenGL()
 
 
 
-    master_indices.clear();
-    master_vertices.clear();
-    master_normals.clear();
-    master_uvs.clear();
-    master_tangents.clear();
-
-
-
-
-
-    /**
-     * Handle command caching
-     */
-
-
-    QVector<DrawElementsCommand> cached_commands;
-    QVector<unsigned int> cached_per_object_index;
-
-
-
-
-
-
-    foreach(auto it, materials.keys())
-    {
-
-
-
-
-        QVector<DrawElementsCommand> commands;
-        QVector<unsigned int> per_object_index;
-
-
-
-
-        CacheDrawCommands(mesh_entries,
-                          commands,
-                          per_object_index,
-                          it);
-
-
-
-
-        m_gpu.indirect_buffer_stride_cache[it] = cached_commands.size();
-        m_gpu.indirect_buffer_size_cache[it] = commands.size();
-        m_gpu.per_object_buffer_stride_cache[it] = cached_per_object_index.size();
-
-
-
-
-        cached_commands << commands;
-        cached_per_object_index << per_object_index;
-
-
-
-
-
-    }
-
-
-
-
-
-
-
-    f->glGenBuffers(1, &m_gpu.cached_indirect_buffer);
-    f->glBindBuffer(GL_DRAW_INDIRECT_BUFFER, m_gpu.cached_indirect_buffer);
-    f->glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(DrawElementsCommand) * cached_commands.size(), &cached_commands[0], GL_STATIC_DRAW);
-
-
-
-
-    f->glGenBuffers(1, &m_gpu.cached_per_object_buffer);
-    f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.cached_per_object_buffer);
-    f->glBufferData(GL_ARRAY_BUFFER, sizeof(unsigned int) * cached_per_object_index.size(), &cached_per_object_index[0], GL_STATIC_DRAW);
-
-
-
-
-
-    cached_commands.clear();
-    cached_per_object_index.clear();
+    d_master_indices.clear();
+    d_master_vertices.clear();
+    d_master_normals.clear();
+    d_master_uvs.clear();
+    d_master_tangents.clear();
 
 
 
@@ -380,7 +316,9 @@ void Mesh::PassGeometryDataToOpenGL()
     f->glBindVertexArray(0);
 
 
-    is_loaded = true;
+
+
+    has_loaded_geometry = true;
 
 
 

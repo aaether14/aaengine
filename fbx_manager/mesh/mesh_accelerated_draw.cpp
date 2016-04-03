@@ -23,7 +23,7 @@ void Mesh::AcceleratedDraw(QString material_name)
 
 
 
-    CacheDrawCommands(mesh_entries,
+    CacheDrawCommands(m_mesh_entries,
                       draw_commands,
                       per_object_index,
                       material_name);
@@ -64,6 +64,58 @@ void Mesh::AcceleratedDraw(QString material_name)
 
 
 }
+
+
+
+
+
+
+
+void Mesh::SendModelMatrixToShader()
+{
+
+
+
+    QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
+
+
+
+    /**
+     *the model matrix vector will be filled with the model matrices of the
+     *mesh entries of the mesh
+     */
+    QVector<aae::mesh_util::float16> model_matrix;
+
+
+
+    foreach(auto it, m_mesh_entries)
+        model_matrix << aae::mesh_util::toFloat16((m_global_transform * it->GetLocalTransform()).constData());
+
+
+
+
+    /**
+    *Send the model matrices to the shader via ssbo binding
+    */
+
+
+
+    f->glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_gpu.ssbo);
+    f->glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(aae::mesh_util::float16) * model_matrix.size(), &model_matrix[0], GL_STATIC_DRAW);
+    f->glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_gpu.ssbo);
+
+
+
+
+    model_matrix.clear();
+
+
+
+}
+
+
+
+
 
 
 

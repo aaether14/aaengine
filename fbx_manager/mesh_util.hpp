@@ -25,6 +25,12 @@ class mesh_util
 
 
 public:
+
+
+
+    /**
+     * @brief mesh_util - basic constructor
+     */
     mesh_util();
 
 
@@ -50,6 +56,23 @@ public:
      * @return
      */
     static QVector3D QVector3DFromFbxVector3D(FbxDouble3 vec);
+
+
+
+
+    /**
+    @brief float16 is a typedef to the 16 float array, it is needed in order to
+    convert QMatrix4x4 to something we can send to the shader
+    */
+    typedef struct float16 { float m[16]; } float16;
+    /**
+     * @brief toFloat16 converts a float array to float16 typedef
+     * @param arr is the float data
+     * @return returns the float16 block
+     */
+    static float16 toFloat16(const float* arr){float16 v; memcpy(&v, arr, sizeof(float16)); return v;}
+
+
 
 
 

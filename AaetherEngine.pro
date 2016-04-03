@@ -44,7 +44,6 @@ SOURCES += main.cpp\
     core/projectmanager.cpp \
     utils/json.cpp \
     script_module/gameobject.cpp \
-    fbx_manager/mesh/mesh_material.cpp \
     fbx_manager/mesh/mesh_buffer_loader.cpp \
     fbx_manager/mesh/mesh_cached_draw.cpp \
     error/aerror.cpp \
@@ -56,7 +55,9 @@ SOURCES += main.cpp\
     fbx_manager/entry/mesh_entry_tangent.cpp \
     fbx_manager/mesh_util.cpp \
     fbx_manager/mesh/mesh_accelerated_draw.cpp \
-    fbx_manager/mesh/geometryloader.cpp
+    fbx_manager/mesh/geometryloader.cpp \
+    fbx_manager/mesh/materialloader.cpp \
+    fbx_manager/mesh/mesh_material_loader.cpp
 
 
 
@@ -89,7 +90,8 @@ HEADERS  += \
     dialogs/base_dialog.hpp \
     fbx_manager/mesh/mesh_gpu_memory.h \
     fbx_manager/mesh_util.hpp \
-    fbx_manager/mesh/geometryloader.hpp
+    fbx_manager/mesh/geometryloader.hpp \
+    fbx_manager/mesh/materialloader.hpp
 
 
 

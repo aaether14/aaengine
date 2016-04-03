@@ -76,7 +76,7 @@ public:
      * @param fbx_file_name is the name of the fbx mesh
      */
     void AddDiffuseProperty(FbxProperty diffuse_property,
-                            QHash<QString, QOpenGLTexture*> & textures,
+                            QHash<QString, QImage> & images,
                             QString fbx_file_name);
 
 
@@ -88,7 +88,7 @@ public:
      * @param fbx_file_name is the name of the fbx mesh
      */
     void AddNormalProperty(FbxProperty normal_property,
-                           QHash<QString, QOpenGLTexture*> & textures,
+                           QHash<QString, QImage> & images,
                            QString fbx_file_name);
 
 

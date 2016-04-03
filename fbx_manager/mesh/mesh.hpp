@@ -7,21 +7,19 @@
 
 #include <QDebug>
 #include <QOpenGLTexture>
-#include <QImage>
 
 
 
 
 #include <QOpenGLFunctions_4_3_Core>
 #include <QOpenGLShaderProgram>
-#include <QList>
-#include <QThread>
 
 
 
 
 #include <fbx_manager/mesh/mesh_gpu_memory.h>
 #include <fbx_manager/mesh/geometryloader.hpp>
+#include <fbx_manager/mesh/materialloader.hpp>
 
 
 
@@ -30,43 +28,32 @@
 /**
  * @brief The Mesh class handles loading, normalizing and rendering of the fbx 3d meshes
  */
-class Mesh : public QObject
+class Mesh
 {
 
 
 
-    Q_OBJECT
-
-
-
     /**
-    @brief float16 is a typedef to the 16 float array, it is needed in order to
-    convert QMatrix4x4 to something we can send to the shader
-    */
-    typedef struct float16 { float m[16]; } float16;
-    /**
-     * @brief toFloat16 converts a float array to float16 typedef
-     * @param arr is the float data
-     * @return returns the float16 block
+     *@brief m_scene is a pointer to fbx scene data
      */
-    float16 toFloat16(const float* arr){float16 v; memcpy(&v, arr, sizeof(float16)); return v;}
+    FbxScene * m_scene;
 
 
 
     /**
      * @brief mesh_entries is the list of individual mesh entries contained by the parent Mesh
      */
-    QList<MeshEntry*> mesh_entries;
+    QList<MeshEntry*> m_mesh_entries;
 
 
     /**
      * @brief textures stores the textures used by the mesh using their name as a key
      */
-    QHash<QString, QOpenGLTexture*> textures;
+    QHash<QString, QOpenGLTexture*> m_textures;
     /**
      * @brief materials stores the materials used by the mesh using their name as a key
      */
-    QHash<QString, Material> materials;
+    QHash<QString, Material> m_materials;
 
 
 
@@ -82,9 +69,8 @@ class Mesh : public QObject
 
 
     /**
-     * @brief NormalizeScene will take care of the differences of scale and
-     * orientation that can occur in the a fbx scene
-     * @param scene is the fbx scene to be normalized
+     * @brief NormalizeScene will make sure the mesh is in an
+     * accepted form for the engine
      * @param fbx_manager is the manager of the fbx sdk
      * @param convert_axis will attempt to convert mesh axis
      * system to opengl one
@@ -98,7 +84,7 @@ class Mesh : public QObject
      * @param convert_textures will attempt to convert the textures
      * from tga to other format (i.e png)
      */
-    void NormalizeScene(FbxScene * scene, FbxManager * fbx_manager,
+    void NormalizeScene(FbxManager * fbx_manager,
                         bool convert_axis,
                         bool convert_scale,
                         bool split_points,
@@ -109,9 +95,16 @@ class Mesh : public QObject
 
     /**
      * @brief CommandLoadingBufferObjects will start the thread where GeometryLoader will work
-     * @param root is the root in the fbx scene
      */
-    void CommandLoadingBufferObjects(FbxNode * root);
+    void CommandLoadingBufferObjects();
+
+
+
+    /**
+     * @brief PassGeometryDataToOpenGL will use the data harvested by GeometryLoader
+     * and pass it to opengl data buffers
+     */
+    void PassGeometryDataToOpenGL();
 
 
 
@@ -119,10 +112,17 @@ class Mesh : public QObject
 
     /**
      * @brief LoadMaterials will load the materials used by the mesh
-     * @param scene is the scene which has the info of the materials
      * @param fbx_file_name is needed to compute the texture filenames
      */
-    void LoadMaterials(FbxScene * scene, QString fbx_file_name);
+    void CommandLoadingMaterials(QString fbx_file_name);
+
+
+
+    /**
+     *@brief PassTextureDataToOpenGL will use the data harvested by
+     *MaterialLoader and pass it to opengl memory
+     */
+    void PassTextureDataToOpenGL();
 
 
 
@@ -164,7 +164,7 @@ class Mesh : public QObject
     /**
      * @brief global_transform is the global transform of the mesh
      */
-    QMatrix4x4 global_transform;
+    QMatrix4x4 m_global_transform;
     /**
      *@brief should_save_scene_after_load is used to know whether the fbx file
      *has been updated and needs to be saved
@@ -172,17 +172,42 @@ class Mesh : public QObject
     bool should_save_scene_after_load;
 
 
+    /**
+     *@brief should_pass_geometry_to_opengl will be true if the mesh has
+     *finished loading geometry data and now needs to send it to opengl memory
+     */
+    bool should_pass_geometry_to_opengl;
 
 
     /**
-     * @brief is_loaded - know at any instance if we succesfully loaded the 3d model
+     *@brief should_pass_textures_to_opengl will be true if the mesh has
+     *finished loading the texture data and now needs to send it to opengl
+     *memory
      */
-    bool is_loaded;
+    bool should_pass_textures_to_opengl;
+
+
+
+    /**
+     *@brief has_loaded_geometry will be true if the mesh has successfully
+     *loaded the geometry and passed the data to opengl
+     */
+    bool has_loaded_geometry;
+
+
+    /**
+     *@brief has_loaded_textures will be true if the mesh has successfully
+     *loaded textures and passed the data to opengl
+     */
+    bool has_loaded_textures;
+
+
+
     /**
      *@brief draw_method will be used to determine the rendering method so we
      *get the best performance result of each individual mesh
      */
-    QString draw_method;
+    QString m_draw_method;
 
 
 
@@ -219,36 +244,45 @@ class Mesh : public QObject
 
 
 
+    /**
+     * @brief master_indices is the index array of the mesh
+     */
+    QVector<unsigned int> d_master_indices;
+    /**
+     * @brief master_vertices is the vertex array of the mesh
+     */
+    QVector<float> d_master_vertices;
+    /**
+     * @brief master_normals is the normal array of the mesh
+     */
+    QVector<float> d_master_normals;
+    /**
+     * @brief master_uvs is the uv array of the mesh
+     */
+    QVector<float> d_master_uvs;
+    /**
+     * @brief master_tangents is the tangent array of the mesh
+     */
+    QVector<float> d_master_tangents;
 
-    QFuture<void> geometry_loading_procces;
-    QFutureWatcher<void> geometry_loading_watcher;
 
 
 
     /**
-     *Create the lists that will be filled with mesh data
+     * @brief images will hold texture information untill it's sent to shader
      */
-
-
-    QVector<unsigned int> master_indices;
-    QVector<float> master_vertices;
-    QVector<float> master_normals;
-    QVector<float> master_uvs;
-    QVector<float> master_tangents;
+    QHash<QString, QImage> d_images;
 
 
 
-private slots:
+
     /**
-     * @brief PassGeometryDataToOpenGL will use the data harvested by GeometryLoader
-     * and pass it to opengl data buffers
+     *@brief SendModelMatrixToShader will send the model matrices of the mesh
+     *entries to the shader
      */
-    void PassGeometryDataToOpenGL();
+    void SendModelMatrixToShader();
 
 
-
-signals:
-   void ShouldPassGeometryDataToOpenGL();
 
 
 
@@ -302,12 +336,26 @@ public:
      * @brief SetGlobalTransform will set the global transform of the mesh
      * @param transform is the new transform
      */
-    inline void SetGlobalTransform(QMatrix4x4 transform) {global_transform = transform; }
+    inline void SetGlobalTransform(QMatrix4x4 transform) {m_global_transform = transform; }
     /**
      * @brief SetDrawMethod will set the draw method for mesh rendering
      * @param method is the new draw method
      */
-    inline void SetDrawMethod(QString method){draw_method = method; }
+    inline void SetDrawMethod(QString method){m_draw_method = method; }
+
+
+    /**
+     * @brief GetScene will return the scene pointer of the model
+     * @return is the requested scene
+     */
+    inline FbxScene * GetScene(){return m_scene; }
+
+
+    /**
+     * @brief SetFbxScene will set the scene pointer of the fbx model
+     * @param scene is the scene pointer
+     */
+    inline void SetFbxScene(FbxScene * scene){m_scene = scene; }
 
 
 

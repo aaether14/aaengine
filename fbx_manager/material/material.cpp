@@ -32,7 +32,7 @@ void Material::SendToShader(QOpenGLShaderProgram &shader)
 
 
 void Material::AddDiffuseProperty(FbxProperty diffuse_property,
-                                  QHash<QString, QOpenGLTexture *> &textures,
+                                  QHash<QString, QImage> &images,
                                   QString fbx_file_name)
 {
 
@@ -99,8 +99,8 @@ void Material::AddDiffuseProperty(FbxProperty diffuse_property,
     /**
     *If the texture is not in the library, add it
     */
-    if (!textures.contains(texture_index))
-        textures[texture_index] = new QOpenGLTexture(QImage(texture_index).mirrored());
+    if (!images.contains(texture_index))
+        images[texture_index] = QImage(texture_index).mirrored();
 
 
 
@@ -120,7 +120,7 @@ void Material::AddDiffuseProperty(FbxProperty diffuse_property,
 
 
 void Material::AddNormalProperty(FbxProperty normal_property,
-                                 QHash<QString, QOpenGLTexture *> &textures,
+                                 QHash<QString, QImage> &images,
                                  QString fbx_file_name)
 {
 
@@ -178,8 +178,8 @@ void Material::AddNormalProperty(FbxProperty normal_property,
     /**
     *If the texture is not in the library, add it
     */
-    if (!textures.contains(texture_index))
-        textures[texture_index] = new QOpenGLTexture(QImage(texture_index).mirrored());
+    if (!images.contains(texture_index))
+        images[texture_index] = QImage(texture_index).mirrored();
 
 
 
