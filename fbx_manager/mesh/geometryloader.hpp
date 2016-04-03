@@ -70,24 +70,24 @@ class GeometryLoader : public QObject
      *@brief is_using_normals will be true if the mesh is using normals for
      *rendering
      */
-    bool is_using_normals;
+    bool & is_using_normals;
     /**
      *@brief is_using_uvs will be true if the mesh is using uvs for rendering
      *(i.e has diffuse textures)
      */
-    bool is_using_uvs;
+    bool & is_using_uvs;
     /**
      *@brief is_using_tangents will be true if the mesh using tangents for
      *rendering (i.e has bump maps)
      */
-    bool is_using_tangents;
+    bool & is_using_tangents;
 
 
 
     /**
-     * @brief root_node is the root node of the fbx mesh
+     * @brief scene is the scene pointer of the mesh to be loaded
      */
-    FbxNode * root_node;
+    FbxScene * m_scene;
 
 
 
@@ -96,6 +96,14 @@ class GeometryLoader : public QObject
      * @param node is the current node we're looking into
      */
     void RecursiveLoad(FbxNode * node);
+
+
+
+    /**
+     * @brief CheckLayersUsedByMesh will determine if the mesh
+     * is using normals, uvs or tangents
+     */
+    void CheckLayersUsedByMesh();
 
 
 
@@ -113,10 +121,10 @@ public:
                    QVector<float> & normals,
                    QVector<float> & uvs,
                    QVector<float> & tangents,
-                   bool using_normals,
-                   bool using_uvs,
-                   bool using_tangents,
-                   FbxNode * root);
+                   bool & using_normals,
+                   bool & using_uvs,
+                   bool & using_tangents,
+                   FbxScene * scene);
 
 
 

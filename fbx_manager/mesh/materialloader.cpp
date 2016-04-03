@@ -9,10 +9,15 @@ MaterialLoader::MaterialLoader(QHash<QString, Material> &materials,
                                QHash<QString, QImage> &images,
                                FbxScene *scene,
                                QString fbx_file_name) :
+
+
     materials(materials),
     images(images),
     scene(scene),
     fbx_file_name(fbx_file_name)
+
+
+
 
 {
 

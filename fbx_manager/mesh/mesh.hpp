@@ -69,31 +69,6 @@ class Mesh
 
 
     /**
-     * @brief NormalizeScene will make sure the mesh is in an
-     * accepted form for the engine
-     * @param fbx_manager is the manager of the fbx sdk
-     * @param convert_axis will attempt to convert mesh axis
-     * system to opengl one
-     * @param convert_scale will attempt to convert mesh scale
-     * system to engine's one
-     * @param split_points will attepmt to split vertices so as
-     * there are only per control point vertex atributes (i.e normal,
-     * tanget etc.)
-     * @param generate_tangent will attempt to generate tangents for the mesh
-     * @param triangulate will attempt to triangulate the mesh
-     * @param convert_textures will attempt to convert the textures
-     * from tga to other format (i.e png)
-     */
-    void NormalizeScene(FbxManager * fbx_manager,
-                        bool convert_axis,
-                        bool convert_scale,
-                        bool split_points,
-                        bool generate_tangents,
-                        bool triangulate,
-                        bool convert_textures);
-
-
-    /**
      * @brief CommandLoadingBufferObjects will start the thread where GeometryLoader will work
      */
     void CommandLoadingBufferObjects();
@@ -162,17 +137,6 @@ class Mesh
 
 
     /**
-     * @brief global_transform is the global transform of the mesh
-     */
-    QMatrix4x4 m_global_transform;
-    /**
-     *@brief should_save_scene_after_load is used to know whether the fbx file
-     *has been updated and needs to be saved
-     */
-    bool should_save_scene_after_load;
-
-
-    /**
      *@brief should_pass_geometry_to_opengl will be true if the mesh has
      *finished loading geometry data and now needs to send it to opengl memory
      */
@@ -211,6 +175,13 @@ class Mesh
 
 
 
+    /**
+     * @brief global_transform is the global transform of the mesh
+     */
+    QMatrix4x4 m_global_transform;
+
+
+
 
     /**
      * @brief AcceleratedDraw will draw the scene computing the draw commands on the
@@ -234,12 +205,13 @@ class Mesh
 
 
 
+
     /**
-     * @brief CheckLayersUsedByMesh will determine if the mesh
-     * is using normals, uvs or tangents
-     * @param scene is the scene on which the check is done
+     *@brief SendModelMatrixToShader will send the model matrices of the mesh
+     *entries to the shader
      */
-    void CheckLayersUsedByMesh(FbxScene * scene);
+    void SendModelMatrixToShader();
+
 
 
 
@@ -276,15 +248,6 @@ class Mesh
 
 
 
-    /**
-     *@brief SendModelMatrixToShader will send the model matrices of the mesh
-     *entries to the shader
-     */
-    void SendModelMatrixToShader();
-
-
-
-
 
 public:
 
@@ -303,12 +266,20 @@ public:
 
 
     /**
-     * @brief LoadFromFBX loads the mesh from the fbx file
-     * @param fbx_manager is the manager of the fbx sdk
+     * @brief Load loads the mesh from the fbx file
      * @param file_name is the name of the file to be loaded
-     * @param normalize_scene will be set to true if you want to
-     * normalize axis system, scene unit and generate tangent data
-     * for the loaded mesh
+     */
+    void Load(QString file_name);
+
+
+
+
+
+
+    /**
+     * @brief NormalizeScene will make sure the mesh is in an
+     * accepted form for the engine
+     * @param fbx_manager is the manager of the fbx sdk
      * @param convert_axis will attempt to convert mesh axis
      * system to opengl one
      * @param convert_scale will attempt to convert mesh scale
@@ -321,15 +292,17 @@ public:
      * @param convert_textures will attempt to convert the textures
      * from tga to other format (i.e png)
      */
-    void LoadFromFBX(FbxManager * fbx_manager,
-                     QString file_name,
-                     bool normalize_scene,
-                     bool convert_axis = false,
-                     bool convert_scale = false,
-                     bool split_points = false,
-                     bool generate_tangents = false,
-                     bool triangulate = false,
-                     bool convert_textures = false);
+    void NormalizeScene(FbxManager * fbx_manager,
+                        bool convert_axis,
+                        bool convert_scale,
+                        bool split_points,
+                        bool generate_tangents,
+                        bool triangulate,
+                        bool convert_textures);
+
+
+
+
 
 
     /**
@@ -356,6 +329,17 @@ public:
      * @param scene is the scene pointer
      */
     inline void SetFbxScene(FbxScene * scene){m_scene = scene; }
+
+
+
+
+    /**
+     * @brief IsLoaded will return true if the mesh has been successfully loaded
+     * @return
+     */
+    inline bool IsLoaded(){
+        return has_loaded_geometry && has_loaded_textures;
+    }
 
 
 

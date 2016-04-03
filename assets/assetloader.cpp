@@ -316,6 +316,25 @@ void AssetLoader::UnloadAssets()
 
 
 
+bool AssetLoader::SanityCheck()
+{
+
+
+    foreach(auto it, assets)
+    {
+        if (!it->isLoaded())
+            return false;
+    }
+
+
+    return true;
+
+
+}
+
+
+
+
 
 void AssetLoader::loadAsset(QString file_name, QString asset_name)
 {

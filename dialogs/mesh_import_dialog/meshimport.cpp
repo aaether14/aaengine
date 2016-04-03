@@ -82,7 +82,7 @@ void MeshImport::on_pushButton_2_clicked()
     *We need asset loader in order to acces loader library
     */
 
-    if (!parent()->findChild<QObject*>("GL")->findChild<AssetLoader*>("AssetLoader"))
+    if (!parent()->findChild<AssetLoader*>("AssetLoader"))
     {
         qDebug() << "MeshImport: Could not find Asset Loader!";
         return;
@@ -94,7 +94,7 @@ void MeshImport::on_pushButton_2_clicked()
      * Get a reference to the asset loader
      */
 
-    AssetLoader * al = parent()->findChild<QObject*>("GL")->findChild<AssetLoader*>("AssetLoader");
+    AssetLoader * al = parent()->findChild<AssetLoader*>("AssetLoader");
 
 
 
@@ -112,41 +112,31 @@ void MeshImport::on_pushButton_2_clicked()
 
 
     /**
-     *Get a reference to the loader and create a dummy_asset
+     *Get a reference to the loader and create a dummy_mesh
      */
+
+
+
 
     FBXManager * fm = static_cast<FBXManager*>(al->GetLoader("fbx"));
-    MeshAsset * dummy_asset = static_cast<MeshAsset*>(fm->CreateAsset());
+    Mesh * dummy_mesh = new Mesh();
+
+
+    fm->ImportScene(dummy_mesh, ui->lineEdit->text());
+    dummy_mesh->NormalizeScene(fm->GetManager(),
+                               ui->checkBox_convert_axis,
+                               ui->checkBox_convert_scale,
+                               ui->checkBox_split_points,
+                               ui->checkBox_generate_tangents,
+                               ui->checkBox_triangulate,
+                               ui->checkBox_convert_textures);
+    fm->ExportScene(dummy_mesh, ui->lineEdit->text());
 
 
 
-
-    /**
-     * Provided the ui layouy, generate the load options
-     */
+    delete dummy_mesh;
 
 
-    QVariantMap load_options;
-
-
-
-
-    load_options["convert_axis"] = ui->checkBox_convert_axis->isChecked();
-    load_options["convert_scale"] = ui->checkBox_convert_scale->isChecked();
-    load_options["split_points"] = ui->checkBox_split_points->isChecked();
-    load_options["generate_tangents"] = ui->checkBox_generate_tangents->isChecked();
-    load_options["triangulate"] = ui->checkBox_triangulate->isChecked();
-    load_options["convert_textures"] = ui->checkBox_convert_textures->isChecked();
-
-
-
-    /**
-    *Load the fbx file with the provided load options, then delete the dummy
-    *asset
-    */
-
-    fm->Load(ui->lineEdit->text(), dummy_asset, load_options);
-    delete dummy_asset;
 
 
 

@@ -2,10 +2,11 @@
 
 
 
-MeshAsset::MeshAsset()
+MeshAsset::MeshAsset() :
+    m_mesh(NULL)
 {
 
-    mesh = new Mesh();
+    m_mesh = new Mesh();
 
 }
 
@@ -14,7 +15,7 @@ MeshAsset::MeshAsset()
 MeshAsset::~MeshAsset()
 {
 
-    delete mesh;
+    delete m_mesh;
 
 
 }
@@ -22,11 +23,22 @@ MeshAsset::~MeshAsset()
 
 
 
+bool MeshAsset::hasData()
+{
+
+
+    return m_mesh != NULL;
+
+
+}
+
+
+
 bool MeshAsset::isLoaded()
 {
 
 
-    return mesh != 0;
+    return m_mesh->IsLoaded();
 
 
 }
@@ -37,7 +49,7 @@ Mesh *MeshAsset::GetMesh()
 {
 
 
-    return mesh;
+    return m_mesh;
 
 
 }

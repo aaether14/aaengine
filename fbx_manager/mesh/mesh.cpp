@@ -18,7 +18,6 @@ Mesh::Mesh():
 
 
 
-    should_save_scene_after_load(false),
     should_pass_geometry_to_opengl(false),
     should_pass_textures_to_opengl(false),
 
@@ -116,38 +115,14 @@ Mesh::~Mesh()
 
 
 
-
 }
 
 
 
 
-void Mesh::LoadFromFBX(FbxManager *fbx_manager,
-                       QString file_name,
-                       bool normalize_scene,
-                       bool convert_axis,
-                       bool convert_scale,
-                       bool split_points,
-                       bool generate_tangents,
-                       bool triangulate,
-                       bool convert_textures)
+void Mesh::Load(QString file_name)
 {
 
-
-
-
-    /**
-    *If requested, normalize the scene with the provided parameters
-    */
-
-    if(normalize_scene)
-        NormalizeScene(fbx_manager,
-                       convert_axis,
-                       convert_scale,
-                       split_points,
-                       generate_tangents,
-                       triangulate,
-                       convert_textures);
 
 
 
@@ -155,56 +130,8 @@ void Mesh::LoadFromFBX(FbxManager *fbx_manager,
      *Load materials and buffer objects
      */
 
-    //CommandLoadingMaterials(file_name);
-    //CommandLoadingBufferObjects();
-
-
-
-
-    /**
-    *If after load saving was requested, do so
-    */
-
-
-    if (should_save_scene_after_load)
-    {
-
-
-        /**
-         *Initialize an exporter using the filename of the mesh
-         */
-
-        FbxExporter *exporter = FbxExporter::Create(fbx_manager, "Aaether Engine Exporter");
-
-
-
-        bool exporter_status = exporter->Initialize(file_name.toStdString().c_str(),
-                                                    -1,
-                                                    fbx_manager->GetIOSettings());
-
-        /**
-        *Catch any error that might have occured during initialization
-        */
-
-        if(!exporter_status)
-        {
-            qDebug() << "Call to FbxExporter::Initialize() failed";
-            qDebug() << "Error returned: " << exporter->GetStatus().GetErrorString();
-            return;
-        }
-
-
-        /**
-        *If everything went well, proceed to exporting the scene
-        */
-
-        exporter->Export(m_scene);
-        exporter->Destroy();
-
-
-    }
-
-
+    CommandLoadingMaterials(file_name);
+    CommandLoadingBufferObjects();
 
 
 
@@ -259,8 +186,29 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
     */
 
 
-    if (!has_loaded_geometry || !has_loaded_textures)
+    if (!IsLoaded())
+    {
         return;
+    }
+    else
+    {
+        QMutex mutex;
+        mutex.lock();
+        if (m_scene)
+        {
+            m_scene->Destroy();
+            m_scene = NULL;
+        }
+        mutex.unlock();
+    }
+
+
+
+
+    /**
+     *First send model matrices to shader
+     */
+    SendModelMatrixToShader();
 
 
 
@@ -278,6 +226,11 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
     /**
+     * -----------------------------------------------------------------*/
+
+
+
+    /**
      *get the current context function and bind the vertex array object of the
      *mesh
      */
@@ -286,13 +239,6 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
     f->glBindVertexArray(m_gpu.vao);
 
-
-
-
-    /**
-     *First send model matrices to shader
-     */
-    SendModelMatrixToShader();
 
 
 

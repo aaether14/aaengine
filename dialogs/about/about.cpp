@@ -18,7 +18,7 @@ About::About(QWidget *parent) :
 
 
 
-    connect(parent->findChild<QObject*>("GL")->findChild<FPS*>("gFPS"), SIGNAL(updatedFps(int)),
+    connect(parent->findChild<FPS*>("gFPS"), SIGNAL(updatedFps(int)),
             this, SLOT(ShowFps(int)));
 
 

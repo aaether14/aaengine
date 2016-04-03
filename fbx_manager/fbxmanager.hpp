@@ -75,11 +75,22 @@ public:
 
     /**
      * @brief ImportScene will import the data from the fbx file to the scene
-     * @param fbx_file_name is the name of the fbx file
      * @param mesh is the mesh whose scene will be imported
+     * @param fbx_file_name is the name of the fbx file
      */
-    void ImportScene(QString fbx_file_name,
-                     Mesh * mesh);
+    void ImportScene(Mesh * mesh,
+                     QString fbx_file_name);
+
+
+
+    /**
+     * @brief ExportScene will export the data from the scene of the mesh to a file
+     * @param mesh is the mesh whose scene we will export
+     * @param fbx_file_name is the name of the fbx file
+     */
+
+    void ExportScene(Mesh * mesh,
+                     QString fbx_file_name);
 
 
 

@@ -163,6 +163,14 @@ public:
 
 
 
+    /**
+     * @brief SanityCheck will be true if all the meshes are loaded successfully
+     * @return true if all the meshes are loaded successfully
+     */
+    virtual bool SanityCheck();
+
+
+
     Q_INVOKABLE void loadAsset(QString file_name, QString asset_name);
 
 

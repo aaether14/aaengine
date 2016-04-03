@@ -23,12 +23,20 @@ public:
      */
     virtual ~BaseAsset() {}
 
+
     /**
-     * @brief isLoaded is a pure virtual function that will be needed
-     *  to provide in order to instantiate any BaseAsset
-     * @return should return true if the asset has been successfully loaded
+     * @brief hasData should return true if the asset has any data
+     * @return true if the asset has any data
+     */
+    virtual bool hasData() = 0;
+
+
+    /**
+     * @brief isLoaded should return true if the asset has been successfully loaded
+     * @return true if the asset has been successfully loaded
      */
     virtual bool isLoaded() = 0;
+
 
 
 };

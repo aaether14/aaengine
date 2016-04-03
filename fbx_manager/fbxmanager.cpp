@@ -69,6 +69,10 @@ void FBXManager::Load(QString file_name,
 
 
 
+    Q_UNUSED(load_options)
+
+
+
     if(!asset)
     {
         qDebug() << "FbxManager: No asset detected!";
@@ -86,9 +90,9 @@ void FBXManager::Load(QString file_name,
 
 
 
-    if(!static_cast<MeshAsset*>(asset)->isLoaded())
+    if(!static_cast<MeshAsset*>(asset)->hasData())
     {
-        qDebug() << "FbxManager: MeshAsset not loaded!";
+        qDebug() << "FbxManager: MeshAsset has no mesh data!";
         return;
     }
 
@@ -96,23 +100,13 @@ void FBXManager::Load(QString file_name,
 
 
     Mesh* mesh = static_cast<MeshAsset*>(asset)->GetMesh();
-    ImportScene(file_name, mesh);
 
 
 
-    mesh->LoadFromFBX(GetManager(),
-                      file_name,
+    ImportScene(mesh, file_name);
+    mesh->Load(file_name);
 
 
-                      load_options.size() > 0 ? true : false,
-                      load_options["convert_axis"].toBool(),
-
-
-            load_options["convert_scale"].toBool(),
-            load_options["split_points"].toBool(),
-            load_options["generate_tangents"].toBool(),
-            load_options["triangulate"].toBool(),
-            load_options["convert_textures"].toBool());
 
 
 }
@@ -132,8 +126,8 @@ BaseAsset *FBXManager::CreateAsset()
 
 
 
-void FBXManager::ImportScene(QString fbx_file_name,
-                             Mesh * mesh)
+void FBXManager::ImportScene(Mesh * mesh,
+                             QString fbx_file_name)
 {
 
 
@@ -182,6 +176,57 @@ void FBXManager::ImportScene(QString fbx_file_name,
 
 
     mesh->SetFbxScene(scene);
+
+
+
+
+}
+
+
+
+void FBXManager::ExportScene(Mesh *mesh,
+                             QString fbx_file_name)
+{
+
+
+
+
+
+    /**
+    *Initialize an exporter using the filename of the mesh
+    */
+
+    FbxExporter *exporter = FbxExporter::Create(GetManager(), "Aaether Engine Exporter");
+
+
+
+    bool exporter_status = exporter->Initialize(fbx_file_name.toStdString().c_str(),
+                                                -1,
+                                                GetManager()->GetIOSettings());
+
+    /**
+        *Catch any error that might have occured during initialization
+        */
+
+    if(!exporter_status)
+    {
+        qDebug() << "Tried to export:" << fbx_file_name << "!";
+        qDebug() << "Call to FbxExporter::Initialize() failed";
+        qDebug() << "Error returned: " << exporter->GetStatus().GetErrorString();
+        qDebug() << "";
+        return;
+    }
+
+
+    /**
+    *If everything went well, proceed to exporting the scene
+    */
+
+    exporter->Export(mesh->GetScene());
+    exporter->Destroy();
+
+
+
 
 
 

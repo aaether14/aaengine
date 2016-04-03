@@ -21,10 +21,25 @@ void ProjectManager::LoadProject()
 
 
 
+
+    if (!parent()->findChild<AssetLoader*>("AssetLoader"))
+    {
+        qDebug() << "ProjectManager: Had to check if all assets are loaded, but could not find the AssetLoader";
+        return;
+    }
+
+
+    if(!parent()->findChild<AssetLoader*>("AssetLoader")->SanityCheck())
+    {
+
+        qDebug() << "ProjectManager: Assets are not all loaded successfully, so it's dangerous to reload, aborted!";
+        return;
+
+    }
+
+
+
     config_json = aae::Json::GetJsonFromFile("data/config.json");
-
-
-
     UnloadProject();
 
 
@@ -38,9 +53,6 @@ void ProjectManager::LoadProject()
 
 
     ScriptEngine * se = parent()->findChild<ScriptEngine*>("ScriptEngine");
-
-
-
     SetProjectLoaded(se->LoadProject(config_json.toVariant().toMap()["AaetherEngine"].toMap()["project"].toString()));
 
 
@@ -68,7 +80,7 @@ void ProjectManager::UnloadProject()
 
 
 
-    if (!parent()->findChild<QObject*>("GL")->findChild<AssetLoader*>("AssetLoader"))
+    if (!parent()->findChild<AssetLoader*>("AssetLoader"))
     {
         qDebug() << "ProjectManager: Tried to unload project, but could not find the AssetLoader";
         return;
@@ -77,7 +89,7 @@ void ProjectManager::UnloadProject()
 
 
 
-    parent()->findChild<QObject*>("GL")->findChild<AssetLoader*>("AssetLoader")->UnloadAssets();
+    parent()->findChild<AssetLoader*>("AssetLoader")->UnloadAssets();
     SetProjectLoaded(false);
 
 

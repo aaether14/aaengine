@@ -20,7 +20,7 @@ class MeshAsset : public BaseAsset
     /**
      *@brief mesh is the fbx mesh encapsulated inside the asset
      */
-    Mesh * mesh;
+    Mesh * m_mesh;
 
 
 
@@ -37,16 +37,24 @@ public:
 
 
     /**
-     * @brief isLoaded will return true if the Mesh has been successfully created
-     * @return
+     * @brief hasData will return true if the Mesh has been successfully created
+     * @return true if the Mesh has been succesfully created
+     */
+    bool hasData();
+
+
+    /**
+     * @brief isLoaded will return true if the Mesh has been successfully loaded
+     * @return true if the mesh has been succesfully loaded
      */
     bool isLoaded();
 
+
     /**
      * @brief GetMesh will return the encapsulated mesh
-     * @return
+     * @return m_mesh
      */
-    Mesh *GetMesh();
+    virtual Mesh *GetMesh();
 
 
 

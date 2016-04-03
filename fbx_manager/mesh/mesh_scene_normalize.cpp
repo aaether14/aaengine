@@ -380,13 +380,6 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
 
 
 
-    /**
-    *Mark that the mesh should be saved after loading the file
-    */
-    should_save_scene_after_load = true;
-
-
-
 }
 
 

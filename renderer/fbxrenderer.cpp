@@ -109,7 +109,7 @@ void FbxRenderer::Render(QObject *parent)
     */
 
 
-    if (!parent->findChild<QObject*>("GL")->findChild<AssetLoader*>("AssetLoader"))
+    if (!parent->findChild<AssetLoader*>("AssetLoader"))
     {
 
         throw aae::AError("Could not find Asset Loader!");
@@ -136,7 +136,7 @@ void FbxRenderer::Render(QObject *parent)
      *reference to them
      */
 
-    AssetLoader * al = parent->findChild<QObject*>("GL")->findChild<AssetLoader*>("AssetLoader");
+    AssetLoader * al = parent->findChild<AssetLoader*>("AssetLoader");
     ScriptEngine * se = parent->findChild<ScriptEngine*>("ScriptEngine");
 
 
@@ -307,10 +307,6 @@ void FbxRenderer::Render(QObject *parent)
     GetShader("Fbx")->release();
 
 
-
-
-
-    return;
 
 
 

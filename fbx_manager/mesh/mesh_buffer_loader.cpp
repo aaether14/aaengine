@@ -5,110 +5,6 @@
 
 
 
-void Mesh::CheckLayersUsedByMesh(FbxScene *scene)
-{
-
-
-
-
-    /**
-    *Loop through the meshes and see if the have normals, uvs, or tangents
-    */
-
-
-    for (int i = 0; i < scene->GetGeometryCount(); i++)
-    {
-
-
-
-        FbxMesh * current_mesh = FbxCast<FbxMesh>(scene->GetGeometry(i));
-
-
-
-        if (!current_mesh)
-            continue;
-
-
-
-        if (current_mesh->GetElementNormalCount() > 0)
-            is_using_normals = true;
-
-
-
-        if (current_mesh->GetElementUVCount() > 0)
-            is_using_uvs = true;
-
-
-
-
-        if (current_mesh->GetElementTangentCount() > 0)
-            is_using_tangents = true;
-
-
-
-
-    }
-
-
-
-    /**
-    *If the mesh has uvs but no textures then we will not load the uv data
-    */
-
-    if (is_using_uvs && !scene->GetTextureCount() > 0)
-        is_using_uvs = false;
-
-
-
-    /**
-    *If not even the tangent information is present on the mesh then exit
-    */
-
-
-    if (!is_using_tangents)
-        return;
-
-
-
-    is_using_tangents = false;
-
-
-    /**
-     *Otherwise, see if there are any bump maps inside the mesh
-    */
-
-    for (int i = 0; i < scene->GetMaterialCount(); i++)
-    {
-
-
-
-        if (!scene->GetMaterial(i))
-            continue;
-
-
-
-        FbxProperty normal_map_property = scene->GetMaterial(i)->FindProperty(FbxSurfaceMaterial::sNormalMap);
-
-
-
-        if (normal_map_property.GetSrcObjectCount<FbxFileTexture>() > 0)
-        {
-            is_using_tangents = true;
-            break;
-        }
-
-
-
-
-    }
-
-
-
-
-}
-
-
-
 
 
 
@@ -117,21 +13,10 @@ void Mesh::CommandLoadingBufferObjects()
 
 
 
-    /**
-     *Check if the mesh is using normals, uvs or tangents
-     */
-
-    CheckLayersUsedByMesh(m_scene);
-
-
-
 
     /**
      *Commence recursive load on all submeshes
      */
-
-
-
     GeometryLoader * geometry_loader = new GeometryLoader(m_mesh_entries,
                                                           d_master_indices,
                                                           d_master_vertices,
@@ -142,7 +27,7 @@ void Mesh::CommandLoadingBufferObjects()
                                                           is_using_normals,
                                                           is_using_uvs,
                                                           is_using_tangents,
-                                                          m_scene->GetRootNode());
+                                                          m_scene);
 
 
 

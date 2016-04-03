@@ -120,10 +120,10 @@ void Controller::ResetScriptEngine()
     *Add required objects to QML context
     */
 
-    script_engine->ConnectToTimer(findChild<QObject*>("GL")->findChild<QTimer*>("gTimer"));
-    script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<FPS*>("gFPS"));
-    script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<InputRegister*>("gInput"));
-    script_engine->RegisterQObject(findChild<QObject*>("GL")->findChild<AssetLoader*>("AssetLoader"));
+    script_engine->ConnectToTimer(findChild<QTimer*>("gTimer"));
+    script_engine->RegisterQObject(findChild<FPS*>("gFPS"));
+    script_engine->RegisterQObject(findChild<InputRegister*>("gInput"));
+    script_engine->RegisterQObject(findChild<AssetLoader*>("AssetLoader"));
     script_engine->RegisterQObject(new aae::Math(script_engine));
 
 
