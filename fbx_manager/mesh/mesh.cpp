@@ -9,17 +9,13 @@
 Mesh::Mesh():
 
 
+
     m_scene(NULL),
 
 
     is_using_normals(false),
     is_using_uvs(false),
     is_using_tangents(false),
-
-
-
-    should_pass_geometry_to_opengl(false),
-    should_pass_textures_to_opengl(false),
 
 
 
@@ -50,46 +46,7 @@ Mesh::~Mesh()
 
 
 
-    QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
-
-
-
-
-
-    if (m_gpu.vao)
-        f->glDeleteVertexArrays(1, &m_gpu.vao);
-    if (m_gpu.ssbo)
-        f->glDeleteBuffers(1, &m_gpu.ssbo);
-
-
-
-    if (m_gpu.indirect_buffer)
-        f->glDeleteBuffers(1, &m_gpu.indirect_buffer);
-    if(m_gpu.per_object_buffer)
-        f->glDeleteBuffers(1, &m_gpu.per_object_buffer);
-
-
-
-
-    if (m_gpu.cached_indirect_buffer)
-        f->glDeleteBuffers(1, &m_gpu.cached_indirect_buffer);
-    if (m_gpu.cached_per_object_buffer)
-        f->glDeleteBuffers(1, &m_gpu.cached_per_object_buffer);
-
-
-
-
-    if (m_gpu.master_vbo)
-        f->glDeleteBuffers(1, &m_gpu.master_vbo);
-    if (m_gpu.master_ibo)
-        f->glDeleteBuffers(1, &m_gpu.master_ibo);
-    if (m_gpu.master_normals_vbo)
-        f->glDeleteBuffers(1, &m_gpu.master_normals_vbo);
-    if (m_gpu.master_uvs_vbo)
-        f->glDeleteBuffers(1, &m_gpu.master_uvs_vbo);
-    if (m_gpu.master_tangents_vbo)
-        f->glDeleteBuffers(1, &m_gpu.master_tangents_vbo);
-
+    ClearGPUMemory(m_gpu, QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>());
 
 
 
@@ -99,17 +56,10 @@ Mesh::~Mesh()
 
 
 
-
     m_textures.clear();
     m_mesh_entries.clear();
-
-
-
-
     m_materials.clear();
-    m_gpu.indirect_buffer_stride_cache.clear();
-    m_gpu.indirect_buffer_size_cache.clear();
-    m_gpu.per_object_buffer_stride_cache.clear();
+
 
 
 
@@ -120,7 +70,7 @@ Mesh::~Mesh()
 
 
 
-void Mesh::Load(QString file_name)
+void Mesh::LoadFromFbxFile(QString file_name)
 {
 
 
@@ -130,8 +80,8 @@ void Mesh::Load(QString file_name)
      *Load materials and buffer objects
      */
 
-    CommandLoadingMaterials(file_name);
-    CommandLoadingBufferObjects();
+    FBX_CommandLoadingBufferObjects();
+    FBX_CommandLoadingMaterials(file_name);
 
 
 
@@ -153,55 +103,12 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
     /**
-     *If the mesh has successfully computed geometry data but has not yet sent
-     *it to opengl memory do so
-     */
-
-
-    if (should_pass_geometry_to_opengl)
-    {
-        PassGeometryDataToOpenGL();
-        should_pass_geometry_to_opengl = false;
-    }
-
-
-
-    /**
-    *If the mesh has successfully computed texture data but has not yet sent it
-    *to opengl memory do so
-    */
-
-
-    if (should_pass_textures_to_opengl)
-    {
-        PassTextureDataToOpenGL();
-        should_pass_textures_to_opengl = false;
-    }
-
-
-
-
-    /**
     *If the mesh wasn't successfully loaded, don't bother to try drawing it
     */
 
 
     if (!IsLoaded())
-    {
         return;
-    }
-    else
-    {
-        QMutex mutex;
-        mutex.lock();
-        if (m_scene)
-        {
-            m_scene->Destroy();
-            m_scene = NULL;
-        }
-        mutex.unlock();
-    }
-
 
 
 
@@ -265,15 +172,12 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
-        if (m_materials[it].use_diffuse_texture)
-            if (m_textures[m_materials[it].difuse_texture_name])
-                m_textures[m_materials[it].difuse_texture_name]->bind(0);
+        for (qint32 i = 0; i < Material::number_of_texture_types; i++)
+            if (m_materials[it].textures.contains(i))
+                if (m_textures[m_materials[it].textures[i]])
+                    m_textures[m_materials[it].textures[i]]->bind(i);
 
 
-
-        if (m_materials[it].use_normal_map)
-            if (m_textures[m_materials[it].normal_map_name])
-                m_textures[m_materials[it].normal_map_name]->bind(1);
 
 
 
@@ -299,15 +203,11 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
-        if (m_materials[it].use_diffuse_texture)
-            if (m_textures[m_materials[it].difuse_texture_name])
-                m_textures[m_materials[it].difuse_texture_name]->release(0);
 
-
-
-        if (m_materials[it].use_normal_map)
-            if (m_textures[m_materials[it].normal_map_name])
-                m_textures[m_materials[it].normal_map_name]->release(1);
+        for (qint32 i = 0; i < Material::number_of_texture_types; i++)
+            if (m_materials[it].textures.contains(i))
+                if (m_textures[m_materials[it].textures[i]])
+                    m_textures[m_materials[it].textures[i]]->release(i);
 
 
 
@@ -329,9 +229,6 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 }
-
-
-
 
 
 

@@ -1,4 +1,4 @@
-#include <fbx_manager/mesh/geometryloader.hpp>
+#include <fbx_manager/mesh/loader/fbx_geometryloader.hpp>
 
 
 
@@ -15,7 +15,7 @@ void GeometryLoader::CheckLayersUsedByMesh()
     */
 
 
-    for (int i = 0; i < m_scene->GetGeometryCount(); i++)
+    for (qint32 i = 0; i < m_scene->GetGeometryCount(); i++)
     {
 
 
@@ -76,7 +76,7 @@ void GeometryLoader::CheckLayersUsedByMesh()
      *Otherwise, see if there are any bump maps inside the mesh
     */
 
-    for (int i = 0; i < m_scene->GetMaterialCount(); i++)
+    for (qint32 i = 0; i < m_scene->GetMaterialCount(); i++)
     {
 
 
@@ -118,7 +118,7 @@ void GeometryLoader::RecursiveLoad(FbxNode *node)
 
 
 
-    for (int i = 0; i < node->GetChildCount(); i++)
+    for (qint32 i = 0; i < node->GetChildCount(); i++)
         RecursiveLoad(node->GetChild(i));
 
 
@@ -178,7 +178,7 @@ void GeometryLoader::RecursiveLoad(FbxNode *node)
 
 
 GeometryLoader::GeometryLoader(QList<MeshEntry *> &entries,
-                               QVector<unsigned int> &indices,
+                               QVector<quint32> &indices,
                                QVector<float> &vertices,
                                QVector<float> &normals,
                                QVector<float> &uvs,
@@ -222,9 +222,6 @@ void GeometryLoader::Load()
         RecursiveLoad(m_scene->GetRootNode());
     }
 
-
-
-    emit HasFinishedLoading();
 
 
 }

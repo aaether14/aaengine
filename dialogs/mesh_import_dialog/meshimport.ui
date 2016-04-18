@@ -98,7 +98,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Import</string>
+    <string>Convert</string>
    </property>
   </widget>
   <widget class="QCheckBox" name="checkBox_triangulate">

@@ -67,7 +67,7 @@ void MeshEntry::LoadNormals(FbxMesh * mesh,
 
 
 
-                for (int i = 0; i < mesh->GetControlPointsCount(); i++)
+                for (qint32 i = 0; i < mesh->GetControlPointsCount(); i++)
                 {
 
 
@@ -93,11 +93,11 @@ void MeshEntry::LoadNormals(FbxMesh * mesh,
 
 
 
-                for (int i = 0; i < mesh->GetControlPointsCount(); i++)
+                for (qint32 i = 0; i < mesh->GetControlPointsCount(); i++)
                 {
 
 
-                    int index = vertex_normal->GetIndexArray().GetAt(i);
+                    qint32 index = vertex_normal->GetIndexArray().GetAt(i);
                     master_normals << (float)(vertex_normal->GetDirectArray().GetAt(index).mData[0]);
                     master_normals << (float)(vertex_normal->GetDirectArray().GetAt(index).mData[1]);
                     master_normals << (float)(vertex_normal->GetDirectArray().GetAt(index).mData[2]);
@@ -137,7 +137,7 @@ void MeshEntry::LoadNormals(FbxMesh * mesh,
         qDebug() << mesh->GetNode()->GetName() << "had abnormal normal information and we had to fill 0's!";
 
 
-        for (int i = 0; i < mesh->GetControlPointsCount(); i++)
+        for (qint32 i = 0; i < mesh->GetControlPointsCount(); i++)
             master_normals << 0.0 << 0.0 << 0.0;
 
 

@@ -11,10 +11,9 @@
 #include <QMatrix4x4>
 
 
-
 #include <fbxsdk.h>
-#include <fbx_manager/material/material.hpp>
-#include <QMutex>
+#include <fbx_manager/material/fbx_material.hpp>
+
 
 
 
@@ -29,16 +28,16 @@ class MeshEntry
 
 
     /**
-     * @brief local_transform holds the local transform of the mesh entry
+     * @brief m_local_transform holds the local transform of the mesh entry
      */
-    QMatrix4x4 local_transform;
+    QMatrix4x4 m_local_transform;
 
 
     /**
-     *@brief commands is the vector containing the draw commands sorted by
+     *@brief m_commands is the vector containing the draw commands sorted by
      *material of the mesh entry
      */
-    QHash<QString, DrawElementsCommand> commands;
+    QHash<QString, DrawElementsCommand> m_commands;
 
 
 
@@ -50,7 +49,7 @@ class MeshEntry
      */
     void LoadVertices(FbxMesh * mesh,
                       QVector<float> & master_vertices,
-                      int & current_control_point_offset);
+                      qint32 & current_control_point_offset);
 
 
     /**
@@ -91,9 +90,9 @@ class MeshEntry
      * @param current_control_point_offset - see mesh.hpp
      */
     void LoadIndices(FbxMesh * mesh,
-                     QVector<unsigned int> & master_indices,
-                     int & current_polygon_offset,
-                     int & current_control_point_offset);
+                     QVector<quint32> & master_indices,
+                     qint32 & current_polygon_offset,
+                     qint32 & current_control_point_offset);
 
 
 
@@ -146,7 +145,7 @@ public:
 
 
 
-                  QVector<unsigned int> &master_indices,
+                  QVector<quint32> &master_indices,
                   QVector<float> &master_vertices,
                   QVector<float> &master_normals,
                   QVector<float> &master_uvs,
@@ -159,8 +158,8 @@ public:
 
 
 
-                  int & current_control_point_offset,
-                  int & current_polygon_offset);
+                  qint32 & current_control_point_offset,
+                  qint32 & current_polygon_offset);
 
 
 
@@ -171,7 +170,30 @@ public:
      * @param material_name
      * @return will return the draw command
      */
-    inline DrawElementsCommand GetDrawCommand(QString material_name){return commands.value(material_name); }
+    inline DrawElementsCommand GetDrawCommand(QString material_name){
+        return m_commands.value(material_name);
+    }
+
+
+    /**
+     * @brief GetDrawCommandsm will return the draw commads of the mesh entry
+     * @return
+     */
+    inline const QHash<QString, DrawElementsCommand> &GetDrawCommands() const{
+        return m_commands;
+    }
+
+
+
+    /**
+     * @brief SetDrawCommands will set the draw commands of the mesh entry
+     * @param commands are the draw commands that will update the mesh
+     */
+    inline void SetDrawCommands(QHash<QString, DrawElementsCommand> commands){
+        m_commands = commands;
+    }
+
+
     /**
      * @brief DoesMaterialExist will check if there is any draw command
      * available for the provided material name
@@ -179,18 +201,45 @@ public:
      *  has a component tied to this material, false otherwise
      * @return
      */
-    inline bool DoesMaterialExist(QString material_name){return commands.contains(material_name); }
+    inline bool DoesMaterialExist(QString material_name){
+        return m_commands.contains(material_name);
+    }
 
     /**
      * @brief GetLocalTransform will get the local transform of the mesh entry
      * @return
      */
-    inline QMatrix4x4 GetLocalTransform(){return local_transform; }
+    inline const QMatrix4x4 &GetLocalTransform() const{
+        return m_local_transform;
+    }
+
+
+    /**
+     * @brief SetLocalTransform will set the local_transform of the mesh entry
+     * @param local_transform is the local transform that will update the entry
+     */
+    inline void SetLocalTransform(QMatrix4x4 local_transform){
+        m_local_transform = local_transform;
+    }
 
 
 
 
 
 };
+
+
+
+
+
+
+QDataStream &operator <<(QDataStream &out, const MeshEntry &entry);
+QDataStream &operator >>(QDataStream &in, MeshEntry &entry);
+
+
+
+
+
+
 
 #endif // MESHENTRY_H

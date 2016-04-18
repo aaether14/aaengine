@@ -122,15 +122,22 @@ void MeshImport::on_pushButton_2_clicked()
     Mesh * dummy_mesh = new Mesh();
 
 
-    fm->ImportScene(dummy_mesh, ui->lineEdit->text());
-    dummy_mesh->NormalizeScene(fm->GetManager(),
-                               ui->checkBox_convert_axis,
-                               ui->checkBox_convert_scale,
-                               ui->checkBox_split_points,
-                               ui->checkBox_generate_tangents,
-                               ui->checkBox_triangulate,
-                               ui->checkBox_convert_textures);
-    fm->ExportScene(dummy_mesh, ui->lineEdit->text());
+
+
+    if(fm->ImportScene(dummy_mesh, ui->lineEdit->text()))
+    {
+        dummy_mesh->NormalizeScene(fm->GetManager(),
+                                   ui->checkBox_convert_axis,
+                                   ui->checkBox_convert_scale,
+                                   ui->checkBox_split_points,
+                                   ui->checkBox_generate_tangents,
+                                   ui->checkBox_triangulate,
+                                   ui->checkBox_convert_textures);
+        fm->ExportScene(dummy_mesh, ui->lineEdit->text());
+        dummy_mesh->ReleaseFbxScene();
+    }
+
+
 
 
 

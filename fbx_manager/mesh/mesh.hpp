@@ -18,8 +18,8 @@
 
 
 #include <fbx_manager/mesh/mesh_gpu_memory.h>
-#include <fbx_manager/mesh/geometryloader.hpp>
-#include <fbx_manager/mesh/materialloader.hpp>
+#include <fbx_manager/mesh/loader/fbx_geometryloader.hpp>
+#include <fbx_manager/mesh/loader/fbx_materialloader.hpp>
 
 
 
@@ -30,6 +30,7 @@
  */
 class Mesh
 {
+
 
 
 
@@ -71,7 +72,7 @@ class Mesh
     /**
      * @brief CommandLoadingBufferObjects will start the thread where GeometryLoader will work
      */
-    void CommandLoadingBufferObjects();
+    void FBX_CommandLoadingBufferObjects();
 
 
 
@@ -89,7 +90,7 @@ class Mesh
      * @brief LoadMaterials will load the materials used by the mesh
      * @param fbx_file_name is needed to compute the texture filenames
      */
-    void CommandLoadingMaterials(QString fbx_file_name);
+    void FBX_CommandLoadingMaterials(QString fbx_file_name);
 
 
 
@@ -111,7 +112,7 @@ class Mesh
      */
     void CacheDrawCommands(QList<MeshEntry *> &mesh_entries,
                            QVector<DrawElementsCommand> & draw_commands,
-                           QVector<unsigned int> &per_object_index,
+                           QVector<quint32> &per_object_index,
                            QString key);
 
 
@@ -135,20 +136,6 @@ class Mesh
     bool is_using_tangents;
 
 
-
-    /**
-     *@brief should_pass_geometry_to_opengl will be true if the mesh has
-     *finished loading geometry data and now needs to send it to opengl memory
-     */
-    bool should_pass_geometry_to_opengl;
-
-
-    /**
-     *@brief should_pass_textures_to_opengl will be true if the mesh has
-     *finished loading the texture data and now needs to send it to opengl
-     *memory
-     */
-    bool should_pass_textures_to_opengl;
 
 
 
@@ -219,7 +206,7 @@ class Mesh
     /**
      * @brief master_indices is the index array of the mesh
      */
-    QVector<unsigned int> d_master_indices;
+    QVector<quint32> d_master_indices;
     /**
      * @brief master_vertices is the vertex array of the mesh
      */
@@ -236,14 +223,6 @@ class Mesh
      * @brief master_tangents is the tangent array of the mesh
      */
     QVector<float> d_master_tangents;
-
-
-
-
-    /**
-     * @brief images will hold texture information untill it's sent to shader
-     */
-    QHash<QString, QImage> d_images;
 
 
 
@@ -267,9 +246,9 @@ public:
 
     /**
      * @brief Load loads the mesh from the fbx file
-     * @param file_name is the name of the file to be loaded
+     * @param fbx_file_name is the name of the file to be loaded
      */
-    void Load(QString file_name);
+    void LoadFromFbxFile(QString fbx_file_name);
 
 
 
@@ -332,6 +311,16 @@ public:
 
 
 
+    /**
+     * @brief ReleaseFbxScene will release the memory used by the fbx data
+     */
+    inline void ReleaseFbxScene(){
+        if (m_scene)
+            m_scene->Destroy();
+    }
+
+
+
 
     /**
      * @brief IsLoaded will return true if the mesh has been successfully loaded
@@ -348,6 +337,16 @@ public:
      * @param shader is the fbx rendering shader
      */
     void Draw(QOpenGLShaderProgram & shader);
+
+
+
+
+    /**
+     * @brief SerializeAAEM will serialize the mesh to an aaem file
+     * @param file_name is the name of the new file which will hold
+     * the mesh data
+     */
+    void SerializeAAEM(QString file_name);
 
 
 

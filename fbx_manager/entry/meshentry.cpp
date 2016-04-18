@@ -5,7 +5,7 @@
 
 
 
-MeshEntry::MeshEntry()
+MeshEntry::MeshEntry() : m_local_transform(QMatrix4x4())
 {
 
 
@@ -19,6 +19,8 @@ MeshEntry::~MeshEntry()
 {
 
 
+    m_commands.clear();
+
 
 }
 
@@ -29,7 +31,7 @@ MeshEntry::~MeshEntry()
 void MeshEntry::LoadMesh(FbxMesh * mesh,
 
 
-                         QVector<unsigned int> &master_indices,
+                         QVector<quint32> &master_indices,
                          QVector<float> &master_vertices,
                          QVector<float> &master_normals,
                          QVector<float> &master_uvs,
@@ -42,8 +44,8 @@ void MeshEntry::LoadMesh(FbxMesh * mesh,
 
 
 
-                         int & current_control_point_offset,
-                         int & current_polygon_offset)
+                         qint32 & current_control_point_offset,
+                         qint32 & current_polygon_offset)
 {
 
 
@@ -84,12 +86,12 @@ void MeshEntry::LoadMesh(FbxMesh * mesh,
 
 void MeshEntry::LoadVertices(FbxMesh * mesh,
                              QVector<float> &master_vertices,
-                             int & current_control_point_offset)
+                             qint32 &current_control_point_offset)
 {
 
 
 
-    for (int i = 0; i < mesh->GetControlPointsCount(); i++)
+    for (qint32 i = 0; i < mesh->GetControlPointsCount(); i++)
     {
 
 
@@ -119,17 +121,17 @@ void MeshEntry::LoadVertices(FbxMesh * mesh,
 
 
 void MeshEntry::LoadIndices(FbxMesh *mesh,
-                            QVector<unsigned int> &master_indices,
-                            int &current_polygon_offset,
-                            int &current_control_point_offset)
+                            QVector<quint32> &master_indices,
+                            qint32 &current_polygon_offset,
+                            qint32 &current_control_point_offset)
 {
 
 
 
 
 
-    QHash<int, QVector<unsigned int> > material_mapped_indices;
-    FbxLayerElementArrayTemplate<int> *material_indices;
+    QHash<qint32, QVector<quint32> > material_mapped_indices;
+    FbxLayerElementArrayTemplate<qint32> *material_indices;
 
 
 
@@ -139,11 +141,11 @@ void MeshEntry::LoadIndices(FbxMesh *mesh,
 
 
 
-    for (int i = 0; i < mesh->GetPolygonCount(); i++)
+    for (qint32 i = 0; i < mesh->GetPolygonCount(); i++)
     {
-        material_mapped_indices[material_indices->GetAt(i)] << (unsigned int)(mesh->GetPolygonVertex(i, 0));
-        material_mapped_indices[material_indices->GetAt(i)] << (unsigned int)(mesh->GetPolygonVertex(i, 1));
-        material_mapped_indices[material_indices->GetAt(i)] << (unsigned int)(mesh->GetPolygonVertex(i, 2));
+        material_mapped_indices[material_indices->GetAt(i)] << (quint32)(mesh->GetPolygonVertex(i, 0));
+        material_mapped_indices[material_indices->GetAt(i)] << (quint32)(mesh->GetPolygonVertex(i, 1));
+        material_mapped_indices[material_indices->GetAt(i)] << (quint32)(mesh->GetPolygonVertex(i, 2));
     }
 
 
@@ -162,7 +164,7 @@ void MeshEntry::LoadIndices(FbxMesh *mesh,
         c.baseVertex = current_control_point_offset;
         c.firstIndex = current_polygon_offset;
         c.vertexCount = material_mapped_indices[it].size();
-        commands[QString(mesh->GetNode()->GetMaterial(it)->GetName())] = c;
+        m_commands[QString(mesh->GetNode()->GetMaterial(it)->GetName())] = c;
         current_polygon_offset += c.vertexCount;
 
 
@@ -197,9 +199,9 @@ void MeshEntry::LoadTransform(FbxMesh *mesh)
 
 
 
-    for (int i = 0; i < 4; i++)
-        for (int j = 0; j < 4; j++)
-            local_transform(i, j) = transform.Transpose().Get(i, j);
+    for (qint32 i = 0; i < 4; i++)
+        for (qint32 j = 0; j < 4; j++)
+            m_local_transform(i, j) = transform.Transpose().Get(i, j);
 
 
 
@@ -224,8 +226,45 @@ void MeshEntry::LoadBoundingBox(FbxMesh *mesh)
 
 
 
+    Q_UNUSED(mesh)
+
+
 
 }
+
+
+
+
+
+
+
+
+
+QDataStream &operator <<(QDataStream &out, const MeshEntry &entry)
+{
+
+    out << entry.GetLocalTransform() << entry.GetDrawCommands();
+    return out;
+
+}
+
+
+QDataStream &operator >>(QDataStream &in, MeshEntry &entry)
+{
+
+
+    QMatrix4x4 local_transform;
+    QHash<QString, DrawElementsCommand> commands;
+    in >> local_transform >> commands;
+
+
+    entry.SetLocalTransform(local_transform);
+    entry.SetDrawCommands(commands);
+    return in;
+
+}
+
+
 
 
 

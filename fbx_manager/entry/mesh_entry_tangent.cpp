@@ -64,7 +64,7 @@ void MeshEntry::LoadTangents(FbxMesh *mesh,
 
 
 
-                for (int i = 0; i < mesh->GetControlPointsCount(); i++)
+                for (qint32 i = 0; i < mesh->GetControlPointsCount(); i++)
                 {
 
 
@@ -91,11 +91,11 @@ void MeshEntry::LoadTangents(FbxMesh *mesh,
 
 
 
-                for (int i = 0; i < mesh->GetControlPointsCount(); i++)
+                for (qint32 i = 0; i < mesh->GetControlPointsCount(); i++)
                 {
 
 
-                    int index = vertex_tangent->GetIndexArray().GetAt(i);
+                    qint32 index = vertex_tangent->GetIndexArray().GetAt(i);
                     master_tangents << (float)(vertex_tangent->GetDirectArray().GetAt(index).mData[0]);
                     master_tangents << (float)(vertex_tangent->GetDirectArray().GetAt(index).mData[1]);
                     master_tangents << (float)(vertex_tangent->GetDirectArray().GetAt(index).mData[2]);
@@ -138,7 +138,7 @@ void MeshEntry::LoadTangents(FbxMesh *mesh,
         qDebug() << mesh->GetNode()->GetName() << "had abnormal tangent information and we had to fill 0's!";
 
 
-        for (int i = 0; i < mesh->GetControlPointsCount(); i++)
+        for (qint32 i = 0; i < mesh->GetControlPointsCount(); i++)
             master_tangents << 0.0 << 0.0 << 0.0 << 0.0;
 
 

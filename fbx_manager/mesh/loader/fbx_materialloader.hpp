@@ -3,8 +3,9 @@
 
 
 
-#include <QObject>
-#include <fbx_manager/material/material.hpp>
+
+#include <fbx_manager/material/fbx_material.hpp>
+#include <assets/basethreadedloader.hpp>
 
 
 
@@ -12,25 +13,19 @@
  *@brief The MaterialLoader class will handle material loading in a separate
  *thread
  */
-class MaterialLoader : public QObject
+class MaterialLoader : public BaseThreadedLoader
 {
 
-
-    Q_OBJECT
 
 
     /**
      * @brief materials is the hash where materials are stored
      */
-    QHash<QString, Material> & materials;
-    /**
-     * @brief images is the hash where images are stored
-     */
-    QHash<QString, QImage> & images;
+    QHash<QString, Material> & m_materials;
     /**
      * @brief scene is the scene of the fbx file
      */
-    FbxScene * scene;
+    FbxScene * m_scene;
     /**
      * @brief fbx_file_name is the name of the fbx file
      */
@@ -45,23 +40,11 @@ public:
     /**
     * @brief MaterialLoader is a basic constructor
     */
-    MaterialLoader(QHash<QString, Material> & materials,
-                   QHash<QString, QImage> & images,
-                   FbxScene * scene,
+    MaterialLoader(QHash<QString, Material> & r_materials,
+                   FbxScene * r_scene,
                    QString fbx_file_name);
 
 
-signals:
-
-    /**
-     *@brief HasLoadedMaterials will be emitted when the loaded has done it's
-     *job
-     */
-    void HasLoadedMaterials();
-
-
-
-public slots:
 
 
     /**

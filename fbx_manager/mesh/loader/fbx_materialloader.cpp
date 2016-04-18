@@ -1,19 +1,17 @@
-#include <fbx_manager/mesh/materialloader.hpp>
+#include <fbx_manager/mesh/loader/fbx_materialloader.hpp>
 
 
 
 
 
 
-MaterialLoader::MaterialLoader(QHash<QString, Material> &materials,
-                               QHash<QString, QImage> &images,
-                               FbxScene *scene,
+MaterialLoader::MaterialLoader(QHash<QString, Material> &r_materials,
+                               FbxScene *r_scene,
                                QString fbx_file_name) :
 
 
-    materials(materials),
-    images(images),
-    scene(scene),
+    m_materials(r_materials),
+    m_scene(r_scene),
     fbx_file_name(fbx_file_name)
 
 
@@ -31,11 +29,12 @@ void MaterialLoader::Load()
 {
 
 
-    materials.clear();
+
+    m_materials.clear();
 
 
 
-    for (int i = 0; i < scene->GetMaterialCount(); i++)
+    for (qint32 i = 0; i < m_scene->GetMaterialCount(); i++)
     {
 
 
@@ -45,7 +44,7 @@ void MaterialLoader::Load()
         */
 
 
-        if (!scene->GetMaterial(i))
+        if (!m_scene->GetMaterial(i))
             continue;
 
 
@@ -54,7 +53,7 @@ void MaterialLoader::Load()
         */
 
 
-        if (materials.contains(scene->GetMaterial(i)->GetName()))
+        if (m_materials.contains(m_scene->GetMaterial(i)->GetName()))
             continue;
 
 
@@ -63,7 +62,7 @@ void MaterialLoader::Load()
          *Get a pointer to the current material
          */
 
-        FbxSurfaceMaterial * material = scene->GetMaterial(i);
+        FbxSurfaceMaterial * material = m_scene->GetMaterial(i);
 
 
 
@@ -79,30 +78,21 @@ void MaterialLoader::Load()
 
 
         new_mat.AddDiffuseProperty(material->FindProperty(FbxSurfaceMaterial::sDiffuse),
-                                   images,
                                    fbx_file_name);
 
 
 
 
         new_mat.AddNormalProperty(material->FindProperty(FbxSurfaceMaterial::sNormalMap),
-                                  images,
                                   fbx_file_name);
 
 
 
-
-
-        materials[material->GetName()] = new_mat;
+        m_materials[material->GetName()] = new_mat;
 
 
 
     }
-
-
-
-
-    emit HasLoadedMaterials();
 
 
 

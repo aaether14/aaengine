@@ -1,15 +1,10 @@
-#include <fbx_manager/material/material.hpp>
+#include <fbx_manager/material/fbx_material.hpp>
 
 
 
 
 
-Material::Material() : diffuse_color(QVector3D(0, 0, 0)),
-    emissive_color(QVector3D(0, 0, 0)),
-    difuse_texture_name(QString()),
-    use_diffuse_texture(false),
-    normal_map_name(QString()),
-    use_normal_map(false)
+Material::Material() : diffuse_color(QVector3D(0, 0, 0))
 {
 
 
@@ -23,7 +18,7 @@ void Material::SendToShader(QOpenGLShaderProgram &shader)
 
 
     shader.setUniformValue("diffuse_color", diffuse_color);
-    shader.setUniformValue("use_diffuse_texture", use_diffuse_texture);
+    shader.setUniformValue("use_diffuse_texture", textures.contains(diffuse));
 
 
 }
@@ -32,7 +27,6 @@ void Material::SendToShader(QOpenGLShaderProgram &shader)
 
 
 void Material::AddDiffuseProperty(FbxProperty diffuse_property,
-                                  QHash<QString, QImage> &images,
                                   QString fbx_file_name)
 {
 
@@ -96,19 +90,7 @@ void Material::AddDiffuseProperty(FbxProperty diffuse_property,
 
 
 
-    /**
-    *If the texture is not in the library, add it
-    */
-    if (!images.contains(texture_index))
-        images[texture_index] = QImage(texture_index).mirrored();
-
-
-
-
-    this->difuse_texture_name = texture_index;
-    this->use_diffuse_texture = true;
-
-
+    textures[diffuse] = texture_index;
 
 
 
@@ -120,7 +102,6 @@ void Material::AddDiffuseProperty(FbxProperty diffuse_property,
 
 
 void Material::AddNormalProperty(FbxProperty normal_property,
-                                 QHash<QString, QImage> &images,
                                  QString fbx_file_name)
 {
 
@@ -175,23 +156,69 @@ void Material::AddNormalProperty(FbxProperty normal_property,
 
 
 
-    /**
-    *If the texture is not in the library, add it
-    */
-    if (!images.contains(texture_index))
-        images[texture_index] = QImage(texture_index).mirrored();
 
-
-
-
-    this->normal_map_name = texture_index;
-    this->use_normal_map = true;
+    textures[normal] = texture_index;
 
 
 
 
 
 }
+
+
+
+
+
+
+QDataStream &operator <<(QDataStream &out, const Material &material)
+{
+
+
+    out << material.diffuse_color << material.textures;
+    return out;
+
+
+}
+
+
+
+QDataStream &operator >>(QDataStream &in, Material &material)
+{
+
+    in >> material.diffuse_color >> material.textures;
+    return in;
+
+
+}
+
+
+
+
+
+QDataStream &operator <<(QDataStream &out, const DrawElementsCommand &command)
+{
+
+
+    out << command.baseInstance << command.baseVertex << command.firstIndex;
+    out << command.instanceCount << command.vertexCount;
+    return out;
+
+
+}
+
+
+
+QDataStream &operator >>(QDataStream &in, DrawElementsCommand &command)
+{
+
+
+    in >> command.baseInstance >> command.baseVertex >> command.firstIndex;
+    in >> command.instanceCount >> command.vertexCount;
+    return in;
+
+
+}
+
 
 
 

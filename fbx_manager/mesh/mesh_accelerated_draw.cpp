@@ -17,7 +17,7 @@ void Mesh::AcceleratedDraw(QString material_name)
 
 
     QVector<DrawElementsCommand> draw_commands;
-    QVector<unsigned int> per_object_index;
+    QVector<quint32> per_object_index;
 
 
 
@@ -43,9 +43,9 @@ void Mesh::AcceleratedDraw(QString material_name)
 
 
     f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.per_object_buffer);
-    f->glBufferData(GL_ARRAY_BUFFER, sizeof(unsigned int) * per_object_index.size(), &per_object_index[0], GL_STATIC_DRAW);
+    f->glBufferData(GL_ARRAY_BUFFER, sizeof(quint32) * per_object_index.size(), &per_object_index[0], GL_STATIC_DRAW);
     f->glEnableVertexAttribArray(MESH_PER_OBJECT_ATTRIBUTE_POINTER);
-    f->glVertexAttribIPointer(MESH_PER_OBJECT_ATTRIBUTE_POINTER, 1, GL_UNSIGNED_INT, sizeof(unsigned int), 0);
+    f->glVertexAttribIPointer(MESH_PER_OBJECT_ATTRIBUTE_POINTER, 1, GL_UNSIGNED_INT, sizeof(quint32), 0);
     f->glVertexAttribDivisor(MESH_PER_OBJECT_ATTRIBUTE_POINTER, 1);
 
 

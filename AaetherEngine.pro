@@ -31,7 +31,6 @@ SOURCES += main.cpp\
     core/fps.cpp \
     core/inputregister.cpp \
     core/main_controller.cpp \
-    fbx_manager/material/material.cpp \
     dialogs/about/about.cpp \
     renderer/baserenderer.cpp \
     renderer/pipeline.cpp \
@@ -55,9 +54,12 @@ SOURCES += main.cpp\
     fbx_manager/entry/mesh_entry_tangent.cpp \
     fbx_manager/mesh_util.cpp \
     fbx_manager/mesh/mesh_accelerated_draw.cpp \
-    fbx_manager/mesh/geometryloader.cpp \
-    fbx_manager/mesh/materialloader.cpp \
-    fbx_manager/mesh/mesh_material_loader.cpp
+    fbx_manager/mesh/mesh_material_loader.cpp \
+    assets/basethreadedloader.cpp \
+    fbx_manager/mesh/loader/fbx_geometryloader.cpp \
+    fbx_manager/mesh/loader/fbx_materialloader.cpp \
+    fbx_manager/material/fbx_material.cpp \
+    fbx_manager/mesh/serialize_aaem.cpp
 
 
 
@@ -72,7 +74,6 @@ HEADERS  += \
     core/fps.hpp \
     core/inputregister.hpp \
     core/main_controller.hpp \
-    fbx_manager/material/material.hpp \
     dialogs/about/about.hpp \
     renderer/baserenderer.hpp \
     renderer/pipeline.hpp \
@@ -90,8 +91,10 @@ HEADERS  += \
     dialogs/base_dialog.hpp \
     fbx_manager/mesh/mesh_gpu_memory.h \
     fbx_manager/mesh_util.hpp \
-    fbx_manager/mesh/geometryloader.hpp \
-    fbx_manager/mesh/materialloader.hpp
+    assets/basethreadedloader.hpp \
+    fbx_manager/mesh/loader/fbx_materialloader.hpp \
+    fbx_manager/mesh/loader/fbx_geometryloader.hpp \
+    fbx_manager/material/fbx_material.hpp
 
 
 

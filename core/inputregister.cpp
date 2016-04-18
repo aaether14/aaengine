@@ -10,9 +10,9 @@ InputRegister::InputRegister(QObject *parent) : QObject(parent)
 
 
 
-    for (int i = 0; i < 512; i++)
+    for (qint32 i = 0; i < 512; i++)
         keys[i] = 0;
-    for (int i = 0; i < 8; i++)
+    for (qint32 i = 0; i < 8; i++)
         buttons[i] = 0;
 
 
@@ -23,9 +23,9 @@ InputRegister::InputRegister(QObject *parent) : QObject(parent)
 void InputRegister::RegisterKeyPress(QKeyEvent *e)
 {
 
-    int key;
+    qint32 key;
     if (e->key() > 512)
-        key = (((unsigned long int) e->key()) & 0x000000FF) + 256;
+        key = (((unsigned long qint32) e->key()) & 0x000000FF) + 256;
     else
         key = e->key();
 
@@ -41,9 +41,9 @@ void InputRegister::RegisterKeyPress(QKeyEvent *e)
 void InputRegister::RegisterKeyRelease(QKeyEvent *e)
 {
 
-    int key;
+    qint32 key;
     if (e->key() > 512)
-        key = (((unsigned long int) e->key()) & 0x000000FF) + 256;
+        key = (((unsigned long qint32) e->key()) & 0x000000FF) + 256;
     else
         key = e->key();
 
@@ -57,8 +57,8 @@ void InputRegister::RegisterKeyRelease(QKeyEvent *e)
 void InputRegister::RegisterMousePress(QMouseEvent *e)
 {
 
-    if ((int)(e->button()) < 8)
-        buttons[(int)(e->button())]++;
+    if ((qint32)(e->button()) < 8)
+        buttons[(qint32)(e->button())]++;
 
 
 }
@@ -69,8 +69,8 @@ void InputRegister::RegisterMousePress(QMouseEvent *e)
 void InputRegister::RegisterMouseRelease(QMouseEvent *e)
 {
 
-    if ((int)(e->button()) < 8)
-        buttons[(int)(e->button())] = 0;
+    if ((qint32)(e->button()) < 8)
+        buttons[(qint32)(e->button())] = 0;
 
 }
 
@@ -87,7 +87,7 @@ void InputRegister::RegisterMouseMovement(QMouseEvent *e)
 
 
 
-bool InputRegister::getKey(int key)
+bool InputRegister::getKey(qint32 key)
 {
 
     if (key < 512)
@@ -99,7 +99,7 @@ bool InputRegister::getKey(int key)
 
 
 
-bool InputRegister::getButton(int button)
+bool InputRegister::getButton(qint32 button)
 {
 
     if (button < 8)

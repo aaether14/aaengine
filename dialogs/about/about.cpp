@@ -18,8 +18,8 @@ About::About(QWidget *parent) :
 
 
 
-    connect(parent->findChild<FPS*>("gFPS"), SIGNAL(updatedFps(int)),
-            this, SLOT(ShowFps(int)));
+    connect(parent->findChild<FPS*>("gFPS"), SIGNAL(updatedFps(qint32)),
+            this, SLOT(ShowFps(qint32)));
 
 
 
@@ -42,7 +42,7 @@ About::~About()
 
 
 
-void About::ShowFps(int fps)
+void About::ShowFps(qint32 fps)
 {
 
     ui->label->setText("Fps: " + QString::number(fps));

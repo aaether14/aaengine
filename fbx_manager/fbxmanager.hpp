@@ -77,8 +77,9 @@ public:
      * @brief ImportScene will import the data from the fbx file to the scene
      * @param mesh is the mesh whose scene will be imported
      * @param fbx_file_name is the name of the fbx file
+     * @return true on importing successfully
      */
-    void ImportScene(Mesh * mesh,
+    bool ImportScene(Mesh * mesh,
                      QString fbx_file_name);
 
 

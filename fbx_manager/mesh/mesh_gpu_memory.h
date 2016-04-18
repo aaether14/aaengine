@@ -37,17 +37,17 @@ struct MeshGPUMemory
      *@brief indirect_buffer_stride_cache stores the stride cache for each
      *material key
      */
-    QHash<QString, unsigned int> indirect_buffer_stride_cache;
+    QHash<QString, quint32> indirect_buffer_stride_cache;
     /**
      *@brief indirect_buffer_size_cache stores the size cache for each material
      *key
      */
-    QHash<QString, unsigned int> indirect_buffer_size_cache;
+    QHash<QString, quint32> indirect_buffer_size_cache;
     /**
      *@brief per_object_buffer_stride_cache stores the per object buffer cache
      *for each material key
      */
-    QHash<QString, unsigned int> per_object_buffer_stride_cache;
+    QHash<QString, quint32> per_object_buffer_stride_cache;
 
 
     /**
@@ -149,6 +149,64 @@ inline void ResetGPUMemory(MeshGPUMemory & m_gpu)
     m_gpu.cached_per_object_buffer = 0;
 
 
+
+
+
+}
+
+
+
+
+
+/**
+ * @brief ClearGPUMemory will clear gpu memory used by the mesh
+ * @param m_gpu is the gpu memory struct
+ * @param f is a pointer to opengl 4.3 functions
+ */
+inline void ClearGPUMemory(MeshGPUMemory & m_gpu, QOpenGLFunctions_4_3_Core * f)
+{
+
+
+
+    if (m_gpu.vao)
+        f->glDeleteVertexArrays(1, &m_gpu.vao);
+    if (m_gpu.ssbo)
+        f->glDeleteBuffers(1, &m_gpu.ssbo);
+
+
+
+    if (m_gpu.indirect_buffer)
+        f->glDeleteBuffers(1, &m_gpu.indirect_buffer);
+    if(m_gpu.per_object_buffer)
+        f->glDeleteBuffers(1, &m_gpu.per_object_buffer);
+
+
+
+
+    if (m_gpu.cached_indirect_buffer)
+        f->glDeleteBuffers(1, &m_gpu.cached_indirect_buffer);
+    if (m_gpu.cached_per_object_buffer)
+        f->glDeleteBuffers(1, &m_gpu.cached_per_object_buffer);
+
+
+
+
+    if (m_gpu.master_vbo)
+        f->glDeleteBuffers(1, &m_gpu.master_vbo);
+    if (m_gpu.master_ibo)
+        f->glDeleteBuffers(1, &m_gpu.master_ibo);
+    if (m_gpu.master_normals_vbo)
+        f->glDeleteBuffers(1, &m_gpu.master_normals_vbo);
+    if (m_gpu.master_uvs_vbo)
+        f->glDeleteBuffers(1, &m_gpu.master_uvs_vbo);
+    if (m_gpu.master_tangents_vbo)
+        f->glDeleteBuffers(1, &m_gpu.master_tangents_vbo);
+
+
+
+    m_gpu.indirect_buffer_stride_cache.clear();
+    m_gpu.indirect_buffer_size_cache.clear();
+    m_gpu.per_object_buffer_stride_cache.clear();
 
 
 

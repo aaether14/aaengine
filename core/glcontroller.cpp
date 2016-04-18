@@ -131,7 +131,7 @@ void GLController::paintGL()
 }
 
 
-void GLController::resizeGL(int w, int h)
+void GLController::resizeGL(qint32 w, qint32 h)
 {
 
     glViewport(0, 0, w, qMax(h, 1));

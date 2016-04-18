@@ -66,7 +66,7 @@ void MeshEntry::LoadUVs(FbxMesh *mesh, QVector<float> &master_uvs)
 
 
 
-                for (int i = 0; i < mesh->GetControlPointsCount(); i++)
+                for (qint32 i = 0; i < mesh->GetControlPointsCount(); i++)
                 {
 
 
@@ -91,11 +91,11 @@ void MeshEntry::LoadUVs(FbxMesh *mesh, QVector<float> &master_uvs)
 
 
 
-                for (int i = 0; i < mesh->GetControlPointsCount(); i++)
+                for (qint32 i = 0; i < mesh->GetControlPointsCount(); i++)
                 {
 
 
-                    int index = vertex_uv->GetIndexArray().GetAt(i);
+                    qint32 index = vertex_uv->GetIndexArray().GetAt(i);
                     master_uvs << (float)(vertex_uv->GetDirectArray().GetAt(index).mData[0]);
                     master_uvs << (float)(vertex_uv->GetDirectArray().GetAt(index).mData[1]);
 
@@ -134,7 +134,7 @@ void MeshEntry::LoadUVs(FbxMesh *mesh, QVector<float> &master_uvs)
         qDebug() << mesh->GetNode()->GetName() << "had abnormal uv information and we had to fill 0's!";
 
 
-        for (int i = 0; i < mesh->GetControlPointsCount(); i++)
+        for (qint32 i = 0; i < mesh->GetControlPointsCount(); i++)
             master_uvs << 0.0 << 0.0;
 
 

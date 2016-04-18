@@ -53,7 +53,7 @@ public slots:
      * @brief ShowFps will update the fps display
      * @param fps
      */
-    void ShowFps(int fps);
+    void ShowFps(qint32 fps);
 
 
 

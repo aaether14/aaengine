@@ -72,7 +72,7 @@ public:
      * @param w - width of viewport
      * @param h - height of viewport
      */
-    void resizeGL(int w, int h);
+    void resizeGL(qint32 w, qint32 h);
 
 
 

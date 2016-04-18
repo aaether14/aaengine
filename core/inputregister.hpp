@@ -25,11 +25,11 @@ class InputRegister : public QObject
     /**
      * @brief keys will be more than 0 if the key is pressed
      */
-    int keys[512];
+    qint32 keys[512];
     /**
      *@brief buttons will be more than 0 if the mouse button is pressed
      */
-    int buttons[8];
+    qint32 buttons[8];
     /**
      *@brief mouse_position will store the mouse position relative to the
      *QOpenGLWidget (GLController)
@@ -79,8 +79,8 @@ public:
 
 
 
-    Q_INVOKABLE bool getKey(int key);
-    Q_INVOKABLE bool getButton(int button);
+    Q_INVOKABLE bool getKey(qint32 key);
+    Q_INVOKABLE bool getButton(qint32 button);
     Q_INVOKABLE QVector2D getMousePosition();
 
 

@@ -22,7 +22,7 @@ void Mesh::CachedDraw(QString material_name)
 
     f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.cached_per_object_buffer);
     f->glEnableVertexAttribArray(MESH_PER_OBJECT_ATTRIBUTE_POINTER);
-    f->glVertexAttribIPointer(MESH_PER_OBJECT_ATTRIBUTE_POINTER, 1, GL_UNSIGNED_INT, sizeof(unsigned int), (GLvoid*)(sizeof(unsigned int) *
+    f->glVertexAttribIPointer(MESH_PER_OBJECT_ATTRIBUTE_POINTER, 1, GL_UNSIGNED_INT, sizeof(unsigned qint32), (GLvoid*)(sizeof(unsigned qint32) *
                                                                                                                      m_gpu.per_object_buffer_stride_cache.value(material_name)));
     f->glVertexAttribDivisor(MESH_PER_OBJECT_ATTRIBUTE_POINTER, 1);
 
@@ -53,13 +53,13 @@ void Mesh::CachedDraw(QString material_name)
 
 void Mesh::CacheDrawCommands(QList<MeshEntry *> &mesh_entries,
                              QVector<DrawElementsCommand> &draw_commands,
-                             QVector<unsigned int> &per_object_index,
+                             QVector<quint32> &per_object_index,
                              QString key)
 {
 
 
 
-    for(int i = 0; i < mesh_entries.size(); i++)
+    for(qint32 i = 0; i < mesh_entries.size(); i++)
     {
 
         if (mesh_entries[i]->DoesMaterialExist(key))

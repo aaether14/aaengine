@@ -3,11 +3,9 @@
 
 
 
-#include <QObject>
-#include <QThread>
-#include <QtConcurrent/QtConcurrent>
-#include <fbx_manager/entry/meshentry.hpp>
 
+#include <fbx_manager/entry/meshentry.hpp>
+#include <assets/basethreadedloader.hpp>
 
 
 
@@ -16,11 +14,9 @@
  *@brief The GeometryLoader class has the purpose of loading the geometry data
  *of a 3d model
  */
-class GeometryLoader : public QObject
+class GeometryLoader : public BaseThreadedLoader
 {
 
-
-    Q_OBJECT
 
 
     /**
@@ -33,7 +29,7 @@ class GeometryLoader : public QObject
     /**
      * @brief master_indices - see mesh.hpp
      */
-    QVector<unsigned int> & master_indices;
+    QVector<quint32> & master_indices;
     /**
      * @brief master_vertices - see mesh.hpp
      */
@@ -57,12 +53,12 @@ class GeometryLoader : public QObject
      *@brief current_polygon_offset is used to know how to fill the mesh entry
      *draw command
      */
-    int current_polygon_offset;
+    qint32 current_polygon_offset;
     /**
      *@brief current_control_point_offset is used to know how to fill the mesh
      *entry draw command
      */
-    int current_control_point_offset;
+    qint32 current_control_point_offset;
 
 
 
@@ -116,7 +112,7 @@ public:
      *  of mesh entries we attempt to fill
      */
     GeometryLoader(QList<MeshEntry*> & entries,
-                   QVector<unsigned int> & indices,
+                   QVector<quint32> & indices,
                    QVector<float> & vertices,
                    QVector<float> & normals,
                    QVector<float> & uvs,
@@ -127,19 +123,6 @@ public:
                    FbxScene * scene);
 
 
-
-signals:
-
-
-    /**
-     *@brief HasFinishedLoading will be emitted when the loader has done it's
-     *job
-     */
-    void HasFinishedLoading();
-
-
-
-public slots:
 
 
     /**

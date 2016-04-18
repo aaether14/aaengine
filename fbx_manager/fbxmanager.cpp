@@ -73,6 +73,7 @@ void FBXManager::Load(QString file_name,
 
 
 
+
     if(!asset)
     {
         qDebug() << "FbxManager: No asset detected!";
@@ -100,11 +101,16 @@ void FBXManager::Load(QString file_name,
 
 
     Mesh* mesh = static_cast<MeshAsset*>(asset)->GetMesh();
-
-
-
+    /**
+     * Import the scene from the fbx file
+     */
     ImportScene(mesh, file_name);
-    mesh->Load(file_name);
+
+
+    mesh->LoadFromFbxFile(file_name);
+    mesh->ReleaseFbxScene();
+
+
 
 
 
@@ -126,7 +132,7 @@ BaseAsset *FBXManager::CreateAsset()
 
 
 
-void FBXManager::ImportScene(Mesh * mesh,
+bool FBXManager::ImportScene(Mesh * mesh,
                              QString fbx_file_name)
 {
 
@@ -158,7 +164,7 @@ void FBXManager::ImportScene(Mesh * mesh,
         qDebug() << "Call to FbxImporter::Initialize() failed";
         qDebug() << "Error returned: " << importer->GetStatus().GetErrorString();
         qDebug() << "";
-        return;
+        return false;
     }
 
 
@@ -168,15 +174,15 @@ void FBXManager::ImportScene(Mesh * mesh,
      */
 
 
-    FbxScene * scene = FbxScene::Create(GetManager(), "default_scene");
-    importer->Import(scene);
+
+    mesh->SetFbxScene(FbxScene::Create(GetManager(), "default_scene"));
+    importer->Import(mesh->GetScene());
     importer->Destroy();
 
 
 
 
-    mesh->SetFbxScene(scene);
-
+    return true;
 
 
 

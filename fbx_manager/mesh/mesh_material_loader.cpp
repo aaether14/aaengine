@@ -6,7 +6,7 @@
 
 
 
-void Mesh::CommandLoadingMaterials(QString fbx_file_name)
+void Mesh::FBX_CommandLoadingMaterials(QString fbx_file_name)
 {
 
 
@@ -14,30 +14,15 @@ void Mesh::CommandLoadingMaterials(QString fbx_file_name)
 
 
     MaterialLoader * material_loader = new MaterialLoader(m_materials,
-                                                          d_images,
                                                           m_scene,
                                                           fbx_file_name);
 
 
 
-    QFuture<void> material_loading_process = QtConcurrent::run(material_loader, &MaterialLoader::Load);
-    Q_UNUSED(material_loading_process)
+    material_loader->Load();
+    PassTextureDataToOpenGL();
+    delete material_loader;
 
-
-
-    material_loader->connect(material_loader, &MaterialLoader::HasLoadedMaterials, [=](){
-
-
-        QMutex mutex;
-        mutex.lock();
-        should_pass_textures_to_opengl = true;
-        mutex.unlock();
-
-
-        delete material_loader;
-
-
-    });
 
 
 
@@ -55,18 +40,11 @@ void Mesh::PassTextureDataToOpenGL()
 
 
 
-    foreach(auto it, d_images.keys())
-    {
 
-
-        m_textures[it] = new QOpenGLTexture(d_images[it]);
-
-
-    }
-
-
-
-    d_images.clear();
+    foreach(auto current_material, m_materials)
+        foreach(auto current_texture, current_material.textures.values())
+            if (!m_textures.contains(current_texture))
+                m_textures[current_texture] = new QOpenGLTexture(QImage(current_texture).mirrored());
 
 
 
@@ -86,7 +64,7 @@ void Mesh::PassTextureDataToOpenGL()
 
 
     QVector<DrawElementsCommand> cached_commands;
-    QVector<unsigned int> cached_per_object_index;
+    QVector<quint32> cached_per_object_index;
 
 
 
@@ -100,7 +78,7 @@ void Mesh::PassTextureDataToOpenGL()
 
 
         QVector<DrawElementsCommand> commands;
-        QVector<unsigned int> per_object_index;
+        QVector<quint32> per_object_index;
 
 
 
@@ -131,18 +109,14 @@ void Mesh::PassTextureDataToOpenGL()
 
 
 
-
-
     /**
     *Create and bind the vertex array object
     */
 
 
     if (!m_gpu.vao)
-    {
         f->glGenVertexArrays(1, &m_gpu.vao);
-        f->glBindVertexArray(m_gpu.vao);
-    }
+    f->glBindVertexArray(m_gpu.vao);
 
 
 
@@ -156,7 +130,7 @@ void Mesh::PassTextureDataToOpenGL()
 
     f->glGenBuffers(1, &m_gpu.cached_per_object_buffer);
     f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.cached_per_object_buffer);
-    f->glBufferData(GL_ARRAY_BUFFER, sizeof(unsigned int) * cached_per_object_index.size(), &cached_per_object_index[0], GL_STATIC_DRAW);
+    f->glBufferData(GL_ARRAY_BUFFER, sizeof(quint32) * cached_per_object_index.size(), &cached_per_object_index[0], GL_STATIC_DRAW);
 
 
 
@@ -169,9 +143,6 @@ void Mesh::PassTextureDataToOpenGL()
 
 
     f->glBindVertexArray(0);
-
-
-
     has_loaded_textures = true;
 
 

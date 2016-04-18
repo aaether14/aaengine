@@ -98,7 +98,7 @@ void FPS::Update()
 
 
 
-int FPS::get()
+qint32 FPS::get()
 {
 
     return fps;

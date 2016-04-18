@@ -8,7 +8,7 @@
 
 
 
-void Mesh::CommandLoadingBufferObjects()
+void Mesh::FBX_CommandLoadingBufferObjects()
 {
 
 
@@ -31,27 +31,9 @@ void Mesh::CommandLoadingBufferObjects()
 
 
 
-    QFuture<void> geometry_loading_procces = QtConcurrent::run(geometry_loader, &GeometryLoader::Load);
-    Q_UNUSED(geometry_loading_procces)
-
-
-
-    geometry_loader->connect(geometry_loader, &GeometryLoader::HasFinishedLoading, [=](){
-
-
-        QMutex mutex;
-        mutex.lock();
-        should_pass_geometry_to_opengl = true;
-        mutex.unlock();
-
-
-        delete geometry_loader;
-
-
-
-    });
-
-
+    geometry_loader->Load();
+    PassGeometryDataToOpenGL();
+    delete geometry_loader;
 
 
 
@@ -91,10 +73,8 @@ void Mesh::PassGeometryDataToOpenGL()
 
 
     if (!m_gpu.vao)
-    {
         f->glGenVertexArrays(1, &m_gpu.vao);
-        f->glBindVertexArray(m_gpu.vao);
-    }
+    f->glBindVertexArray(m_gpu.vao);
 
 
 
@@ -104,7 +84,7 @@ void Mesh::PassGeometryDataToOpenGL()
 
     f->glGenBuffers(1, &m_gpu.master_ibo);
     f->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_gpu.master_ibo);
-    f->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * d_master_indices.size(), &d_master_indices[0], GL_STATIC_DRAW);
+    f->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned qint32) * d_master_indices.size(), &d_master_indices[0], GL_STATIC_DRAW);
 
 
 
@@ -199,10 +179,6 @@ void Mesh::PassGeometryDataToOpenGL()
 
 
     f->glBindVertexArray(0);
-
-
-
-
     has_loaded_geometry = true;
 
 

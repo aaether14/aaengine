@@ -37,11 +37,11 @@ class FPS : public QObject
      *@brief frame_counter counts the number of frames that have passed from
      *the list timer rest
      */
-    int frame_counter;
+    qint32 frame_counter;
     /**
      * @brief fps is the final result
      */
-    int fps;
+    qint32 fps;
     /**
      * @brief r_delta is the amount of msecs in a frame
      */
@@ -79,7 +79,7 @@ signals:
     /**
      *@brief updatedFps sends the current fps
      */
-    void updatedFps(int);
+    void updatedFps(qint32);
 
 
 public slots:
@@ -101,7 +101,7 @@ public:
      * @brief get will return fps
      * @return fps
      */
-    Q_INVOKABLE int get();
+    Q_INVOKABLE qint32 get();
 
     /**
      * @brief delta will return r_delta

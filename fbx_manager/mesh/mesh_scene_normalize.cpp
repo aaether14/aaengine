@@ -96,7 +96,7 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
     {
 
 
-        for (int i = 0; i < m_scene->GetGeometryCount(); i++)
+        for (qint32 i = 0; i < m_scene->GetGeometryCount(); i++)
         {
 
 
@@ -129,7 +129,7 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
     {
 
 
-        for (int i = 0; i < m_scene->GetGeometryCount(); i++)
+        for (qint32 i = 0; i < m_scene->GetGeometryCount(); i++)
         {
 
 
@@ -146,7 +146,7 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
             *Remove existing tangent data
             */
 
-            for (int i = 0; i < current_mesh->GetElementTangentCount(); i++)
+            for (qint32 i = 0; i < current_mesh->GetElementTangentCount(); i++)
                 current_mesh->RemoveElementTangent(current_mesh->GetElementTangent(i));
 
 
@@ -198,7 +198,7 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
 
 
 
-            for (int j = 0; j < current_mesh->GetPolygonCount(); j++)
+            for (qint32 j = 0; j < current_mesh->GetPolygonCount(); j++)
             {
 
 
@@ -207,9 +207,9 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
                  */
 
 
-                int i1 = current_mesh->GetPolygonVertex(j, 0);
-                int i2 = current_mesh->GetPolygonVertex(j, 1);
-                int i3 = current_mesh->GetPolygonVertex(j, 2);
+                qint32 i1 = current_mesh->GetPolygonVertex(j, 0);
+                qint32 i2 = current_mesh->GetPolygonVertex(j, 1);
+                qint32 i3 = current_mesh->GetPolygonVertex(j, 2);
 
 
                 /**
@@ -297,7 +297,7 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
             */
 
 
-            for (int j = 0; j < current_mesh->GetControlPointsCount(); j++)
+            for (qint32 j = 0; j < current_mesh->GetControlPointsCount(); j++)
             {
 
 
@@ -352,7 +352,7 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
     if (convert_textures)
     {
 
-        for (int i = 0; i < m_scene->GetTextureCount(); i++)
+        for (qint32 i = 0; i < m_scene->GetTextureCount(); i++)
         {
 
 
