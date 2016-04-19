@@ -9,12 +9,12 @@
 
 
 void Mesh::NormalizeScene(FbxManager *fbx_manager,
-                          bool convert_axis,
-                          bool convert_scale,
-                          bool split_points,
-                          bool generate_tangents,
-                          bool triangulate,
-                          bool convert_textures)
+                          const bool &convert_axis,
+                          const bool &convert_scale,
+                          const bool &split_points,
+                          const bool &generate_tangents,
+                          const bool &triangulate,
+                          const bool &convert_textures)
 {
 
 

@@ -18,9 +18,12 @@ Mesh::Mesh():
     is_using_tangents(false),
 
 
+    m_resources_semaphore(0),
+    m_loaded_semaphore(0),
 
-    has_loaded_geometry(false),
-    has_loaded_textures(false),
+
+
+    m_file_name(""),
     m_draw_method("cached")
 {
 
@@ -52,11 +55,10 @@ Mesh::~Mesh()
 
 
     qDeleteAll(m_textures);
-    qDeleteAll(m_mesh_entries);
-
-
-
     m_textures.clear();
+
+
+
     m_mesh_entries.clear();
     m_materials.clear();
 
@@ -70,10 +72,12 @@ Mesh::~Mesh()
 
 
 
-void Mesh::LoadFromFbxFile(QString file_name)
+void Mesh::LoadFromFbxFile(const QString &fbx_file_name)
 {
 
 
+
+    m_file_name = fbx_file_name;
 
 
     /**
@@ -81,9 +85,32 @@ void Mesh::LoadFromFbxFile(QString file_name)
      */
 
     FBX_CommandLoadingBufferObjects();
-    FBX_CommandLoadingMaterials(file_name);
+    FBX_CommandLoadingMaterials();
 
 
+
+
+}
+
+
+
+
+
+
+void Mesh::LoadFromAAEMFile(const QString &aaem_file_name)
+{
+
+
+
+    m_file_name = aaem_file_name;
+
+
+    /**
+    *Try to load and signal if it succeded
+    */
+
+    if (DeserializeAAEM(aaem_file_name))
+        m_resources_semaphore.release(2);
 
 
 
@@ -105,6 +132,18 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
     /**
     *If the mesh wasn't successfully loaded, don't bother to try drawing it
     */
+
+
+
+    if (m_resources_semaphore.tryAcquire(2))
+    {
+        PassGeometryDataToOpenGL();
+        PassTextureDataToOpenGL();
+        ClearGeometryData();
+        m_loaded_semaphore.release();
+    }
+
+
 
 
     if (!IsLoaded())

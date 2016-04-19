@@ -62,9 +62,9 @@ FBXManager::~FBXManager()
 
 
 
-void FBXManager::Load(QString file_name,
+void FBXManager::Load(const QString &file_name,
                       BaseAsset *asset,
-                      QVariantMap load_options)
+                      const QVariantMap &load_options)
 {
 
 
@@ -101,15 +101,31 @@ void FBXManager::Load(QString file_name,
 
 
     Mesh* mesh = static_cast<MeshAsset*>(asset)->GetMesh();
-    /**
-     * Import the scene from the fbx file
-     */
-    ImportScene(mesh, file_name);
+    QFileInfo file_info(file_name);
 
 
-    mesh->LoadFromFbxFile(file_name);
-    mesh->ReleaseFbxScene();
 
+
+    if (file_info.suffix() == "fbx")
+    {
+
+        /**
+         * Import the scene from the fbx file
+         */
+        ImportScene(mesh, file_name);
+        mesh->LoadFromFbxFile(file_name);
+        mesh->ReleaseFbxScene();
+
+    }
+    else if (file_info.suffix() == "aaem")
+    {
+
+        /**
+        *Import the mesh from an aaem file
+        */
+
+        mesh->LoadFromAAEMFile(file_name);
+    }
 
 
 

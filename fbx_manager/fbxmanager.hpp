@@ -58,9 +58,9 @@ public:
      * @param load_options is a hash map of options you want the
      * loader to keep account of
      */
-    void Load(QString file_name,
+    void Load(const QString &file_name,
               BaseAsset * asset,
-              QVariantMap load_options);
+              const QVariantMap &load_options);
 
 
     /**

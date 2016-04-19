@@ -26,8 +26,7 @@ void Material::SendToShader(QOpenGLShaderProgram &shader)
 
 
 
-void Material::AddDiffuseProperty(FbxProperty diffuse_property,
-                                  QString fbx_file_name)
+void Material::AddDiffuseProperty(FbxProperty diffuse_property)
 {
 
 
@@ -68,29 +67,8 @@ void Material::AddDiffuseProperty(FbxProperty diffuse_property,
 
 
 
-    /**
-     *texture_index is the index by which this texture will be stored and it's
-     *the path of the texture
-     */
 
-
-
-    QString texture_index = aae::mesh_util::ComputeTextureFilename(texture->GetFileName(),
-                                                                   fbx_file_name);
-
-
-
-
-    if (!QFileInfo(texture_index).exists())
-    {
-        qDebug() << "Could not find" << texture->GetFileName() <<"!";
-        return;
-    }
-
-
-
-
-    textures[diffuse] = texture_index;
+    textures[diffuse] = texture->GetFileName();
 
 
 
@@ -101,8 +79,7 @@ void Material::AddDiffuseProperty(FbxProperty diffuse_property,
 
 
 
-void Material::AddNormalProperty(FbxProperty normal_property,
-                                 QString fbx_file_name)
+void Material::AddNormalProperty(FbxProperty normal_property)
 {
 
 
@@ -134,30 +111,9 @@ void Material::AddNormalProperty(FbxProperty normal_property,
 
 
 
-    /**
-     *texture_index is the index by which this texture will be stored and it's
-     *the path of the texture
-     */
 
 
-
-    QString texture_index = aae::mesh_util::ComputeTextureFilename(texture->GetFileName(),
-                                                                   fbx_file_name);
-
-
-
-
-    if (!QFileInfo(texture_index).exists())
-    {
-        qDebug() << "Could not find" << texture->GetFileName() <<"!";
-        return;
-    }
-
-
-
-
-
-    textures[normal] = texture_index;
+    textures[normal] = texture->GetFileName();
 
 
 

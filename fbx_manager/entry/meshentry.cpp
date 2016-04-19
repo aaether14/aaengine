@@ -258,6 +258,7 @@ QDataStream &operator >>(QDataStream &in, MeshEntry &entry)
     in >> local_transform >> commands;
 
 
+
     entry.SetLocalTransform(local_transform);
     entry.SetDrawCommands(commands);
     return in;

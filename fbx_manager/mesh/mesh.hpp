@@ -7,7 +7,7 @@
 
 #include <QDebug>
 #include <QOpenGLTexture>
-
+#include <QSemaphore>
 
 
 
@@ -44,7 +44,7 @@ class Mesh
     /**
      * @brief mesh_entries is the list of individual mesh entries contained by the parent Mesh
      */
-    QList<MeshEntry*> m_mesh_entries;
+    QList<MeshEntry> m_mesh_entries;
 
 
     /**
@@ -88,9 +88,8 @@ class Mesh
 
     /**
      * @brief LoadMaterials will load the materials used by the mesh
-     * @param fbx_file_name is needed to compute the texture filenames
      */
-    void FBX_CommandLoadingMaterials(QString fbx_file_name);
+    void FBX_CommandLoadingMaterials();
 
 
 
@@ -110,10 +109,10 @@ class Mesh
      * @param per_object_index is a reference to the per object vector to be filled
      * @param key is the material key
      */
-    void CacheDrawCommands(QList<MeshEntry *> &mesh_entries,
+    void CacheDrawCommands(QList<MeshEntry> &mesh_entries,
                            QVector<DrawElementsCommand> & draw_commands,
                            QVector<quint32> &per_object_index,
-                           QString key);
+                           const QString &key);
 
 
 
@@ -138,19 +137,19 @@ class Mesh
 
 
 
+    /**
+     *@brief m_resources_semaphore will hold information about whether the
+     *resrouces have been loaded or not
+     */
+    QSemaphore m_resources_semaphore, m_loaded_semaphore;
+
+
 
     /**
-     *@brief has_loaded_geometry will be true if the mesh has successfully
-     *loaded the geometry and passed the data to opengl
+     *@brief m_file_name will store the name of the file from which we loaded
+     *the mesh
      */
-    bool has_loaded_geometry;
-
-
-    /**
-     *@brief has_loaded_textures will be true if the mesh has successfully
-     *loaded textures and passed the data to opengl
-     */
-    bool has_loaded_textures;
+    QString m_file_name;
 
 
 
@@ -177,7 +176,7 @@ class Mesh
      * @param shader is the shader used by the engine to render this kind of components
      * @param material_name determines which material based commands are we taking for this render
      */
-    void AcceleratedDraw(QString material_name);
+    void AcceleratedDraw(const QString &material_name);
 
 
 
@@ -187,7 +186,7 @@ class Mesh
      * @param shader is the shader used by the engine to render this kind of components
      * @param material_name determines which material based commands are we taking for this render
      */
-    void CachedDraw(QString material_name);
+    void CachedDraw(const QString &material_name);
 
 
 
@@ -200,6 +199,13 @@ class Mesh
     void SendModelMatrixToShader();
 
 
+
+    /**
+     * @brief DeserializeAAEM will deserialize the mesh from an aaem file
+     * @param file_name is the name of the file which holds the mesh data
+     * @return will return true if nothing went wrong
+     */
+    bool DeserializeAAEM(const QString &file_name);
 
 
 
@@ -248,10 +254,22 @@ public:
      * @brief Load loads the mesh from the fbx file
      * @param fbx_file_name is the name of the file to be loaded
      */
-    void LoadFromFbxFile(QString fbx_file_name);
+    void LoadFromFbxFile(const QString &fbx_file_name);
+
+
+    /**
+     * @brief LoadFromAAEMFile will load the mesh from an aaem file
+     * @param aaem_file_name is the name of the file to be loaded
+     */
+    void LoadFromAAEMFile(const QString &aaem_file_name);
 
 
 
+    /**
+     *@brief ClearGeometryData will release the data where we stored geometry
+     *information
+     */
+    void ClearGeometryData();
 
 
 
@@ -272,12 +290,12 @@ public:
      * from tga to other format (i.e png)
      */
     void NormalizeScene(FbxManager * fbx_manager,
-                        bool convert_axis,
-                        bool convert_scale,
-                        bool split_points,
-                        bool generate_tangents,
-                        bool triangulate,
-                        bool convert_textures);
+                        const bool &convert_axis,
+                        const bool &convert_scale,
+                        const bool &split_points,
+                        const bool &generate_tangents,
+                        const bool &triangulate,
+                        const bool &convert_textures);
 
 
 
@@ -288,26 +306,36 @@ public:
      * @brief SetGlobalTransform will set the global transform of the mesh
      * @param transform is the new transform
      */
-    inline void SetGlobalTransform(QMatrix4x4 transform) {m_global_transform = transform; }
+    inline void SetGlobalTransform(const QMatrix4x4 &transform) {
+        m_global_transform = transform;
+    }
+
+
     /**
      * @brief SetDrawMethod will set the draw method for mesh rendering
      * @param method is the new draw method
      */
-    inline void SetDrawMethod(QString method){m_draw_method = method; }
+    inline void SetDrawMethod(const QString &method){
+        m_draw_method = method;
+    }
 
 
     /**
      * @brief GetScene will return the scene pointer of the model
      * @return is the requested scene
      */
-    inline FbxScene * GetScene(){return m_scene; }
+    inline FbxScene * GetScene(){
+        return m_scene;
+    }
 
 
     /**
      * @brief SetFbxScene will set the scene pointer of the fbx model
      * @param scene is the scene pointer
      */
-    inline void SetFbxScene(FbxScene * scene){m_scene = scene; }
+    inline void SetFbxScene(FbxScene * scene){
+        m_scene = scene;
+    }
 
 
 
@@ -327,7 +355,17 @@ public:
      * @return
      */
     inline bool IsLoaded(){
-        return has_loaded_geometry && has_loaded_textures;
+        /**
+        *This means it has successfully loaded both geometry and material data and this data
+        * has also been sent to opengl memory
+        */
+        return m_loaded_semaphore.available();
+    }
+
+
+
+    inline const QString &GetFileName() const{
+        return m_file_name;
     }
 
 
@@ -346,8 +384,7 @@ public:
      * @param file_name is the name of the new file which will hold
      * the mesh data
      */
-    void SerializeAAEM(QString file_name);
-
+    void SerializeAAEM(const QString &file_name);
 
 
 

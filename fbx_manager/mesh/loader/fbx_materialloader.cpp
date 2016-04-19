@@ -6,31 +6,33 @@
 
 
 MaterialLoader::MaterialLoader(QHash<QString, Material> &r_materials,
-                               FbxScene *r_scene,
-                               QString fbx_file_name) :
+                               FbxScene *r_scene) :
 
 
     m_materials(r_materials),
-    m_scene(r_scene),
-    fbx_file_name(fbx_file_name)
-
-
-
-
+    m_scene(r_scene)
 {
 
 
-
+    /**
+    *Pass the references to required data
+    */
 
 
 }
+
+
+
+
 
 void MaterialLoader::Load()
 {
 
 
 
+
     m_materials.clear();
+
 
 
 
@@ -73,18 +75,8 @@ void MaterialLoader::Load()
 
 
         Material new_mat;
-
-
-
-
-        new_mat.AddDiffuseProperty(material->FindProperty(FbxSurfaceMaterial::sDiffuse),
-                                   fbx_file_name);
-
-
-
-
-        new_mat.AddNormalProperty(material->FindProperty(FbxSurfaceMaterial::sNormalMap),
-                                  fbx_file_name);
+        new_mat.AddDiffuseProperty(material->FindProperty(FbxSurfaceMaterial::sDiffuse));
+        new_mat.AddNormalProperty(material->FindProperty(FbxSurfaceMaterial::sNormalMap));
 
 
 

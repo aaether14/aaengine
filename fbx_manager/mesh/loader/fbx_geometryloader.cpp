@@ -144,15 +144,15 @@ void GeometryLoader::RecursiveLoad(FbxNode *node)
 
 
 
-    MeshEntry * new_mesh_entry = new MeshEntry();
-    new_mesh_entry->LoadMesh(mesh,
+    MeshEntry new_mesh_entry;
+    new_mesh_entry.LoadMesh(mesh,
 
 
-                             master_indices,
-                             master_vertices,
-                             master_normals,
-                             master_uvs,
-                             master_tangents,
+                             d_master_indices,
+                             d_master_vertices,
+                             d_master_normals,
+                             d_master_uvs,
+                             d_master_tangents,
 
 
                              is_using_normals,
@@ -167,7 +167,7 @@ void GeometryLoader::RecursiveLoad(FbxNode *node)
 
 
 
-    mesh_entries << new_mesh_entry;
+    m_mesh_entries << new_mesh_entry;
 
 
 
@@ -177,28 +177,28 @@ void GeometryLoader::RecursiveLoad(FbxNode *node)
 
 
 
-GeometryLoader::GeometryLoader(QList<MeshEntry *> &entries,
-                               QVector<quint32> &indices,
-                               QVector<float> &vertices,
-                               QVector<float> &normals,
-                               QVector<float> &uvs,
-                               QVector<float> &tangents,
+GeometryLoader::GeometryLoader(QList<MeshEntry> &r_entries,
+                               QVector<quint32> &r_indices,
+                               QVector<float> &r_vertices,
+                               QVector<float> &r_normals,
+                               QVector<float> &r_uvs,
+                               QVector<float> &r_tangents,
                                bool &using_normals,
                                bool &using_uvs,
                                bool &using_tangents,
-                               FbxScene *scene) :
-    mesh_entries(entries),
-    master_indices(indices),
-    master_vertices(vertices),
-    master_normals(normals),
-    master_uvs(uvs),
-    master_tangents(tangents),
+                               FbxScene *r_scene) :
+    m_mesh_entries(r_entries),
+    d_master_indices(r_indices),
+    d_master_vertices(r_vertices),
+    d_master_normals(r_normals),
+    d_master_uvs(r_uvs),
+    d_master_tangents(r_tangents),
     current_polygon_offset(0),
     current_control_point_offset(0),
     is_using_normals(using_normals),
     is_using_uvs(using_uvs),
     is_using_tangents(using_tangents),
-    m_scene(scene)
+    m_scene(r_scene)
 {
 
 

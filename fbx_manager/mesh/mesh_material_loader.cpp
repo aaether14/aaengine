@@ -6,7 +6,7 @@
 
 
 
-void Mesh::FBX_CommandLoadingMaterials(QString fbx_file_name)
+void Mesh::FBX_CommandLoadingMaterials()
 {
 
 
@@ -14,16 +14,20 @@ void Mesh::FBX_CommandLoadingMaterials(QString fbx_file_name)
 
 
     MaterialLoader * material_loader = new MaterialLoader(m_materials,
-                                                          m_scene,
-                                                          fbx_file_name);
+                                                          m_scene);
 
 
 
     material_loader->Load();
-    PassTextureDataToOpenGL();
     delete material_loader;
 
 
+
+
+    /**
+    *Mark it that you managed to load a resource
+    */
+    m_resources_semaphore.release();
 
 
 
@@ -39,12 +43,35 @@ void Mesh::PassTextureDataToOpenGL()
 
 
 
+    /**
+    *Load textures into opengl memory
+    */
+
 
 
     foreach(auto current_material, m_materials)
         foreach(auto current_texture, current_material.textures.values())
             if (!m_textures.contains(current_texture))
-                m_textures[current_texture] = new QOpenGLTexture(QImage(current_texture).mirrored());
+            {
+
+
+                QString texture_index = aae::mesh_util::ComputeTextureFilename(current_texture, GetFileName());
+
+
+
+                if (!QFileInfo(texture_index).exists())
+                {
+                    qDebug() << "Could not find texture:" << current_texture << "!";
+                    continue;
+                }
+
+
+
+                m_textures[current_texture] = new QOpenGLTexture(QImage(texture_index).mirrored());
+
+            }
+
+
 
 
 
@@ -143,8 +170,6 @@ void Mesh::PassTextureDataToOpenGL()
 
 
     f->glBindVertexArray(0);
-    has_loaded_textures = true;
-
 
 
 

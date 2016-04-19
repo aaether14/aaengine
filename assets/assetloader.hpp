@@ -59,9 +59,20 @@ class AssetLoader : public QObject
      * @param extension is the extension the new loader can load
      * @param loader is the pointer in memory to the newly created loader
      */
-    void AddLoader(QString loader_name,
-                   QString extension,
+    void AddLoader(const QString &loader_name,
+                   const QString &extension,
                    BaseAssetLoader * loader);
+
+
+
+    /**
+     * @brief LinkExtensionToLoader will link an extension to a certain loader in the library
+     * @param loader_name is the name of the loader to link against
+     * @param extension is the extension to link
+     */
+    void LinkExtensionToLoader(const QString &loader_name,
+                               const QString &extension);
+
 
 
     /**
@@ -70,7 +81,8 @@ class AssetLoader : public QObject
      * @param new_asset - the asset to be added to the asset library
      * @return returns the loaded asset
      */
-    BaseAsset *AddAsset(QString asset_name, BaseAsset * new_asset);
+    BaseAsset *AddAsset(const QString &asset_name,
+                        BaseAsset * new_asset);
 
 
 
@@ -105,7 +117,8 @@ public:
      * @param file_name is the file to be loaded
      * @param asset_name is the alias of the asset to be loaded
      */
-    void AddToLoadingStack(QString file_name, QString asset_name);
+    void AddToLoadingStack(const QString &file_name,
+                           const QString &asset_name);
 
 
     /**
@@ -120,7 +133,7 @@ public:
      * loading stack
      * @param instance is the instance we will try to load
      */
-    virtual void LoadStackInstance(QPair<QString, QString> instance);
+    virtual void LoadStackInstance(const QPair<QString, QString> &instance);
 
 
     /**
@@ -128,7 +141,7 @@ public:
      * @param asset_name is the name of the requested asset
      * @return
      */
-    virtual BaseAsset *GetAsset(QString asset_name);
+    virtual BaseAsset *GetAsset(const QString &asset_name);
 
 
     /**
@@ -136,7 +149,7 @@ public:
      * @param asset_name is the name of the asset to be checked
      * @return
      */
-    virtual bool HasAsset(QString asset_name);
+    virtual bool HasAsset(const QString &asset_name);
 
 
     /**
@@ -145,7 +158,7 @@ public:
      * @param extension is the extension you are requesting a loader for
      * @return
      */
-    virtual BaseAssetLoader *GetLoader(QString extension);
+    virtual BaseAssetLoader *GetLoader(const QString &extension);
 
 
     /**
@@ -153,7 +166,7 @@ public:
      * @param extension is the extension you are requesting a loader for
      * @return
      */
-    virtual bool HasLoader(QString extension);
+    virtual bool HasLoader(const QString &extension);
 
 
     /**
@@ -171,7 +184,8 @@ public:
 
 
 
-    Q_INVOKABLE void loadAsset(QString file_name, QString asset_name);
+    Q_INVOKABLE void loadAsset(const QString &file_name,
+                               const QString &asset_name);
 
 
 

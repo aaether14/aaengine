@@ -25,7 +25,7 @@ void InputRegister::RegisterKeyPress(QKeyEvent *e)
 
     qint32 key;
     if (e->key() > 512)
-        key = (((unsigned long qint32) e->key()) & 0x000000FF) + 256;
+        key = (((quint64) e->key()) & 0x000000FF) + 256;
     else
         key = e->key();
 
@@ -43,7 +43,7 @@ void InputRegister::RegisterKeyRelease(QKeyEvent *e)
 
     qint32 key;
     if (e->key() > 512)
-        key = (((unsigned long qint32) e->key()) & 0x000000FF) + 256;
+        key = (((quint64) e->key()) & 0x000000FF) + 256;
     else
         key = e->key();
 
@@ -87,7 +87,7 @@ void InputRegister::RegisterMouseMovement(QMouseEvent *e)
 
 
 
-bool InputRegister::getKey(qint32 key)
+bool InputRegister::getKey(const qint32 &key)
 {
 
     if (key < 512)
@@ -99,7 +99,7 @@ bool InputRegister::getKey(qint32 key)
 
 
 
-bool InputRegister::getButton(qint32 button)
+bool InputRegister::getButton(const qint32 &button)
 {
 
     if (button < 8)

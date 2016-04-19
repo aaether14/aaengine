@@ -41,9 +41,9 @@ public:
      * @param load_options is a hash map of options you want the loader to keep
      * account of
      */
-    virtual void Load(QString file_name,
+    virtual void Load(const QString &file_name,
                       BaseAsset * asset,
-                      QVariantMap load_options = QVariantMap()) = 0;
+                      const QVariantMap &load_options = QVariantMap()) = 0;
 
     /**
      * @brief CreateAsset should create an instance of a class deriving from BaseAsset

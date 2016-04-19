@@ -5,7 +5,7 @@
 
 
 
-void Mesh::AcceleratedDraw(QString material_name)
+void Mesh::AcceleratedDraw(const QString &material_name)
 {
 
 
@@ -89,7 +89,7 @@ void Mesh::SendModelMatrixToShader()
 
 
     foreach(auto it, m_mesh_entries)
-        model_matrix << aae::mesh_util::toFloat16((m_global_transform * it->GetLocalTransform()).constData());
+        model_matrix << aae::mesh_util::toFloat16((m_global_transform * it.GetLocalTransform()).constData());
 
 
 

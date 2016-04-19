@@ -106,7 +106,7 @@ void ProjectManager::UnloadProject()
 
 
 
-void ProjectManager::LoadProjectAndModifyConfig(QString project_path)
+void ProjectManager::LoadProjectAndModifyConfig(const QString &project_path)
 {
 
 

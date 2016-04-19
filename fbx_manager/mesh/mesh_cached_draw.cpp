@@ -4,7 +4,7 @@
 
 
 
-void Mesh::CachedDraw(QString material_name)
+void Mesh::CachedDraw(const QString &material_name)
 {
 
 
@@ -22,8 +22,8 @@ void Mesh::CachedDraw(QString material_name)
 
     f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.cached_per_object_buffer);
     f->glEnableVertexAttribArray(MESH_PER_OBJECT_ATTRIBUTE_POINTER);
-    f->glVertexAttribIPointer(MESH_PER_OBJECT_ATTRIBUTE_POINTER, 1, GL_UNSIGNED_INT, sizeof(unsigned qint32), (GLvoid*)(sizeof(unsigned qint32) *
-                                                                                                                     m_gpu.per_object_buffer_stride_cache.value(material_name)));
+    f->glVertexAttribIPointer(MESH_PER_OBJECT_ATTRIBUTE_POINTER, 1, GL_UNSIGNED_INT, sizeof(quint32), (GLvoid*)(sizeof(quint32) *
+                                                                                                                m_gpu.per_object_buffer_stride_cache.value(material_name)));
     f->glVertexAttribDivisor(MESH_PER_OBJECT_ATTRIBUTE_POINTER, 1);
 
 
@@ -51,10 +51,10 @@ void Mesh::CachedDraw(QString material_name)
 
 
 
-void Mesh::CacheDrawCommands(QList<MeshEntry *> &mesh_entries,
+void Mesh::CacheDrawCommands(QList<MeshEntry> &mesh_entries,
                              QVector<DrawElementsCommand> &draw_commands,
                              QVector<quint32> &per_object_index,
-                             QString key)
+                             const QString &key)
 {
 
 
@@ -62,17 +62,21 @@ void Mesh::CacheDrawCommands(QList<MeshEntry *> &mesh_entries,
     for(qint32 i = 0; i < mesh_entries.size(); i++)
     {
 
-        if (mesh_entries[i]->DoesMaterialExist(key))
+
+        if (mesh_entries[i].DoesMaterialExist(key))
         {
 
 
+
             DrawElementsCommand c;
-            c = mesh_entries[i]->GetDrawCommand(key);
+            c = mesh_entries[i].GetDrawCommand(key);
             c.baseInstance = draw_commands.size();
+
 
 
             draw_commands << c;
             per_object_index << i;
+
 
 
 

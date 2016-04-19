@@ -121,7 +121,9 @@ public:
      * @brief IsPlaying will return whether the game is paused or not
      * @return is_playing private member;
      */
-    inline bool IsPlaying(){return is_playing; }
+    inline const bool &IsPlaying() const{
+        return is_playing;
+    }
 
 
 
@@ -134,7 +136,8 @@ public:
      * @param suffix_to_look_for is the suffix of the files the file dialog will look for
      * @return the name of the file you chose from the dialog
      */
-    QString OpenFileDialog(QString file_dialog_name, QString suffix_to_look_for);
+    QString OpenFileDialog(const QString &file_dialog_name,
+                           const QString &suffix_to_look_for);
 
 
 
@@ -150,7 +153,7 @@ public slots:
      * @brief SetPlaying will set whether the game is playing or not
      * @param playing is the value that is_playing will be set to
      */
-    void SetPlaying(bool playing);
+    void SetPlaying(const bool &playing);
 
 
 private slots:

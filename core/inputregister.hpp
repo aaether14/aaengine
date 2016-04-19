@@ -79,8 +79,8 @@ public:
 
 
 
-    Q_INVOKABLE bool getKey(qint32 key);
-    Q_INVOKABLE bool getButton(qint32 button);
+    Q_INVOKABLE bool getKey(const qint32 &key);
+    Q_INVOKABLE bool getButton(const qint32 &button);
     Q_INVOKABLE QVector2D getMousePosition();
 
 

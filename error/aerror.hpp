@@ -32,7 +32,7 @@ public:
      * @brief AError is a basic constructor for QString
      * @param msg is the error message
      */
-    AError(QString msg);
+    AError(const QString &msg);
 
 
 

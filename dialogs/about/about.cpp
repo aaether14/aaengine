@@ -42,7 +42,7 @@ About::~About()
 
 
 
-void About::ShowFps(qint32 fps)
+void About::ShowFps(const qint32 &fps)
 {
 
     ui->label->setText("Fps: " + QString::number(fps));

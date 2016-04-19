@@ -26,11 +26,6 @@ class MaterialLoader : public BaseThreadedLoader
      * @brief scene is the scene of the fbx file
      */
     FbxScene * m_scene;
-    /**
-     * @brief fbx_file_name is the name of the fbx file
-     */
-    QString fbx_file_name;
-
 
 
 
@@ -41,8 +36,7 @@ public:
     * @brief MaterialLoader is a basic constructor
     */
     MaterialLoader(QHash<QString, Material> & r_materials,
-                   FbxScene * r_scene,
-                   QString fbx_file_name);
+                   FbxScene * r_scene);
 
 
 

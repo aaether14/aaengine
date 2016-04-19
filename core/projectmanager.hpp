@@ -57,12 +57,19 @@ public:
      * @brief SetProjectLoaded will set if a project has been loaded
      * @param project_loaded
      */
-    inline void SetProjectLoaded(bool project_loaded){is_project_loaded = project_loaded; }
+    inline void SetProjectLoaded(const bool &project_loaded){
+        is_project_loaded = project_loaded;
+    }
+
+
+
     /**
      * @brief GetProjectLoaded returns is a project has been loaded
      * @return
      */
-    inline bool GetProjectLoaded(){return is_project_loaded; }
+    inline const bool &GetProjectLoaded() const{
+        return is_project_loaded;
+    }
 
 
 
@@ -71,7 +78,7 @@ public:
      *from config json, modify the config json with the new path
      *@param project_path is the path of the project to be loaded
      */
-    void LoadProjectAndModifyConfig(QString project_path);
+    void LoadProjectAndModifyConfig(const QString &project_path);
 
 
 

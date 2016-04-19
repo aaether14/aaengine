@@ -127,6 +127,19 @@
     <string>Convert Textures</string>
    </property>
   </widget>
+  <widget class="QCheckBox" name="checkBox_create_aaem">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>30</y>
+     <width>111</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Create AAEM</string>
+   </property>
+  </widget>
  </widget>
  <tabstops>
   <tabstop>lineEdit</tabstop>

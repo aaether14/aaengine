@@ -68,17 +68,15 @@ public:
      * @brief SendToShader will send the material data to the shader
      * @param shader is the shader the material will sent to by uniforms
      */
-    void SendToShader(QOpenGLShaderProgram & shader);
+    void SendToShader(QOpenGLShaderProgram &shader);
 
 
 
     /**
      * @brief AddDiffuseProperty will add the diffuse property of the material
      * @param diffuse_property is the property to be added
-     * @param fbx_file_name is the name of the fbx file
      */
-    void AddDiffuseProperty(FbxProperty diffuse_property,
-                            QString fbx_file_name);
+    void AddDiffuseProperty(FbxProperty diffuse_property);
 
 
 
@@ -86,10 +84,8 @@ public:
     /**
      * @brief AddNormalProperty will add the normal map property of the material
      * @param normal_property is the property to be added
-     * @param fbx_file_name is the name of the fbx file
      */
-    void AddNormalProperty(FbxProperty normal_property,
-                           QString fbx_file_name);
+    void AddNormalProperty(FbxProperty normal_property);
 
 
 

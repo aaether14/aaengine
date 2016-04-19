@@ -20,32 +20,32 @@ class GeometryLoader : public BaseThreadedLoader
 
 
     /**
-     *@brief mesh_entries is the list of mesh entries the loader will attempt
+     *@brief m_mesh_entries is the list of mesh entries the loader will attempt
      *to load
      */
-    QList<MeshEntry*> &mesh_entries;
+    QList<MeshEntry> &m_mesh_entries;
 
 
     /**
-     * @brief master_indices - see mesh.hpp
+     * @brief d_master_indices - see mesh.hpp
      */
-    QVector<quint32> & master_indices;
+    QVector<quint32> & d_master_indices;
     /**
-     * @brief master_vertices - see mesh.hpp
+     * @brief d_master_vertices - see mesh.hpp
      */
-    QVector<float> & master_vertices;
+    QVector<float> & d_master_vertices;
     /**
-     * @brief master_normals - see mesh.hpp
+     * @brief d_master_normals - see mesh.hpp
      */
-    QVector<float> & master_normals;
+    QVector<float> & d_master_normals;
     /**
-     * @brief master_uvs - see mesh.hpp
+     * @brief d_master_uvs - see mesh.hpp
      */
-    QVector<float> & master_uvs;
+    QVector<float> & d_master_uvs;
     /**
-     * @brief master_tangents - see mesh.hpp
+     * @brief d_master_tangents - see mesh.hpp
      */
-    QVector<float> & master_tangents;
+    QVector<float> & d_master_tangents;
 
 
 
@@ -111,16 +111,16 @@ public:
      * @param entries is a reference to the list
      *  of mesh entries we attempt to fill
      */
-    GeometryLoader(QList<MeshEntry*> & entries,
-                   QVector<quint32> & indices,
-                   QVector<float> & vertices,
-                   QVector<float> & normals,
-                   QVector<float> & uvs,
-                   QVector<float> & tangents,
+    GeometryLoader(QList<MeshEntry> & r_entries,
+                   QVector<quint32> & r_indices,
+                   QVector<float> & r_vertices,
+                   QVector<float> & r_normals,
+                   QVector<float> & r_uvs,
+                   QVector<float> & r_tangents,
                    bool & using_normals,
                    bool & using_uvs,
                    bool & using_tangents,
-                   FbxScene * scene);
+                   FbxScene * r_scene);
 
 
 

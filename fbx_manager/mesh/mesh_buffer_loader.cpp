@@ -18,22 +18,35 @@ void Mesh::FBX_CommandLoadingBufferObjects()
      *Commence recursive load on all submeshes
      */
     GeometryLoader * geometry_loader = new GeometryLoader(m_mesh_entries,
+
+
+
                                                           d_master_indices,
                                                           d_master_vertices,
                                                           d_master_normals,
                                                           d_master_uvs,
                                                           d_master_tangents,
 
+
                                                           is_using_normals,
                                                           is_using_uvs,
                                                           is_using_tangents,
+
+
+
                                                           m_scene);
 
 
 
     geometry_loader->Load();
-    PassGeometryDataToOpenGL();
     delete geometry_loader;
+
+
+
+    /**
+    *Mark it that you managed to load a resource
+    */
+    m_resources_semaphore.release();
 
 
 
@@ -57,6 +70,8 @@ void Mesh::PassGeometryDataToOpenGL()
 
 
 
+
+
     /**
     *Generate buffers for ssbo, command buffer and per object buffer
     */
@@ -64,6 +79,9 @@ void Mesh::PassGeometryDataToOpenGL()
     f->glGenBuffers(1, &m_gpu.ssbo);
     f->glGenBuffers(1, &m_gpu.indirect_buffer);
     f->glGenBuffers(1, &m_gpu.per_object_buffer);
+
+
+
 
 
 
@@ -84,7 +102,7 @@ void Mesh::PassGeometryDataToOpenGL()
 
     f->glGenBuffers(1, &m_gpu.master_ibo);
     f->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_gpu.master_ibo);
-    f->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned qint32) * d_master_indices.size(), &d_master_indices[0], GL_STATIC_DRAW);
+    f->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(quint32) * d_master_indices.size(), &d_master_indices[0], GL_STATIC_DRAW);
 
 
 
@@ -168,18 +186,26 @@ void Mesh::PassGeometryDataToOpenGL()
 
 
 
+
+    f->glBindVertexArray(0);
+
+
+
+}
+
+
+
+
+void Mesh::ClearGeometryData()
+{
+
+
+
     d_master_indices.clear();
     d_master_vertices.clear();
     d_master_normals.clear();
     d_master_uvs.clear();
     d_master_tangents.clear();
-
-
-
-
-
-    f->glBindVertexArray(0);
-    has_loaded_geometry = true;
 
 
 

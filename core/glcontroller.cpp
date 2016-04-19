@@ -248,7 +248,7 @@ void GLController::Unpause()
 
 
 
-void GLController::SetPlaying(bool playing)
+void GLController::SetPlaying(const bool &playing)
 {
 
 
@@ -288,7 +288,8 @@ void GLController::Update()
 
 
 
-QString GLController::OpenFileDialog(QString file_dialog_name, QString suffix_to_look_for)
+QString GLController::OpenFileDialog(const QString &file_dialog_name,
+                                     const QString &suffix_to_look_for)
 {
 
 

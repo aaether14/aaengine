@@ -49,6 +49,7 @@ void MeshImport::Reset()
     ui->checkBox_generate_tangents->setChecked(false);
     ui->checkBox_triangulate->setChecked(false);
     ui->checkBox_convert_textures->setChecked(false);
+    ui->checkBox_create_aaem->setChecked(false);
 
 
     ui->lineEdit->clear();
@@ -126,6 +127,9 @@ void MeshImport::on_pushButton_2_clicked()
 
     if(fm->ImportScene(dummy_mesh, ui->lineEdit->text()))
     {
+
+
+
         dummy_mesh->NormalizeScene(fm->GetManager(),
                                    ui->checkBox_convert_axis,
                                    ui->checkBox_convert_scale,
@@ -133,8 +137,45 @@ void MeshImport::on_pushButton_2_clicked()
                                    ui->checkBox_generate_tangents,
                                    ui->checkBox_triangulate,
                                    ui->checkBox_convert_textures);
+
+
+
+
         fm->ExportScene(dummy_mesh, ui->lineEdit->text());
         dummy_mesh->ReleaseFbxScene();
+
+
+
+
+        if (ui->checkBox_create_aaem->isChecked())
+        {
+
+
+            if (fm->ImportScene(dummy_mesh, ui->lineEdit->text()))
+            {
+
+
+                dummy_mesh->LoadFromFbxFile(ui->lineEdit->text());
+
+
+
+                QFileInfo fbx_file_info(ui->lineEdit->text());
+                dummy_mesh->SerializeAAEM(fbx_file_info.path() + "/" + fbx_file_info.baseName() + ".aaem");
+
+
+
+                dummy_mesh->ReleaseFbxScene();
+                dummy_mesh->ClearGeometryData();
+
+
+            }
+
+
+        }
+
+
+
+
     }
 
 

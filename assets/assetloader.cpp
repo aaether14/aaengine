@@ -3,11 +3,27 @@
 
 
 
-void AssetLoader::AddLoader(QString loader_name, QString extension, BaseAssetLoader *loader)
+void AssetLoader::AddLoader(const QString &loader_name,
+                            const QString &extension,
+                            BaseAssetLoader *loader)
 {
 
 
     loaders[loader_name] = loader;
+    LinkExtensionToLoader(loader_name,
+                          extension);
+
+
+}
+
+
+
+
+void AssetLoader::LinkExtensionToLoader(const QString &loader_name,
+                                        const QString &extension)
+{
+
+
     extension_to_loader_map[extension] = loader_name;
 
 
@@ -18,7 +34,8 @@ void AssetLoader::AddLoader(QString loader_name, QString extension, BaseAssetLoa
 
 
 
-BaseAsset *AssetLoader::AddAsset(QString asset_name, BaseAsset *new_asset)
+BaseAsset *AssetLoader::AddAsset(const QString &asset_name,
+                                 BaseAsset *new_asset)
 {
 
 
@@ -40,7 +57,11 @@ AssetLoader::AssetLoader(QObject *parent) : QObject(parent),
 
 
     setObjectName("AssetLoader");
+
+
+
     AddLoader("FbxLoader", "fbx", new FBXManager());
+    LinkExtensionToLoader("FbxLoader", "aaem");
 
 
 
@@ -72,7 +93,8 @@ AssetLoader::~AssetLoader()
 
 
 
-void AssetLoader::AddToLoadingStack(QString file_name, QString asset_name)
+void AssetLoader::AddToLoadingStack(const QString &file_name,
+                                    const QString &asset_name)
 {
 
 
@@ -154,7 +176,7 @@ void AssetLoader::LoadStack()
 
 
 
-void AssetLoader::LoadStackInstance(QPair<QString, QString> instance)
+void AssetLoader::LoadStackInstance(const QPair<QString, QString> &instance)
 {
 
 
@@ -258,7 +280,7 @@ void AssetLoader::LoadStackInstance(QPair<QString, QString> instance)
 
 
 
-BaseAsset *AssetLoader::GetAsset(QString asset_name)
+BaseAsset *AssetLoader::GetAsset(const QString &asset_name)
 {
 
     return assets[asset_name];
@@ -268,7 +290,7 @@ BaseAsset *AssetLoader::GetAsset(QString asset_name)
 
 
 
-bool AssetLoader::HasAsset(QString asset_name)
+bool AssetLoader::HasAsset(const QString &asset_name)
 {
 
 
@@ -280,7 +302,7 @@ bool AssetLoader::HasAsset(QString asset_name)
 
 
 
-BaseAssetLoader *AssetLoader::GetLoader(QString extension)
+BaseAssetLoader *AssetLoader::GetLoader(const QString &extension)
 {
 
 
@@ -292,7 +314,7 @@ BaseAssetLoader *AssetLoader::GetLoader(QString extension)
 
 
 
-bool AssetLoader::HasLoader(QString extension)
+bool AssetLoader::HasLoader(const QString &extension)
 {
 
 
@@ -336,7 +358,8 @@ bool AssetLoader::SanityCheck()
 
 
 
-void AssetLoader::loadAsset(QString file_name, QString asset_name)
+void AssetLoader::loadAsset(const QString &file_name,
+                            const QString &asset_name)
 {
 
     AddToLoadingStack(file_name, asset_name);

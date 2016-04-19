@@ -170,7 +170,7 @@ public:
      * @param material_name
      * @return will return the draw command
      */
-    inline DrawElementsCommand GetDrawCommand(QString material_name){
+    inline DrawElementsCommand GetDrawCommand(const QString &material_name){
         return m_commands.value(material_name);
     }
 
@@ -189,7 +189,7 @@ public:
      * @brief SetDrawCommands will set the draw commands of the mesh entry
      * @param commands are the draw commands that will update the mesh
      */
-    inline void SetDrawCommands(QHash<QString, DrawElementsCommand> commands){
+    inline void SetDrawCommands(const QHash<QString, DrawElementsCommand> &commands){
         m_commands = commands;
     }
 
@@ -201,7 +201,7 @@ public:
      *  has a component tied to this material, false otherwise
      * @return
      */
-    inline bool DoesMaterialExist(QString material_name){
+    inline bool DoesMaterialExist(const QString &material_name){
         return m_commands.contains(material_name);
     }
 
@@ -218,7 +218,7 @@ public:
      * @brief SetLocalTransform will set the local_transform of the mesh entry
      * @param local_transform is the local transform that will update the entry
      */
-    inline void SetLocalTransform(QMatrix4x4 local_transform){
+    inline void SetLocalTransform(const QMatrix4x4 &local_transform){
         m_local_transform = local_transform;
     }
 
