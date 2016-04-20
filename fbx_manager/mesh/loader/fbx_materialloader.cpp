@@ -4,7 +4,7 @@
 
 
 
-
+#ifdef AAE_USING_FBX
 MaterialLoader::MaterialLoader(QHash<QString, Material> &r_materials,
                                FbxScene *r_scene) :
 
@@ -68,15 +68,12 @@ void MaterialLoader::Load()
 
 
 
-
         /**
          *Create a new material and add properties to it
          */
-
-
         Material new_mat;
-        new_mat.AddDiffuseProperty(material->FindProperty(FbxSurfaceMaterial::sDiffuse));
-        new_mat.AddNormalProperty(material->FindProperty(FbxSurfaceMaterial::sNormalMap));
+        new_mat.AddProperty(material->FindProperty(FbxSurfaceMaterial::sDiffuse));
+        new_mat.AddProperty(material->FindProperty(FbxSurfaceMaterial::sNormalMap));
 
 
 
@@ -90,5 +87,5 @@ void MaterialLoader::Load()
 
 
 }
-
+#endif
 

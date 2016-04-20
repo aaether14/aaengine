@@ -27,6 +27,8 @@ MeshEntry::~MeshEntry()
 
 
 
+#ifdef AAE_USING_FBX
+
 
 void MeshEntry::LoadMesh(FbxMesh * mesh,
 
@@ -231,7 +233,7 @@ void MeshEntry::LoadBoundingBox(FbxMesh *mesh)
 
 
 }
-
+#endif
 
 
 

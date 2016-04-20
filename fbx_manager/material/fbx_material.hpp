@@ -3,6 +3,10 @@
 
 
 
+#include <aae_defines.hpp>
+
+
+
 #include <QVector3D>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
@@ -12,8 +16,12 @@
 
 
 #include <fbx_manager/mesh_util.hpp>
-#include <fbxsdk.h>
 
+
+
+#ifdef AAE_USING_FBX
+#include <fbxsdk.h>
+#endif
 
 
 
@@ -25,6 +33,26 @@
  */
 class Material
 {
+
+
+
+
+    /**
+     *@brief diffuse_color is the diffuse component of the material
+     */
+    QVector3D m_diffuse_color;
+
+
+
+
+    /**
+     *@brief textures is a hash containing the name of the textures used by the
+     *material
+     */
+    QHash<quint32, QString> m_textures;
+
+
+
 
 
 
@@ -42,25 +70,13 @@ public:
 
 
 
+
     /**
      * @brief Material - basic constructor
      */
     Material();
 
 
-    /**
-     *@brief diffuse_color is the diffuse component of the material
-     */
-    QVector3D diffuse_color;
-
-
-
-
-    /**
-     *@brief textures is a hash containing the name of the textures used by the
-     *material
-     */
-    QHash<quint32, QString> textures;
 
 
 
@@ -72,20 +88,59 @@ public:
 
 
 
-    /**
-     * @brief AddDiffuseProperty will add the diffuse property of the material
-     * @param diffuse_property is the property to be added
-     */
-    void AddDiffuseProperty(FbxProperty diffuse_property);
 
-
+#ifdef AAE_USING_FBX
 
 
     /**
-     * @brief AddNormalProperty will add the normal map property of the material
-     * @param normal_property is the property to be added
+     * @brief AddProperty will add a certain property to the material
+     * @param property is the property to be added
      */
-    void AddNormalProperty(FbxProperty normal_property);
+    void AddProperty(const FbxProperty &property);
+
+#endif
+
+
+
+    /**
+     * @brief GetDiffuseColor will get the diffuse color of the material
+     * @return m_diffuse_color
+     */
+    inline const QVector3D & GetDiffuseColor() const{
+        return m_diffuse_color;
+    }
+
+
+
+    /**
+     * @brief GetTextures will get the textures of the material
+     * @return m_textures
+     */
+    inline const QHash<quint32, QString> & GetTextures() const{
+        return m_textures;
+    }
+
+
+
+    /**
+     * @brief SetDiffuseColor will set the diffuse color of the material
+     * @param diffuse_color is the color to update diffuse color
+     */
+    inline void SetDiffuseColor(const QVector3D & diffuse_color){
+        m_diffuse_color = diffuse_color;
+    }
+
+
+
+    /**
+     * @brief SetTextures will set the textures of the material
+     * @param textures is the texture has to update materials' textures
+     */
+    inline void SetTextures(const QHash<quint32, QString> & textures){
+        m_textures = textures;
+    }
+
+
 
 
 

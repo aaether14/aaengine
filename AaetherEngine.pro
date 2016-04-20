@@ -94,7 +94,8 @@ HEADERS  += \
     assets/basethreadedloader.hpp \
     fbx_manager/mesh/loader/fbx_materialloader.hpp \
     fbx_manager/mesh/loader/fbx_geometryloader.hpp \
-    fbx_manager/material/fbx_material.hpp
+    fbx_manager/material/fbx_material.hpp \
+    aae_defines.hpp
 
 
 

@@ -3,9 +3,7 @@
 
 
 
-
-
-
+#ifdef AAE_USING_FBX
 void MeshEntry::LoadNormals(FbxMesh * mesh,
                             QVector<float> &master_normals)
 {
@@ -149,3 +147,4 @@ void MeshEntry::LoadNormals(FbxMesh * mesh,
 
 
 }
+#endif

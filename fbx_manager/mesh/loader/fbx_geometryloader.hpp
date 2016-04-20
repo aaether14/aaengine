@@ -3,6 +3,10 @@
 
 
 
+#include <aae_defines.hpp>
+#ifdef AAE_USING_FBX
+
+
 
 #include <fbx_manager/entry/meshentry.hpp>
 #include <assets/basethreadedloader.hpp>
@@ -132,5 +136,8 @@ public:
 
 
 };
+#endif
+
+
 
 #endif // GEOMETRYLOADER_H

@@ -3,11 +3,19 @@
 
 
 
+#include <aae_defines.hpp>
+
+
 
 #include <QString>
 #include <QVector3D>
 #include <QFileInfo>
+
+
+
+#ifdef AAE_USING_FBX
 #include <fbxsdk.h>
+#endif
 
 
 
@@ -49,6 +57,8 @@ public:
     static QString ComputeTextureFilename(QString texture_name, QString fbx_file_name);
 
 
+
+#ifdef AAE_USING_FBX
     /**
      * @brief QVector3DFromFbxVector3D will compute a QT version of
      * a 3d fbx vector
@@ -56,7 +66,7 @@ public:
      * @return
      */
     static QVector3D QVector3DFromFbxVector3D(FbxDouble3 vec);
-
+#endif
 
 
 

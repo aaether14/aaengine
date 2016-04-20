@@ -9,7 +9,7 @@ FBXManager::FBXManager()
 
 
 
-
+#ifdef AAE_USING_FBX
     manager = FbxManager::Create();
 
 
@@ -34,7 +34,7 @@ FBXManager::FBXManager()
 
 
     }
-
+#endif
 
 
 
@@ -48,9 +48,9 @@ FBXManager::~FBXManager()
 {
 
 
-
+#ifdef AAE_USING_FBX
     manager->Destroy();
-
+#endif
 
 
 }
@@ -108,14 +108,14 @@ void FBXManager::Load(const QString &file_name,
 
     if (file_info.suffix() == "fbx")
     {
-
+#ifdef AAE_USING_FBX
         /**
          * Import the scene from the fbx file
          */
         ImportScene(mesh, file_name);
         mesh->LoadFromFbxFile(file_name);
         mesh->ReleaseFbxScene();
-
+#endif
     }
     else if (file_info.suffix() == "aaem")
     {
@@ -147,7 +147,7 @@ BaseAsset *FBXManager::CreateAsset()
 
 
 
-
+#ifdef AAE_USING_FBX
 bool FBXManager::ImportScene(Mesh * mesh,
                              QString fbx_file_name)
 {
@@ -254,7 +254,7 @@ void FBXManager::ExportScene(Mesh *mesh,
 
 
 }
-
+#endif
 
 
 

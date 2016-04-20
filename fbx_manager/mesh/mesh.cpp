@@ -9,9 +9,9 @@
 Mesh::Mesh():
 
 
-
+    #ifdef AAE_USING_FBX
     m_scene(NULL),
-
+    #endif
 
     is_using_normals(false),
     is_using_uvs(false),
@@ -71,7 +71,7 @@ Mesh::~Mesh()
 
 
 
-
+#ifdef AAE_USING_FBX
 void Mesh::LoadFromFbxFile(const QString &fbx_file_name)
 {
 
@@ -91,7 +91,7 @@ void Mesh::LoadFromFbxFile(const QString &fbx_file_name)
 
 
 }
-
+#endif
 
 
 
@@ -108,7 +108,6 @@ void Mesh::LoadFromAAEMFile(const QString &aaem_file_name)
     /**
     *Try to load and signal if it succeded
     */
-
     if (DeserializeAAEM(aaem_file_name))
         m_resources_semaphore.release(2);
 
@@ -212,9 +211,9 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
         for (qint32 i = 0; i < Material::number_of_texture_types; i++)
-            if (m_materials[it].textures.contains(i))
-                if (m_textures[m_materials[it].textures[i]])
-                    m_textures[m_materials[it].textures[i]]->bind(i);
+            if (m_materials[it].GetTextures().contains(i))
+                if (m_textures[m_materials[it].GetTextures()[i]])
+                    m_textures[m_materials[it].GetTextures()[i]]->bind(i);
 
 
 
@@ -244,9 +243,9 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
         for (qint32 i = 0; i < Material::number_of_texture_types; i++)
-            if (m_materials[it].textures.contains(i))
-                if (m_textures[m_materials[it].textures[i]])
-                    m_textures[m_materials[it].textures[i]]->release(i);
+            if (m_materials[it].GetTextures().contains(i))
+                if (m_textures[m_materials[it].GetTextures()[i]])
+                    m_textures[m_materials[it].GetTextures()[i]]->release(i);
 
 
 

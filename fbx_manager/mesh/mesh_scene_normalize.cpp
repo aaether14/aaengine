@@ -7,7 +7,7 @@
 
 
 
-
+#ifdef AAE_USING_FBX
 void Mesh::NormalizeScene(FbxManager *fbx_manager,
                           const bool &convert_axis,
                           const bool &convert_scale,
@@ -381,7 +381,7 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
 
 
 }
-
+#endif
 
 
 

@@ -3,7 +3,7 @@
 
 
 
-
+#ifdef AAE_USING_FBX
 void MeshEntry::LoadTangents(FbxMesh *mesh,
                              QVector<float> &master_tangents)
 {
@@ -149,3 +149,4 @@ void MeshEntry::LoadTangents(FbxMesh *mesh,
 
 
 }
+#endif

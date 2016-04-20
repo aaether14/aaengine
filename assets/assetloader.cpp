@@ -4,14 +4,11 @@
 
 
 void AssetLoader::AddLoader(const QString &loader_name,
-                            const QString &extension,
                             BaseAssetLoader *loader)
 {
 
 
     loaders[loader_name] = loader;
-    LinkExtensionToLoader(loader_name,
-                          extension);
 
 
 }
@@ -57,10 +54,12 @@ AssetLoader::AssetLoader(QObject *parent) : QObject(parent),
 
 
     setObjectName("AssetLoader");
+    AddLoader("FbxLoader", new FBXManager());
 
 
-
-    AddLoader("FbxLoader", "fbx", new FBXManager());
+#ifdef AAE_USING_FBX
+    LinkExtensionToLoader("FbxLoader", "fbx");
+#endif
     LinkExtensionToLoader("FbxLoader", "aaem");
 
 

@@ -67,7 +67,7 @@ void MeshImport::on_pushButton_2_clicked()
 {
 
 
-
+#ifdef AAE_USING_FBX
     /**
     *If no file was provided, no reason to bother to load it
     */
@@ -187,16 +187,13 @@ void MeshImport::on_pushButton_2_clicked()
 
 
 
-
+#endif
 
     /**
      *After all is done, reset to default layout
      */
 
     Reset();
-
-
-
 
 
 

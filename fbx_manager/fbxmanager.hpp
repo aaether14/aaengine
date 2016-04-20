@@ -3,11 +3,19 @@
 
 
 
+#include <aae_defines.hpp>
+
+
 
 #include <QDebug>
-#include <fbxsdk.h>
 #include <assets/baseassetloader.hpp>
 #include <assets/meshasset.hpp>
+
+
+
+#ifdef AAE_USING_FBX
+#include <fbxsdk.h>
+#endif
 
 
 
@@ -21,12 +29,12 @@ class FBXManager : public BaseAssetLoader
 
 
 
-
+#ifdef AAE_USING_FBX
     /**
      * @brief manager is the manager of the fbx sdk
      */
     FbxManager * manager;
-
+#endif
 
 
 
@@ -45,11 +53,7 @@ public:
     ~FBXManager();
 
 
-    /**
-     * @brief GetManager will return the fbx sdk manager
-     * @return
-     */
-    inline FbxManager * GetManager(){return manager; }
+
 
     /**
      * @brief Load will load the fbx model into the provided MeshAsset
@@ -71,6 +75,12 @@ public:
 
 
 
+#ifdef AAE_USING_FBX
+    /**
+     * @brief GetManager will return the fbx sdk manager
+     * @return
+     */
+    inline FbxManager * GetManager(){return manager; }
 
 
     /**
@@ -92,7 +102,7 @@ public:
 
     void ExportScene(Mesh * mesh,
                      QString fbx_file_name);
-
+#endif
 
 
 

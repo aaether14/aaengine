@@ -3,7 +3,7 @@
 
 
 
-
+#ifdef AAE_USING_FBX
 void GeometryLoader::CheckLayersUsedByMesh()
 {
 
@@ -225,3 +225,5 @@ void GeometryLoader::Load()
 
 
 }
+#endif
+

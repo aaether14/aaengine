@@ -3,7 +3,10 @@
 
 
 
+#include <aae_defines.hpp>
 
+
+#ifdef AAE_USING_FBX
 #include <fbx_manager/material/fbx_material.hpp>
 #include <assets/basethreadedloader.hpp>
 
@@ -48,5 +51,9 @@ public:
 
 
 };
+#endif
+
+
+
 
 #endif // MATERIALLOADER_H

@@ -5,7 +5,7 @@
 
 
 
-
+#ifdef AAE_USING_FBX
 void MeshEntry::LoadUVs(FbxMesh *mesh, QVector<float> &master_uvs)
 {
 
@@ -148,3 +148,4 @@ void MeshEntry::LoadUVs(FbxMesh *mesh, QVector<float> &master_uvs)
 
 
 }
+#endif

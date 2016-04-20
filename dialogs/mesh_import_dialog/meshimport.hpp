@@ -3,6 +3,7 @@
 
 
 
+#include <aae_defines.hpp>
 
 
 #include <QDebug>

@@ -5,7 +5,7 @@
 
 
 
-
+#ifdef AAE_USING_FBX
 void Mesh::FBX_CommandLoadingMaterials()
 {
 
@@ -33,7 +33,7 @@ void Mesh::FBX_CommandLoadingMaterials()
 
 
 }
-
+#endif
 
 
 
@@ -50,7 +50,7 @@ void Mesh::PassTextureDataToOpenGL()
 
 
     foreach(auto current_material, m_materials)
-        foreach(auto current_texture, current_material.textures.values())
+        foreach(auto current_texture, current_material.GetTextures().values())
             if (!m_textures.contains(current_texture))
             {
 

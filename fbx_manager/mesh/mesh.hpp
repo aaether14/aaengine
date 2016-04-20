@@ -3,6 +3,8 @@
 
 
 
+#include <aae_defines.hpp>
+
 
 
 #include <QDebug>
@@ -13,14 +15,19 @@
 
 #include <QOpenGLFunctions_4_3_Core>
 #include <QOpenGLShaderProgram>
-
+#include <QtConcurrent/QtConcurrent>
 
 
 
 #include <fbx_manager/mesh/mesh_gpu_memory.h>
+#include <fbx_manager/entry/meshentry.hpp>
+
+
+
+#ifdef AAE_USING_FBX
 #include <fbx_manager/mesh/loader/fbx_geometryloader.hpp>
 #include <fbx_manager/mesh/loader/fbx_materialloader.hpp>
-
+#endif
 
 
 
@@ -33,12 +40,12 @@ class Mesh
 
 
 
-
+#ifdef AAE_USING_FBX
     /**
      *@brief m_scene is a pointer to fbx scene data
      */
     FbxScene * m_scene;
-
+#endif
 
 
     /**
@@ -59,8 +66,6 @@ class Mesh
 
 
 
-
-
     /**
      *@brief m_gpu will hold the gpu memory pointers for entire mesh data
      */
@@ -69,10 +74,19 @@ class Mesh
 
 
 
+#ifdef AAE_USING_FBX
     /**
      * @brief CommandLoadingBufferObjects will start the thread where GeometryLoader will work
      */
     void FBX_CommandLoadingBufferObjects();
+
+
+
+    /**
+     * @brief LoadMaterials will load the materials used by the mesh
+     */
+    void FBX_CommandLoadingMaterials();
+#endif
 
 
 
@@ -82,14 +96,6 @@ class Mesh
      */
     void PassGeometryDataToOpenGL();
 
-
-
-
-
-    /**
-     * @brief LoadMaterials will load the materials used by the mesh
-     */
-    void FBX_CommandLoadingMaterials();
 
 
 
@@ -251,13 +257,6 @@ public:
 
 
     /**
-     * @brief Load loads the mesh from the fbx file
-     * @param fbx_file_name is the name of the file to be loaded
-     */
-    void LoadFromFbxFile(const QString &fbx_file_name);
-
-
-    /**
      * @brief LoadFromAAEMFile will load the mesh from an aaem file
      * @param aaem_file_name is the name of the file to be loaded
      */
@@ -270,6 +269,15 @@ public:
      *information
      */
     void ClearGeometryData();
+
+
+
+#ifdef AAE_USING_FBX
+    /**
+     * @brief Load loads the mesh from the fbx file
+     * @param fbx_file_name is the name of the file to be loaded
+     */
+    void LoadFromFbxFile(const QString &fbx_file_name);
 
 
 
@@ -296,7 +304,7 @@ public:
                         const bool &generate_tangents,
                         const bool &triangulate,
                         const bool &convert_textures);
-
+#endif
 
 
 
@@ -320,6 +328,8 @@ public:
     }
 
 
+
+#ifdef AAE_USING_FBX
     /**
      * @brief GetScene will return the scene pointer of the model
      * @return is the requested scene
@@ -346,7 +356,7 @@ public:
         if (m_scene)
             m_scene->Destroy();
     }
-
+#endif
 
 
 

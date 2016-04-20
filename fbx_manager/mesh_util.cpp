@@ -100,6 +100,7 @@ QString mesh_util::ComputeTextureFilename(QString texture_name, QString fbx_file
 
 
 
+#ifdef AAE_USING_FBX
 QVector3D mesh_util::QVector3DFromFbxVector3D(FbxDouble3 vec)
 {
 
@@ -108,7 +109,7 @@ QVector3D mesh_util::QVector3DFromFbxVector3D(FbxDouble3 vec)
 
 
 }
-
+#endif
 
 
 

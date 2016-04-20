@@ -7,7 +7,7 @@
 
 
 
-
+#ifdef AAE_USING_FBX
 void Mesh::FBX_CommandLoadingBufferObjects()
 {
 
@@ -53,7 +53,7 @@ void Mesh::FBX_CommandLoadingBufferObjects()
 
 
 }
-
+#endif
 
 
 

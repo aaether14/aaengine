@@ -13,7 +13,7 @@
 #include <fbx_manager/fbxmanager.hpp>
 
 
-
+#include <aae_defines.hpp>
 #include <error/aerror.hpp>
 
 
@@ -56,11 +56,9 @@ class AssetLoader : public QObject
     /**
      * @brief AddLoader will add a new loader
      * @param loader_name is the name of the new loader
-     * @param extension is the extension the new loader can load
      * @param loader is the pointer in memory to the newly created loader
      */
     void AddLoader(const QString &loader_name,
-                   const QString &extension,
                    BaseAssetLoader * loader);
 
 

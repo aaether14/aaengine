@@ -4,12 +4,13 @@
 
 
 
-Material::Material() : diffuse_color(QVector3D(0, 0, 0))
+Material::Material() : m_diffuse_color(QVector3D(0, 0, 0))
 {
 
 
 
 }
+
 
 
 
@@ -17,8 +18,8 @@ void Material::SendToShader(QOpenGLShaderProgram &shader)
 {
 
 
-    shader.setUniformValue("diffuse_color", diffuse_color);
-    shader.setUniformValue("use_diffuse_texture", textures.contains(diffuse));
+    shader.setUniformValue("diffuse_color", m_diffuse_color);
+    shader.setUniformValue("use_diffuse_texture", m_textures.contains(diffuse));
 
 
 }
@@ -26,102 +27,82 @@ void Material::SendToShader(QOpenGLShaderProgram &shader)
 
 
 
-void Material::AddDiffuseProperty(FbxProperty diffuse_property)
+#ifdef AAE_USING_FBX
+void Material::AddProperty(const FbxProperty &property)
 {
+
 
 
 
     /**
     *If we are dealing with an invalid property, return;
     */
-
-
-    if (!diffuse_property.IsValid())
+    if (!property.IsValid())
         return;
 
 
 
-    /**
-     * Get the diffuse color of the material
-     */
-
-
-    FbxDouble3 diffuse_color = diffuse_property.Get<FbxDouble3>();
-    this->diffuse_color = aae::mesh_util::QVector3DFromFbxVector3D(diffuse_color);
+    QString property_name = property.GetNameAsCStr();
+    if (property_name == FbxSurfaceMaterial::sDiffuse)
+    {
 
 
 
-    /**
-    *If there are no textures attached to the property, return
-    */
-
-
-    if(!diffuse_property.GetSrcObjectCount<FbxFileTexture>() > 0)
-        return;
+        FbxDouble3 diffuse_color = property.Get<FbxDouble3>();
+        SetDiffuseColor(aae::mesh_util::QVector3DFromFbxVector3D(diffuse_color));
 
 
 
-    FbxFileTexture * texture = diffuse_property.GetSrcObject<FbxFileTexture>();
-    if (!texture)
-        return;
+        /**
+        *If there are no textures attached to the property, return
+        */
+        if(!property.GetSrcObjectCount<FbxFileTexture>() > 0)
+            return;
 
 
 
-
-    textures[diffuse] = texture->GetFileName();
-
-
-
-
-}
+        FbxFileTexture * texture = property.GetSrcObject<FbxFileTexture>();
+        if (!texture)
+            return;
 
 
 
+        m_textures[diffuse] = texture->GetFileName();
 
 
-void Material::AddNormalProperty(FbxProperty normal_property)
-{
+    }
+    else if (property_name == FbxSurfaceMaterial::sNormalMap)
+    {
 
 
-
-    /**
-    *If we are dealing with an invalid property, return;
-    */
-
-
-    if (!normal_property.IsValid())
-        return;
+        /**
+        *If there are no textures attached to the property, return
+        */
 
 
 
-    /**
-    *If there are no textures attached to the property, return
-    */
+        if(!property.GetSrcObjectCount<FbxFileTexture>() > 0)
+            return;
 
 
 
-    if(!normal_property.GetSrcObjectCount<FbxFileTexture>() > 0)
-        return;
+        FbxFileTexture * texture = property.GetSrcObject<FbxFileTexture>();
+        if (!texture)
+            return;
 
 
 
-    FbxFileTexture * texture = normal_property.GetSrcObject<FbxFileTexture>();
-    if (!texture)
-        return;
+        m_textures[normal] = texture->GetFileName();
 
 
-
-
-
-    textures[normal] = texture->GetFileName();
+    }
 
 
 
 
 
 }
-
-
+#endif
 
 
 
@@ -130,7 +111,7 @@ QDataStream &operator <<(QDataStream &out, const Material &material)
 {
 
 
-    out << material.diffuse_color << material.textures;
+    out << material.GetDiffuseColor() << material.GetTextures();
     return out;
 
 
@@ -141,7 +122,15 @@ QDataStream &operator <<(QDataStream &out, const Material &material)
 QDataStream &operator >>(QDataStream &in, Material &material)
 {
 
-    in >> material.diffuse_color >> material.textures;
+    QVector3D diffuse_color;
+    QHash<quint32, QString> textures;
+
+
+    in>>diffuse_color >> textures;
+    material.SetDiffuseColor(diffuse_color);
+    material.SetTextures(textures);
+
+
     return in;
 
 

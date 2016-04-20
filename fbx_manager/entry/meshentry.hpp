@@ -3,6 +3,9 @@
 
 
 
+#include <aae_defines.hpp>
+
+
 
 
 #include <QOpenGLFunctions_4_3_Core>
@@ -11,7 +14,15 @@
 #include <QMatrix4x4>
 
 
+
+
+#ifdef AAE_USING_FBX
 #include <fbxsdk.h>
+#endif
+
+
+
+
 #include <fbx_manager/material/fbx_material.hpp>
 
 
@@ -38,6 +49,11 @@ class MeshEntry
      *material of the mesh entry
      */
     QHash<QString, DrawElementsCommand> m_commands;
+
+
+
+
+#ifdef AAE_USING_FBX
 
 
 
@@ -109,6 +125,9 @@ class MeshEntry
      * @param mesh is the mesh whose bounding box we will load
      */
     void LoadBoundingBox(FbxMesh * mesh);
+#endif
+
+
 
 
 
@@ -124,6 +143,11 @@ public:
     */
     ~MeshEntry();
 
+
+
+
+
+#ifdef AAE_USING_FBX
 
     /**
      * @brief LoadMesh will load the provided mesh to the master buffers
@@ -160,6 +184,8 @@ public:
 
                   qint32 & current_control_point_offset,
                   qint32 & current_polygon_offset);
+#endif
+
 
 
 

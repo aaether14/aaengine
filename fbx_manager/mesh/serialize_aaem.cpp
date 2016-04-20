@@ -4,6 +4,14 @@
 
 
 
+
+#define AAEM_SERIALIZER_VERSION 0xffff01
+
+
+
+
+
+
 void Mesh::SerializeAAEM(const QString &file_name)
 {
 
@@ -23,6 +31,14 @@ void Mesh::SerializeAAEM(const QString &file_name)
 
     QDataStream out(&file);
     out.setVersion(QDataStream::Qt_5_5);
+
+
+
+
+    qint32 aaem_version = AAEM_SERIALIZER_VERSION;
+    out << aaem_version;
+
+
 
 
     /**
@@ -78,8 +94,10 @@ bool Mesh::DeserializeAAEM(const QString &file_name)
 
 
 
+
     m_mesh_entries.clear();
     m_materials.clear();
+
 
 
 
@@ -104,6 +122,23 @@ bool Mesh::DeserializeAAEM(const QString &file_name)
 
     QDataStream in(&file);
     in.setVersion(QDataStream::Qt_5_5);
+
+
+
+
+    qint32 aaem_version;
+    in >> aaem_version;
+
+
+
+    if (aaem_version != AAEM_SERIALIZER_VERSION)
+    {
+
+        qDebug() << file_name << "has an unsupported file version!";
+        file.close();
+        return false;
+
+    }
 
 
 
