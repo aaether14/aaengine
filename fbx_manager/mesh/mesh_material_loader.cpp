@@ -23,15 +23,6 @@ void Mesh::FBX_CommandLoadingMaterials()
 
 
 
-
-    /**
-    *Mark it that you managed to load a resource
-    */
-    m_resources_semaphore.release();
-
-
-
-
 }
 #endif
 
@@ -73,13 +64,9 @@ void Mesh::PassTextureDataToOpenGL()
 
 
 
-
-
-
     /**
      * get opengl functions from context
      */
-
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
 
 

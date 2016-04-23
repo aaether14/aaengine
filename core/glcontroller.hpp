@@ -21,7 +21,8 @@
 #include <core/inputregister.hpp>
 #include <renderer/pipeline.hpp>
 #include <assets/assetloader.hpp>
-
+#include <opengl_worker/aaeopenglworkerthread.hpp>
+#include <dialogs/console/logger.hpp>
 
 
 
@@ -161,7 +162,9 @@ private slots:
     /**
      * @brief Update will set the internal QOpenGLWidget update() method
      */
-    void Update();
+    inline void Update(){
+        update();
+    }
 
 
 

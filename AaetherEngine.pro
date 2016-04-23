@@ -59,7 +59,9 @@ SOURCES += main.cpp\
     fbx_manager/mesh/loader/fbx_geometryloader.cpp \
     fbx_manager/mesh/loader/fbx_materialloader.cpp \
     fbx_manager/material/fbx_material.cpp \
-    fbx_manager/mesh/serialize_aaem.cpp
+    fbx_manager/mesh/serialize_aaem.cpp \
+    opengl_worker/aaeopenglworkerthread.cpp \
+    opengl_worker/workerthread.cpp
 
 
 
@@ -95,7 +97,9 @@ HEADERS  += \
     fbx_manager/mesh/loader/fbx_materialloader.hpp \
     fbx_manager/mesh/loader/fbx_geometryloader.hpp \
     fbx_manager/material/fbx_material.hpp \
-    aae_defines.hpp
+    aae_defines.hpp \
+    opengl_worker/aaeopenglworkerthread.hpp \
+    opengl_worker/workerthread.hpp
 
 
 
@@ -113,8 +117,10 @@ CONFIG += c++11
 
 
 
+
 RESOURCES += \
     resources.qrc
+
 
 
 

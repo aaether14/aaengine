@@ -36,6 +36,12 @@ GLController::GLController(QWidget *parent)
 
 
 
+    /**
+     *--------------------------------------------------------------------------**
+    */
+
+
+
     FPS * fps = new FPS(this);
     InputRegister * input = new InputRegister(this);
     AssetLoader * asset_loader = new AssetLoader(this);
@@ -60,6 +66,10 @@ GLController::GLController(QWidget *parent)
 
 
 
+
+
+
+
 }
 
 
@@ -71,8 +81,6 @@ GLController::~GLController()
 
 
 
-    makeCurrent();
-    doneCurrent();
 
 
 }
@@ -96,6 +104,29 @@ void GLController::initializeGL()
 
     Pipeline * pipeline = new Pipeline(this);
     Q_UNUSED(pipeline)
+
+
+
+
+
+#ifdef AAE_USING_OPENGL_DEBUG
+    if (!QOpenGLContext::currentContext()->hasExtension(QByteArrayLiteral("GL_KHR_debug")))
+    {
+        qDebug() << "Can't use opengl debug operations!";
+    }
+
+
+    /**
+    *Initialize opengl error listening
+    */
+    Logger::Instance()->InitializeOpenGLLogger();
+#endif
+
+
+    /**
+    *Create worker thread share context
+    */
+    AAEOpenGLWorkerThread::Instance()->CreateContext(context());
 
 
 
@@ -261,26 +292,6 @@ void GLController::SetPlaying(const bool &playing)
 
 
 }
-
-
-
-
-
-
-
-
-
-void GLController::Update()
-{
-
-
-    update();
-
-
-
-}
-
-
 
 
 

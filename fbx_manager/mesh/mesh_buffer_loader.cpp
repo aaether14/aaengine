@@ -42,16 +42,6 @@ void Mesh::FBX_CommandLoadingBufferObjects()
     delete geometry_loader;
 
 
-
-    /**
-    *Mark it that you managed to load a resource
-    */
-    m_resources_semaphore.release();
-
-
-
-
-
 }
 #endif
 
@@ -66,8 +56,8 @@ void Mesh::PassGeometryDataToOpenGL()
      * get opengl functions from context
      */
 
-    QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
 
+    QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
 
 
 
@@ -96,6 +86,7 @@ void Mesh::PassGeometryDataToOpenGL()
 
 
 
+
     /**
     *Load the indicies
     */
@@ -106,13 +97,10 @@ void Mesh::PassGeometryDataToOpenGL()
 
 
 
+
     /**
     *load the vertices
     */
-
-
-
-
     f->glGenBuffers(1, &m_gpu.master_vbo);
     f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.master_vbo);
     f->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * d_master_vertices.size(), &d_master_vertices[0], GL_STATIC_DRAW);

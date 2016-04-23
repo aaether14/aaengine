@@ -4,7 +4,7 @@
 
 
 #include <aae_defines.hpp>
-
+#include <opengl_worker/aaeopenglworkerthread.hpp>
 
 
 #include <QDebug>
@@ -144,10 +144,10 @@ class Mesh
 
 
     /**
-     *@brief m_resources_semaphore will hold information about whether the
-     *resrouces have been loaded or not
+     *@brief m_loaded_semaphore will hold information about whether the
+     * mesh has been successfully loaded or not
      */
-    QSemaphore m_resources_semaphore, m_loaded_semaphore;
+    QSemaphore m_loaded_semaphore;
 
 
 
@@ -362,7 +362,7 @@ public:
 
     /**
      * @brief IsLoaded will return true if the mesh has been successfully loaded
-     * @return
+     * @return true if the mesh is loaded
      */
     inline bool IsLoaded(){
         /**
@@ -371,6 +371,7 @@ public:
         */
         return m_loaded_semaphore.available();
     }
+
 
 
 

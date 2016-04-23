@@ -3,8 +3,11 @@
 
 
 
+
 QSharedPointer<Logger> Logger::m_instance;
 QPointer<QTextEdit> Logger::m_textEdit;
+qint64 Logger::m_message_counter = 0;
+
 
 
 
@@ -35,7 +38,18 @@ void Logger::customMessageHandler(QtMsgType type, const QMessageLogContext& cont
     Q_UNUSED(context)
 
 
+
+    if (m_message_counter > WIPE_AMOUNT)
+    {
+        m_message_counter = 0;
+        m_textEdit->clear();
+    }
+
+
+    m_message_counter++;
     m_textEdit->append(msg);
+
+
 
 }
 
@@ -58,12 +72,52 @@ void Logger::setTextEdit(QTextEdit * p_textEdit)
 
 
 
+void Logger::InitializeOpenGLLogger()
+{
+
+
+    m_opengl_debug_logger = new QOpenGLDebugLogger(this);
+    m_opengl_debug_logger->initialize();
+
+
+
+    connect(m_opengl_debug_logger, &QOpenGLDebugLogger::messageLogged,
+            this, &Logger::HandleOpenGLDebugMessage);
+
+
+
+    m_opengl_debug_logger->startLogging();
+
+
+}
+
+
+
+
 Logger::~Logger()
 {
 
+
+
     qInstallMessageHandler(0);
 
+
+
 }
+
+
+
+void Logger::HandleOpenGLDebugMessage(const QOpenGLDebugMessage &debugMessage)
+{
+
+
+    qDebug() << debugMessage;
+
+
+}
+
+
+
 
 
 

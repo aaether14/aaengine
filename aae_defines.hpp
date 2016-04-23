@@ -4,8 +4,8 @@
 
 
 
-//#define AAE_USING_FBX
-
+#define AAE_USING_FBX
+#define AAE_USING_OPENGL_DEBUG
 
 
 

@@ -13,12 +13,13 @@ Mesh::Mesh():
     m_scene(NULL),
     #endif
 
+
     is_using_normals(false),
     is_using_uvs(false),
     is_using_tangents(false),
 
 
-    m_resources_semaphore(0),
+
     m_loaded_semaphore(0),
 
 
@@ -90,6 +91,23 @@ void Mesh::LoadFromFbxFile(const QString &fbx_file_name)
 
 
 
+   /**
+   *Pass data to opengl memory
+   */
+    PassGeometryDataToOpenGL();
+    PassTextureDataToOpenGL();
+
+
+   /**
+   *Clear cache and signal successful loading
+   */
+    ClearGeometryData();
+    m_loaded_semaphore.release();
+
+
+
+
+
 }
 #endif
 
@@ -108,8 +126,38 @@ void Mesh::LoadFromAAEMFile(const QString &aaem_file_name)
     /**
     *Try to load and signal if it succeded
     */
-    if (DeserializeAAEM(aaem_file_name))
-        m_resources_semaphore.release(2);
+    QFutureWatcher<bool> *aaem_loaidng_watcher = new QFutureWatcher<bool>();
+    QFuture<bool> aaem_loading_process = QtConcurrent::run(this, &Mesh::DeserializeAAEM, aaem_file_name);
+    aaem_loaidng_watcher->connect(aaem_loaidng_watcher, &QFutureWatcher<bool>::finished, [=]{
+
+
+
+        if (aaem_loaidng_watcher->result())
+            AAEOpenGLWorkerThread::Instance()->GetThread()->enque_work([=](){
+
+
+             /**
+             *Pass data to opengl memory
+             */
+                PassGeometryDataToOpenGL();
+                PassTextureDataToOpenGL();
+
+
+             /**
+             *Clear cache and signal successful loading
+             */
+                ClearGeometryData();
+                m_loaded_semaphore.release();
+
+
+
+            });
+
+
+
+        delete aaem_loaidng_watcher;
+    });
+    aaem_loaidng_watcher->setFuture(aaem_loading_process);
 
 
 
@@ -128,25 +176,9 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
-    /**
-    *If the mesh wasn't successfully loaded, don't bother to try drawing it
-    */
-
-
-
-    if (m_resources_semaphore.tryAcquire(2))
-    {
-        PassGeometryDataToOpenGL();
-        PassTextureDataToOpenGL();
-        ClearGeometryData();
-        m_loaded_semaphore.release();
-    }
-
-
-
-
     if (!IsLoaded())
         return;
+
 
 
 
