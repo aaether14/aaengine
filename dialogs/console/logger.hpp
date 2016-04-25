@@ -3,9 +3,11 @@
 
 
 
+
 #include <QTextEdit>
 #include <QSharedPointer>
 #include <QOpenGLDebugLogger>
+#include <QSemaphore>
 #include <QPointer>
 
 
@@ -104,7 +106,7 @@ private:
      *@brief m_message_counter will count how many messages have been written to
      *console since last wipe
      */
-    static qint64 m_message_counter;
+    static QSemaphore m_message_counter;
 
 
     /**

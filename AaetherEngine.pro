@@ -21,15 +21,15 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-    core/glcontroller.cpp \
+    core/gl/glcontroller.cpp \
     dialogs/console/console.cpp \
     script_module/scriptengine.cpp \
     dialogs/console/logger.cpp \
     fbx_manager/fbxmanager.cpp \
     fbx_manager/entry/meshentry.cpp \
     fbx_manager/mesh/mesh.cpp \
-    core/fps.cpp \
-    core/inputregister.cpp \
+    core/gl/fps.cpp \
+    core/gl/inputregister.cpp \
     core/main_controller.cpp \
     dialogs/about/about.cpp \
     renderer/baserenderer.cpp \
@@ -61,20 +61,22 @@ SOURCES += main.cpp\
     fbx_manager/material/fbx_material.cpp \
     fbx_manager/mesh/serialize_aaem.cpp \
     opengl_worker/aaeopenglworkerthread.cpp \
-    opengl_worker/workerthread.cpp
+    opengl_worker/workerthread.cpp \
+    core/gl/aux_glcontroller.cpp \
+    utils/bounding_box.cpp
 
 
 
 HEADERS  += \
-    core/glcontroller.hpp \
+    core/gl/glcontroller.hpp \
     dialogs/console/console.hpp \
     script_module/scriptengine.hpp \
     dialogs/console/logger.hpp \
     fbx_manager/fbxmanager.hpp \
     fbx_manager/entry/meshentry.hpp \
     fbx_manager/mesh/mesh.hpp \
-    core/fps.hpp \
-    core/inputregister.hpp \
+    core/gl/fps.hpp \
+    core/gl/inputregister.hpp \
     core/main_controller.hpp \
     dialogs/about/about.hpp \
     renderer/baserenderer.hpp \
@@ -99,7 +101,8 @@ HEADERS  += \
     fbx_manager/material/fbx_material.hpp \
     aae_defines.hpp \
     opengl_worker/aaeopenglworkerthread.hpp \
-    opengl_worker/workerthread.hpp
+    opengl_worker/workerthread.hpp \
+    utils/bounding_box.hpp
 
 
 

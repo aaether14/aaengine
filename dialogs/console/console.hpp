@@ -3,6 +3,10 @@
 
 
 
+#include <aae_defines.hpp>
+
+
+
 #include <script_module/scriptengine.hpp>
 #include <dialogs/console/logger.hpp>
 #include <dialogs/base_dialog.hpp>

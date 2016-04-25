@@ -4,7 +4,7 @@
 
 
 
-Material::Material() : m_diffuse_color(QVector3D(0, 0, 0))
+Material::Material() : m_diffuse_color()
 {
 
 

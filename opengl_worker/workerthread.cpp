@@ -32,11 +32,16 @@ void WorkerThread::work()
 {
 
 
+
+    /**
+    *If there are available jobs append one
+    */
     if (!m_functions_stack.isEmpty())
     {
         m_function = m_functions_stack.pop();
         start();
     }
+
 
 
 }
@@ -50,6 +55,10 @@ WorkerThread::WorkerThread(QOpenGLContext *context,
 {
 
 
+    /**
+    *Set the pointers to opengl context and offscreen surface used to make
+    *context current
+    */
     m_context = context;
     m_offscreen_surface = offscreen_surface;
 

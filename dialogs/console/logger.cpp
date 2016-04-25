@@ -6,7 +6,7 @@
 
 QSharedPointer<Logger> Logger::m_instance;
 QPointer<QTextEdit> Logger::m_textEdit;
-qint64 Logger::m_message_counter = 0;
+QSemaphore Logger::m_message_counter(0);
 
 
 
@@ -15,6 +15,7 @@ qint64 Logger::m_message_counter = 0;
 
 Logger* Logger::Instance()
 {
+
 
     if (m_instance.isNull())
         m_instance.reset(new Logger);
@@ -39,14 +40,11 @@ void Logger::customMessageHandler(QtMsgType type, const QMessageLogContext& cont
 
 
 
-    if (m_message_counter > WIPE_AMOUNT)
-    {
-        m_message_counter = 0;
+    if (m_message_counter.tryAcquire(WIPE_AMOUNT))
         m_textEdit->clear();
-    }
 
 
-    m_message_counter++;
+    m_message_counter.release();
     m_textEdit->append(msg);
 
 
@@ -98,9 +96,7 @@ Logger::~Logger()
 {
 
 
-
     qInstallMessageHandler(0);
-
 
 
 }

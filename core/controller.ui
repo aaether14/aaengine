@@ -187,7 +187,7 @@
   <customwidget>
    <class>GLController</class>
    <extends>QOpenGLWidget</extends>
-   <header location="global">core/glcontroller.hpp</header>
+   <header location="global">core/gl/glcontroller.hpp</header>
   </customwidget>
  </customwidgets>
  <resources>

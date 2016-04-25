@@ -41,8 +41,6 @@ void MeshImport::Reset()
     /**
     *Resets layout to default state
     */
-
-
     ui->checkBox_convert_axis->setChecked(false);
     ui->checkBox_convert_scale->setChecked(false);
     ui->checkBox_split_points->setChecked(false);
@@ -50,6 +48,7 @@ void MeshImport::Reset()
     ui->checkBox_triangulate->setChecked(false);
     ui->checkBox_convert_textures->setChecked(false);
     ui->checkBox_create_aaem->setChecked(false);
+
 
 
     ui->lineEdit->clear();
@@ -65,6 +64,9 @@ void MeshImport::Reset()
 
 void MeshImport::on_pushButton_2_clicked()
 {
+
+
+
 
 
 #ifdef AAE_USING_FBX
@@ -186,13 +188,16 @@ void MeshImport::on_pushButton_2_clicked()
 
 
 
-
+#else
+    qDebug() << "FBX importing unavailable on this build! Define AAE_USING_FBX in order to add this feature.";
 #endif
+
+
+
 
     /**
      *After all is done, reset to default layout
      */
-
     Reset();
 
 

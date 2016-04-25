@@ -91,14 +91,14 @@ void Mesh::LoadFromFbxFile(const QString &fbx_file_name)
 
 
 
-   /**
+    /**
    *Pass data to opengl memory
    */
     PassGeometryDataToOpenGL();
     PassTextureDataToOpenGL();
 
 
-   /**
+    /**
    *Clear cache and signal successful loading
    */
     ClearGeometryData();
@@ -176,8 +176,20 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
+    /**
+    *If the mesh has not yet been loaded, no point in trying to render
+    */
     if (!IsLoaded())
         return;
+
+
+
+
+    /**
+    *If the vertex array object has not yet been created, go ahead and do it
+    */
+    if (!m_gpu.vao)
+        CreateVAO(m_gpu, QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>());
 
 
 

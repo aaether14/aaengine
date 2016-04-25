@@ -11,20 +11,16 @@ QSharedPointer<aae::WorkerThread> AAEOpenGLWorkerThread::m_worker_thread;
 
 
 
-AAEOpenGLWorkerThread::AAEOpenGLWorkerThread()
-{
-
-
-
-
-}
-
 
 
 AAEOpenGLWorkerThread::~AAEOpenGLWorkerThread()
 {
 
 
+    /**
+    *apparently OpenGL context is already deleted at this point
+    * delete offscreen surface
+    */
     delete m_offscreen_surface;
 
 
@@ -38,6 +34,9 @@ AAEOpenGLWorkerThread *AAEOpenGLWorkerThread::Instance()
 {
 
 
+    /**
+    *If the singleton instance has not yet been created, go ahead and do it
+    */
     if (m_instance.isNull())
         m_instance.reset(new AAEOpenGLWorkerThread);
 

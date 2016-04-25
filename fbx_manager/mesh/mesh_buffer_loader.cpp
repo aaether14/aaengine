@@ -74,19 +74,6 @@ void Mesh::PassGeometryDataToOpenGL()
 
 
 
-
-    /**
-    *Create and bind the vertex array object
-    */
-
-
-    if (!m_gpu.vao)
-        f->glGenVertexArrays(1, &m_gpu.vao);
-    f->glBindVertexArray(m_gpu.vao);
-
-
-
-
     /**
     *Load the indicies
     */
@@ -104,8 +91,6 @@ void Mesh::PassGeometryDataToOpenGL()
     f->glGenBuffers(1, &m_gpu.master_vbo);
     f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.master_vbo);
     f->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * d_master_vertices.size(), &d_master_vertices[0], GL_STATIC_DRAW);
-    f->glEnableVertexAttribArray(MESH_VERTEX_ATTRIBUTE_POINTER);
-    f->glVertexAttribPointer(MESH_VERTEX_ATTRIBUTE_POINTER, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 
 
@@ -121,8 +106,6 @@ void Mesh::PassGeometryDataToOpenGL()
         f->glGenBuffers(1, &m_gpu.master_normals_vbo);
         f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.master_normals_vbo);
         f->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * d_master_normals.size(), &d_master_normals[0], GL_STATIC_DRAW);
-        f->glEnableVertexAttribArray(MESH_NORMAL_ATTRIBUTE_POINTER);
-        f->glVertexAttribPointer(MESH_NORMAL_ATTRIBUTE_POINTER, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 
     }
@@ -141,8 +124,6 @@ void Mesh::PassGeometryDataToOpenGL()
         f->glGenBuffers(1, &m_gpu.master_uvs_vbo);
         f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.master_uvs_vbo);
         f->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * d_master_uvs.size(), &d_master_uvs[0], GL_STATIC_DRAW);
-        f->glEnableVertexAttribArray(MESH_UV_ATTRIBUTE_POINTER);
-        f->glVertexAttribPointer(MESH_UV_ATTRIBUTE_POINTER, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 
 
@@ -163,8 +144,6 @@ void Mesh::PassGeometryDataToOpenGL()
         f->glGenBuffers(1, &m_gpu.master_tangents_vbo);
         f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.master_tangents_vbo);
         f->glBufferData(GL_ARRAY_BUFFER, sizeof(float) * d_master_tangents.size(), &d_master_tangents[0], GL_STATIC_DRAW);
-        f->glEnableVertexAttribArray(MESH_TANGENT_ATTRIBUTE_POINTER);
-        f->glVertexAttribPointer(MESH_TANGENT_ATTRIBUTE_POINTER, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
 
 
@@ -172,10 +151,6 @@ void Mesh::PassGeometryDataToOpenGL()
 
 
 
-
-
-
-    f->glBindVertexArray(0);
 
 
 

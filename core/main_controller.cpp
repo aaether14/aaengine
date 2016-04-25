@@ -108,18 +108,24 @@ void Controller::ResetScriptEngine()
 
 
 
+    /**
+    *If there is any ScriptEngine in the hierarchy tree delete it before
+    *creating a new one
+    */
     if (findChild<ScriptEngine*>("ScriptEngine"))
         delete findChild<ScriptEngine*>("ScriptEngine");
 
 
 
+    /**
+     *Create the new ScriptEngine
+     */
     ScriptEngine * script_engine = new ScriptEngine(this);
 
 
     /**
     *Add required objects to QML context
     */
-
     script_engine->ConnectToTimer(findChild<QTimer*>("gTimer"));
     script_engine->RegisterQObject(findChild<FPS*>("gFPS"));
     script_engine->RegisterQObject(findChild<InputRegister*>("gInput"));
@@ -159,6 +165,11 @@ void Controller::on_actionProject_triggered()
 
 
 
+
+    /**
+    *We first the GLController that will need to pause in order to open the
+    *file dialog and then pop it
+    */
     if (!findChild<GLController*>("GL"))
     {
         qDebug() << "MainController: No GL controller detected!";
@@ -167,17 +178,25 @@ void Controller::on_actionProject_triggered()
 
 
 
-
+    /**
+     *Open the file diloag and let the user chose the project he wants to open
+     */
     QString project_name = findChild<GLController*>("GL")->OpenFileDialog("Open Project", "*.qml");
 
 
 
+    /**
+    *No project has chosen. Abort!
+    */
     if (!project_name.size())
         return;
 
 
 
 
+    /**
+    *We need the project manager in order to do the loading. If for some reason it's not there abort.
+    */
     if (!findChild<ProjectManager*>("ProjectManager"))
     {
         qDebug() << "MainController: Could not load: " << project_name << " because ProjectManager was not found!";
@@ -186,11 +205,51 @@ void Controller::on_actionProject_triggered()
 
 
 
-
+    /**
+    *Load the chosen project and also modify config.json to by default load
+    *this project
+    */
     findChild<ProjectManager*>("ProjectManager")->LoadProjectAndModifyConfig(project_name);
 
 
 
+
+
+
+}
+
+
+
+
+void Controller::closeEvent(QCloseEvent *event)
+{
+
+
+
+    /**
+    *If there is no asset loader there might be no assets loading so go ahead
+    *and proceed to quiting the application
+    */
+    if (!findChild<AssetLoader*>("AssetLoader"))
+    {
+        event->accept();
+        return;
+    }
+
+
+    if (!findChild<AssetLoader*>("AssetLoader")->SanityCheck())
+    {
+        qDebug() << "MainController: Not all assets have finished loading so it's unsafe to quit. Aborted!";
+        event->ignore();
+        return;
+    }
+
+
+
+    /**
+    *If everything went well go ahead and close the window
+    */
+    event->accept();
 
 
 

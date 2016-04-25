@@ -9,15 +9,9 @@ namespace aae
 
 
 
-Json::Json()
-{
 
 
-}
-
-
-
-QJsonDocument Json::GetJsonFromFile(QString file_name)
+QJsonDocument Json::GetJsonFromFile(const QString &file_name)
 {
 
 
@@ -49,7 +43,8 @@ QJsonDocument Json::GetJsonFromFile(QString file_name)
 
 
 
-void Json::SaveJsonToFile(QString file_name, QJsonDocument json_doc)
+void Json::SaveJsonToFile(const QString &file_name,
+                          const QJsonDocument &json_doc)
 {
 
 

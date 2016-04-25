@@ -3,7 +3,7 @@
 
 
 
-#include <core/fps.hpp>
+#include <core/gl/fps.hpp>
 #include <dialogs/base_dialog.hpp>
 
 

@@ -4,6 +4,8 @@
 
 
 
+
+
 Console::Console(QWidget *parent) :
     baseDialog(parent),
     ui(new Ui::Console)
@@ -11,23 +13,33 @@ Console::Console(QWidget *parent) :
 
 
 
+
     ui->setupUi(this);
 
 
+
+
     /**
-    *Set the stretch factor for the splitter in the console
+    *Set the stretch factor for the splitter in the console and also the color
+    *of the text
     */
 
     ui->splitter->setStretchFactor(0, 2);
     ui->splitter->setStretchFactor(1, 1);
-
-
-    /**
-    *Commence redirecting the console output to in-game console
-    */
-
-    Logger::Instance()->setTextEdit(ui->textEdit_2);
     ui->textEdit_2->setTextColor(Qt::red);
+
+
+
+
+
+#ifdef AAE_REDIRECT_MESSAGES_TO_INGAME_CONSOLE
+    /**
+    *Start redirecting the console output to in-game console
+    */
+    Logger::Instance()->setTextEdit(ui->textEdit_2);
+#endif
+
+
 
 
 
@@ -39,7 +51,11 @@ Console::Console(QWidget *parent) :
 
 Console::~Console()
 {
+
+
     delete ui;
+
+
 }
 
 

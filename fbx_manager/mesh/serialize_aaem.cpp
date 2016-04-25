@@ -167,6 +167,7 @@ bool Mesh::DeserializeAAEM(const QString &file_name)
 
 
     file.close();
+    return true;
 
 
 

@@ -32,7 +32,7 @@ public:
     /**
      * @brief Json is a basic constructor
      */
-    Json();
+    Json(){}
 
 
 
@@ -41,7 +41,7 @@ public:
      * @param file_name is the filename of the file to be read
      * @return will return the parsed QJsonDocument
      */
-    static QJsonDocument GetJsonFromFile(QString file_name);
+    static QJsonDocument GetJsonFromFile(const QString &file_name);
 
 
 
@@ -50,7 +50,8 @@ public:
      * @param file_name is the name of the file where the json will be saved
      * @param json_doc is the json document that will be saved to the file
      */
-    static void SaveJsonToFile(QString file_name, QJsonDocument json_doc);
+    static void SaveJsonToFile(const QString &file_name,
+                               const QJsonDocument &json_doc);
 
 
 

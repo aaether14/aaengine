@@ -163,7 +163,8 @@ inline void ResetGPUMemory(MeshGPUMemory & m_gpu)
  * @param m_gpu is the gpu memory struct
  * @param f is a pointer to opengl 4.3 functions
  */
-inline void ClearGPUMemory(MeshGPUMemory & m_gpu, QOpenGLFunctions_4_3_Core * f)
+inline void ClearGPUMemory(MeshGPUMemory & m_gpu,
+                           QOpenGLFunctions_4_3_Core * f)
 {
 
 
@@ -211,6 +212,95 @@ inline void ClearGPUMemory(MeshGPUMemory & m_gpu, QOpenGLFunctions_4_3_Core * f)
 
 
 }
+
+
+
+
+/**
+ * @brief CreateVAO will create the vertex array object used by
+ * the mesh and also bind certain buffers to it
+ * @param m_gpu is the gpu memory struct
+ * @param f is a pointer to opengl 4.3 functinos
+ */
+inline void CreateVAO(MeshGPUMemory & m_gpu,
+                      QOpenGLFunctions_4_3_Core * f)
+{
+
+
+
+    /**
+    *First generate the vertex array object and bind it to context
+    */
+    f->glGenVertexArrays(1, &m_gpu.vao);
+    f->glBindVertexArray(m_gpu.vao);
+
+
+    /**
+    *Bind the index array
+    */
+    f->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_gpu.master_ibo);
+
+
+
+    /**
+    *Bind vertex array and setup shader pointer
+    */
+    f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.master_vbo);
+    f->glEnableVertexAttribArray(MESH_VERTEX_ATTRIBUTE_POINTER);
+    f->glVertexAttribPointer(MESH_VERTEX_ATTRIBUTE_POINTER, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+
+
+    /**
+    *Bind normal array and setup shader pointer
+    */
+    if (m_gpu.master_normals_vbo)
+    {
+        f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.master_normals_vbo);
+        f->glEnableVertexAttribArray(MESH_NORMAL_ATTRIBUTE_POINTER);
+        f->glVertexAttribPointer(MESH_NORMAL_ATTRIBUTE_POINTER, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+    }
+
+
+
+    /**
+    *Bind uv array and setup shader pointer
+    */
+    if (m_gpu.master_uvs_vbo)
+    {
+
+        f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.master_uvs_vbo);
+        f->glEnableVertexAttribArray(MESH_UV_ATTRIBUTE_POINTER);
+        f->glVertexAttribPointer(MESH_UV_ATTRIBUTE_POINTER, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+    }
+
+
+
+    if (m_gpu.master_tangents_vbo)
+    {
+
+        f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.master_tangents_vbo);
+        f->glEnableVertexAttribArray(MESH_TANGENT_ATTRIBUTE_POINTER);
+        f->glVertexAttribPointer(MESH_TANGENT_ATTRIBUTE_POINTER, 4, GL_FLOAT, GL_FALSE, 0, 0);
+
+    }
+
+
+
+
+    f->glBindVertexArray(0);
+
+
+
+
+}
+
+
+
+
+
 
 
 

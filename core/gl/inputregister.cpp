@@ -1,4 +1,4 @@
-#include <core/inputregister.hpp>
+#include <core/gl/inputregister.hpp>
 
 
 

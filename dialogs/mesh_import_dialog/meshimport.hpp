@@ -11,7 +11,7 @@
 
 
 #include <dialogs/base_dialog.hpp>
-#include <core/glcontroller.hpp>
+#include <core/gl/glcontroller.hpp>
 
 
 

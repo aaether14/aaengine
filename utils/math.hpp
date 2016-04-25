@@ -33,37 +33,37 @@ public:
 
     /**
      * @brief Math - basic constructor
-     * @param parent
+     * @param parent is the parent of the QObject
      */
     explicit Math(QObject *parent = 0);
 
 
 
-    Q_INVOKABLE QMatrix4x4 scale(QVector3D xyz);
+    Q_INVOKABLE QMatrix4x4 scale(const QVector3D &xyz);
 
 
 
-    Q_INVOKABLE QMatrix4x4 translate(QVector3D xyz);
+    Q_INVOKABLE QMatrix4x4 translate(const QVector3D &xyz);
 
 
 
-    Q_INVOKABLE QMatrix4x4 rotate(QVector3D xyz);
+    Q_INVOKABLE QMatrix4x4 rotate(const QVector3D &xyz);
 
 
 
-    Q_INVOKABLE QMatrix4x4 transform(QVector3D translation_xyz,
-                                     QVector3D rotation_xyz,
-                                     QVector3D scaling_xyz);
+    Q_INVOKABLE QMatrix4x4 transform(const QVector3D &translation_xyz,
+                                     const QVector3D &rotation_xyz,
+                                     const QVector3D &scaling_xyz);
 
 
 
-    Q_INVOKABLE QMatrix4x4 camera(QVector3D position,
-                                  QVector3D target,
-                                  QVector3D up,
-                                  float aspect_ratio,
-                                  float fov,
-                                  float near_plane,
-                                  float far_plane);
+    Q_INVOKABLE QMatrix4x4 camera(const QVector3D &position,
+                                  const QVector3D &target,
+                                  const QVector3D &up,
+                                  const float &aspect_ratio,
+                                  const float &fov,
+                                  const float &near_plane,
+                                  const float &far_plane);
 
 
 

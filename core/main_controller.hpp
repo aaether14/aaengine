@@ -8,7 +8,7 @@
 
 
 
-#include <core/glcontroller.hpp>
+#include <core/gl/glcontroller.hpp>
 #include <dialogs/console/console.hpp>
 #include <dialogs/about/about.hpp>
 #include <dialogs/mesh_import_dialog/meshimport.hpp>
@@ -82,6 +82,15 @@ private slots:
 
 
 private:
+
+
+
+    /**
+     *@brief closeEvent will reimplement the close event to make sure all
+     *working threads have finished their work before closing the application
+     */
+    void closeEvent(QCloseEvent * event);
+
 
 
     Ui::Controller *ui;

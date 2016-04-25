@@ -17,8 +17,8 @@
 
 
 #include <fbx_manager/fbxmanager.hpp>
-#include <core/fps.hpp>
-#include <core/inputregister.hpp>
+#include <core/gl/fps.hpp>
+#include <core/gl/inputregister.hpp>
 #include <renderer/pipeline.hpp>
 #include <assets/assetloader.hpp>
 #include <opengl_worker/aaeopenglworkerthread.hpp>

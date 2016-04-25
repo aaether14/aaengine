@@ -34,12 +34,12 @@ void Mesh::PassTextureDataToOpenGL()
 
 
 
+
+
+
     /**
     *Load textures into opengl memory
     */
-
-
-
     foreach(auto current_material, m_materials)
         foreach(auto current_texture, current_material.GetTextures().values())
             if (!m_textures.contains(current_texture))
@@ -61,6 +61,10 @@ void Mesh::PassTextureDataToOpenGL()
                 m_textures[current_texture] = new QOpenGLTexture(QImage(texture_index).mirrored());
 
             }
+
+
+
+
 
 
 
@@ -123,21 +127,12 @@ void Mesh::PassTextureDataToOpenGL()
 
 
 
-    /**
-    *Create and bind the vertex array object
-    */
-
-
-    if (!m_gpu.vao)
-        f->glGenVertexArrays(1, &m_gpu.vao);
-    f->glBindVertexArray(m_gpu.vao);
-
-
 
 
     f->glGenBuffers(1, &m_gpu.cached_indirect_buffer);
     f->glBindBuffer(GL_DRAW_INDIRECT_BUFFER, m_gpu.cached_indirect_buffer);
     f->glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(DrawElementsCommand) * cached_commands.size(), &cached_commands[0], GL_STATIC_DRAW);
+
 
 
 
@@ -150,13 +145,9 @@ void Mesh::PassTextureDataToOpenGL()
 
 
 
+
     cached_commands.clear();
     cached_per_object_index.clear();
-
-
-
-
-    f->glBindVertexArray(0);
 
 
 

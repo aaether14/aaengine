@@ -21,7 +21,7 @@ Math::Math(QObject *parent) : QObject(parent)
 
 
 
-QMatrix4x4 Math::translate(QVector3D xyz)
+QMatrix4x4 Math::translate(const QVector3D &xyz)
 {
 
 
@@ -35,7 +35,7 @@ QMatrix4x4 Math::translate(QVector3D xyz)
 
 
 
-QMatrix4x4 Math::rotate(QVector3D xyz)
+QMatrix4x4 Math::rotate(const QVector3D &xyz)
 {
 
     QMatrix4x4 result;
@@ -47,9 +47,9 @@ QMatrix4x4 Math::rotate(QVector3D xyz)
 
 
 
-QMatrix4x4 Math::transform(QVector3D translation_xyz,
-                           QVector3D rotation_xyz,
-                           QVector3D scaling_xyz)
+QMatrix4x4 Math::transform(const QVector3D &translation_xyz,
+                           const QVector3D &rotation_xyz,
+                           const QVector3D &scaling_xyz)
 {
 
 
@@ -65,13 +65,13 @@ QMatrix4x4 Math::transform(QVector3D translation_xyz,
 
 
 
-QMatrix4x4 Math::camera(QVector3D position,
-                        QVector3D target,
-                        QVector3D up,
-                        float aspect_ratio,
-                        float fov,
-                        float near_plane,
-                        float far_plane)
+QMatrix4x4 Math::camera(const QVector3D &position,
+                        const QVector3D &target,
+                        const QVector3D &up,
+                        const float &aspect_ratio,
+                        const float &fov,
+                        const float &near_plane,
+                        const float &far_plane)
 {
 
 
@@ -91,7 +91,7 @@ QMatrix4x4 Math::camera(QVector3D position,
 
 
 
-QMatrix4x4 Math::scale(QVector3D xyz)
+QMatrix4x4 Math::scale(const QVector3D &xyz)
 {
 
 
