@@ -13,6 +13,7 @@ Controller::Controller(QWidget *parent) :
 {
 
 
+
     /**
       Basic ui setup
     */
@@ -62,15 +63,10 @@ Controller::Controller(QWidget *parent) :
     /**
      * Load config.json project
      */
-    ResetScriptEngine();
     project_manager->LoadProject();
 
 
-    /**
-    *Every time MainController recieves a signal to reset the script engine, it
-    *will do so
-    */
-    connect(project_manager, SIGNAL(shouldResetScriptEngine()), this, SLOT(ResetScriptEngine()));
+
     /**
      *Call project_manager->UnloadProject() when close project action is
      *triggered
@@ -95,6 +91,9 @@ Controller::Controller(QWidget *parent) :
 Controller::~Controller()
 {
 
+    /**
+    *Just delete the ui
+    */
     delete ui;
 
 }
@@ -102,39 +101,6 @@ Controller::~Controller()
 
 
 
-
-void Controller::ResetScriptEngine()
-{
-
-
-
-    /**
-    *If there is any ScriptEngine in the hierarchy tree delete it before
-    *creating a new one
-    */
-    if (findChild<ScriptEngine*>("ScriptEngine"))
-        delete findChild<ScriptEngine*>("ScriptEngine");
-
-
-
-    /**
-     *Create the new ScriptEngine
-     */
-    ScriptEngine * script_engine = new ScriptEngine(this);
-
-
-    /**
-    *Add required objects to QML context
-    */
-    script_engine->ConnectToTimer(findChild<QTimer*>("gTimer"));
-    script_engine->RegisterQObject(findChild<FPS*>("gFPS"));
-    script_engine->RegisterQObject(findChild<InputRegister*>("gInput"));
-    script_engine->RegisterQObject(findChild<AssetLoader*>("AssetLoader"));
-    script_engine->RegisterQObject(new aae::Math(script_engine));
-
-
-
-}
 
 
 
@@ -149,6 +115,7 @@ void Controller::TogglePlayOnProjectLoad()
     */
     if(!ui->actionPlay->isChecked())
         ui->actionPlay->toggle();
+
 
 
 }

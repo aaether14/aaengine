@@ -8,12 +8,12 @@
 
 
 
+
 #include <core/gl/glcontroller.hpp>
 #include <dialogs/console/console.hpp>
 #include <dialogs/about/about.hpp>
 #include <dialogs/mesh_import_dialog/meshimport.hpp>
 #include <core/projectmanager.hpp>
-#include <utils/math.hpp>
 
 
 
@@ -43,25 +43,18 @@ public:
 
 
     /**
-     * @brief Controller will initialize the project mananger and the script engine
-     * @param parent
+     *@brief Controller will initialize the project mananger and the script engine
+     *@param parent is the parent of the QObject
      */
     explicit Controller(QWidget *parent = 0);
     /**
-    *@brief ~Controller - basic destructor
+    *@brief ~Controller is a basic QWidget destructor
     */
     ~Controller();
 
 
 
 private slots:
-
-
-
-    /**
-     *@brief ResetScriptEngine will delete and reinitialize ScriptEngine
-     */
-    void ResetScriptEngine();
 
 
 
@@ -81,6 +74,7 @@ private slots:
 
 
 
+
 private:
 
 
@@ -93,6 +87,9 @@ private:
 
 
 
+    /**
+     * @brief ui is the ui layout of the main window
+     */
     Ui::Controller *ui;
 
 

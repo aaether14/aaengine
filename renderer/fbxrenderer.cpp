@@ -3,7 +3,7 @@
 
 
 
-void FbxRenderer::HandleLights(QVariantMap light_map)
+void FbxRenderer::HandleLights(const QVariantMap &light_map)
 {
 
 

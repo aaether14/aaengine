@@ -33,7 +33,8 @@ class Pipeline : public QObject
      * @param renderer_name is the key of new renderer
      * @param renderer is the initialized renderer to be added
      */
-    void AddRenderer(QString renderer_name, BaseRenderer* renderer);
+    void AddRenderer(const QString &renderer_name,
+                     BaseRenderer* renderer);
 
 
 

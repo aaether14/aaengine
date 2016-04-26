@@ -34,9 +34,9 @@ class FbxRenderer : public BaseRenderer
 
     /**
      * @brief HandleLights takes light components and sends them trough ssbo to fragment shader
-     * @param light_map - the part of components library pointing to lights in scene
+     * @param light_map is the part of components library pointing to lights in scene
      */
-    void HandleLights(QVariantMap light_map);
+    void HandleLights(const QVariantMap &light_map);
 
 
 

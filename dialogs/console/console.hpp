@@ -46,12 +46,15 @@ public:
     
 private slots:
     
+
     /**
-     *@brief on_pushButton_clicked will send the text inside the text edit to
+     *@brief on_run_script_button_clicked will send the text inside the text edit to
      *the script engine
      */
-    void on_pushButton_clicked();
-    
+    void on_run_script_button_clicked();
+
+
+
 private:
     
     

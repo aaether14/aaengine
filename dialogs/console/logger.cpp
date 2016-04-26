@@ -17,10 +17,16 @@ Logger* Logger::Instance()
 {
 
 
+    /**
+    *If no singleton instance has yet been created, do so
+    */
     if (m_instance.isNull())
         m_instance.reset(new Logger);
 
 
+    /**
+    *Return a pointer to the singleton instance
+    */
     return m_instance.data();
 
 
@@ -35,15 +41,24 @@ void Logger::customMessageHandler(QtMsgType type, const QMessageLogContext& cont
 {
 
 
+
+    /**
+    *No use for this ATM so mark that they are unused to avoid compiler warnings
+    */
     Q_UNUSED(type)
     Q_UNUSED(context)
 
 
-
+    /**
+    *If a sufficient amount of message have been recorded clear the console
+    */
     if (m_message_counter.tryAcquire(WIPE_AMOUNT))
         m_textEdit->clear();
 
 
+    /**
+    *Log the recived message to the console
+    */
     m_message_counter.release();
     m_textEdit->append(msg);
 
@@ -57,8 +72,8 @@ void Logger::customMessageHandler(QtMsgType type, const QMessageLogContext& cont
 void Logger::setTextEdit(QTextEdit * p_textEdit)
 {
 
-    m_textEdit = p_textEdit;
 
+    m_textEdit = p_textEdit;
 
 
     if (!m_textEdit.isNull())

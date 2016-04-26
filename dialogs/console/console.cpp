@@ -23,10 +23,9 @@ Console::Console(QWidget *parent) :
     *Set the stretch factor for the splitter in the console and also the color
     *of the text
     */
-
     ui->splitter->setStretchFactor(0, 2);
     ui->splitter->setStretchFactor(1, 1);
-    ui->textEdit_2->setTextColor(Qt::red);
+    ui->console_output->setTextColor(Qt::red);
 
 
 
@@ -36,7 +35,7 @@ Console::Console(QWidget *parent) :
     /**
     *Start redirecting the console output to in-game console
     */
-    Logger::Instance()->setTextEdit(ui->textEdit_2);
+    Logger::Instance()->setTextEdit(ui->console_output);
 #endif
 
 
@@ -53,6 +52,9 @@ Console::~Console()
 {
 
 
+    /**
+    *Just delete the ui
+    */
     delete ui;
 
 
@@ -62,19 +64,23 @@ Console::~Console()
 
 
 
-
-void Console::on_pushButton_clicked()
+void Console::on_run_script_button_clicked()
 {
 
 
 
-
+    /**
+    *If you can find the ScriptEngine go ahead and send the text written in the
+    *console to it to be run
+    */
     if (parent()->findChild<ScriptEngine*>("ScriptEngine"))
-        parent()->findChild<ScriptEngine*>("ScriptEngine")->RunScriptFromString(ui->textEdit->toPlainText());
+        parent()->findChild<ScriptEngine*>("ScriptEngine")->RunScriptFromString(ui->console_input->toPlainText());
 
 
-
-    ui->textEdit->clear();
+    /**
+    *Clear the console
+    */
+    ui->console_input->clear();
 
 
 }

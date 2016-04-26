@@ -19,7 +19,7 @@
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
-     <widget class="QTextEdit" name="textEdit">
+     <widget class="QTextEdit" name="console_input">
       <property name="font">
        <font>
         <weight>75</weight>
@@ -27,7 +27,7 @@
        </font>
       </property>
      </widget>
-     <widget class="QTextEdit" name="textEdit_2">
+     <widget class="QTextEdit" name="console_output">
       <property name="readOnly">
        <bool>true</bool>
       </property>
@@ -35,7 +35,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pushButton">
+    <widget class="QPushButton" name="run_script_button">
      <property name="toolTip">
       <string>Run JS </string>
      </property>
