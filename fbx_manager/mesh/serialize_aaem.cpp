@@ -30,7 +30,7 @@ void Mesh::SerializeAAEM(const QString &file_name)
 
 
     QDataStream out(&file);
-    out.setVersion(QDataStream::Qt_5_5);
+    out.setVersion(QDataStream::Qt_5_6);
 
 
 
@@ -87,9 +87,6 @@ bool Mesh::DeserializeAAEM(const QString &file_name)
     /**
      * Clear cache before loading new data
      */
-
-
-
     ClearGeometryData();
 
 
@@ -121,7 +118,7 @@ bool Mesh::DeserializeAAEM(const QString &file_name)
 
 
     QDataStream in(&file);
-    in.setVersion(QDataStream::Qt_5_5);
+    in.setVersion(QDataStream::Qt_5_6);
 
 
 

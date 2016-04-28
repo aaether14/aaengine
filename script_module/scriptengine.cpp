@@ -9,12 +9,20 @@ ScriptEngine::ScriptEngine(QObject *parent) : QQmlEngine(parent)
 
 
 
+    /**
+     *Set the name of the QObject
+     */
     setObjectName("ScriptEngine");
 
 
 
-
+    /**
+     *Register the script engine to be accessable from the scripts
+     */
     RegisterQObject(this);
+    /**
+     *Register the newly created game object
+     */
     RegisterQObject(new GameObject(this));
 
 
@@ -29,11 +37,9 @@ ScriptEngine::~ScriptEngine()
 {
 
 
-    foreach(auto it, timer_connections)
-        disconnect(it);
-
-
-    timer_connections.clear();
+    /**
+   *The glorious nothing...
+   */
 
 
 }
@@ -45,10 +51,47 @@ void ScriptEngine::ConnectToTimer(QTimer *new_timer)
 {
 
 
+    /**
+    *We need the timer that is used to know when to update the scene
+    */
     if (new_timer)
-        timer = new_timer;
+        m_timer = new_timer;
     else
         qDebug() << "ScriptEngine: Invalid timer reference!";
+
+
+}
+
+
+
+
+void ScriptEngine::ResetGameObject()
+{
+
+
+    /**
+     *Clear all the cache from the created components
+     */
+    clearComponentCache();
+
+
+    /**
+    *Delete any existing GameObject along with the script components
+    */
+    if (findChild<GameObject*>("GameObject"))
+        delete findChild<GameObject*>("GameObject");
+
+
+    /**
+     *Register a newly created GameObject
+     */
+    RegisterQObject(new GameObject(this));
+
+
+
+
+
+
 
 
 }
@@ -59,16 +102,20 @@ void ScriptEngine::ConnectToTimer(QTimer *new_timer)
 
 
 
-void ScriptEngine::addQMLScript(QString path)
+void ScriptEngine::addQMLScript(const QString &path)
 {
 
 
-
+    /**
+     *First load the component
+     */
     QQmlComponent component(this, QUrl(path));
 
 
-
-    if (!component.isReady() && component.isError())
+    /**
+    *If the component has not been loading correctly, log the error
+    */
+    if (!component.isReady() || component.isError())
     {
         qDebug() << path << " could not be loaded!";
         qDebug() << component.errors();
@@ -77,8 +124,11 @@ void ScriptEngine::addQMLScript(QString path)
 
 
 
+    /**
+     *Add the component to the game object
+     */
     QObject *obj = qobject_cast<QObject*>(component.create());
-    obj->setParent(this);
+    obj->setParent(findChild<GameObject*>("GameObject"));
 
 
 }
@@ -90,12 +140,17 @@ void ScriptEngine::forceUpdate(QJSValue value)
 {
 
 
+    /**
+    *If the argument is not a function, abort
+    */
     if (!value.isCallable())
         return;
 
 
-
-    timer_connections << connect(timer.data(), &QTimer::timeout, [=]() mutable
+    /**
+    *Connect the function to m_timer and register the connection
+    */
+    timer_connections << connect(m_timer.data(), &QTimer::timeout, [=]() mutable
     {
         value.call();
     });
@@ -106,10 +161,14 @@ void ScriptEngine::forceUpdate(QJSValue value)
 
 
 
-void ScriptEngine::setWindowProperty(QString property_name, QVariant new_property)
+void ScriptEngine::setWindowProperty(const QString &property_name,
+                                     QVariant new_property)
 {
 
 
+    /**
+    *Set a certain property of the MainController
+    */
     parent()->setProperty(property_name.toStdString().c_str(), new_property);
 
 
@@ -122,6 +181,9 @@ void ScriptEngine::closeWindow()
 {
 
 
+    /**
+    *Close the MainController
+    */
     qobject_cast<QWidget*>(parent())->close();
 
 
@@ -130,10 +192,13 @@ void ScriptEngine::closeWindow()
 
 
 
-QVariant ScriptEngine::getWindowProperty(QString property_name)
+QVariant ScriptEngine::getWindowProperty(const QString &property_name)
 {
 
 
+    /**
+    *Query a certain window property from the MainController
+    */
     return parent()->property(property_name.toStdString().c_str());
 
 
@@ -143,11 +208,15 @@ QVariant ScriptEngine::getWindowProperty(QString property_name)
 
 
 
-void ScriptEngine::RunScriptFromString(QString script_code)
+void ScriptEngine::RunScriptFromString(const QString &script_code)
 {
 
 
 
+    /**
+    The evaluate function should be present in the Settings object, so first
+    look for this object
+    */
     if (!findChild<QObject*>("Settings"))
     {
         qDebug() << "Settings object not found!";
@@ -156,6 +225,9 @@ void ScriptEngine::RunScriptFromString(QString script_code)
 
 
 
+    /**
+     *If you can find the method, invoke it with the script_code argument
+     */
     QMetaObject::invokeMethod(findChild<QObject*>("Settings"),
                               "evaluate",
                               Qt::QueuedConnection,
@@ -172,6 +244,11 @@ void ScriptEngine::RunScriptFromString(QString script_code)
 void ScriptEngine::RegisterQObject(QObject *obj)
 {
 
+
+    /**
+    *If the pointer to a QObject is valid than add it's reference to the root
+    *context of the QML Engine
+    */
     if (obj)
         rootContext()->setContextProperty(obj->objectName(), obj);
     else
@@ -183,11 +260,13 @@ void ScriptEngine::RegisterQObject(QObject *obj)
 
 
 
-bool ScriptEngine::LoadProject(QString project_name)
+bool ScriptEngine::LoadProject(const QString &project_name)
 {
 
 
-
+    /**
+    *If the file exits, load the project from it
+    */
     if (QFileInfo(project_name).exists())
         addQMLScript(project_name);
     else

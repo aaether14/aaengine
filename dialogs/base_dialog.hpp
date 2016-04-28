@@ -26,14 +26,14 @@ public:
 
 
     /**
-     * @brief baseDialog - basic constructor
-     * @param parent
+     * @brief baseDialog is a nothing constructor
+     * @param parent is the parent of the QObject
      */
     explicit baseDialog(QWidget *parent = 0);
 
 
     /**
-     * @brief ~baseDialog - basic destructor
+     * @brief ~baseDialog is a nothing destructor
      */
     virtual ~baseDialog();
 

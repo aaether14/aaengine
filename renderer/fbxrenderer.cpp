@@ -159,8 +159,6 @@ void FbxRenderer::Render(QObject *parent)
     /**
     *Bind the shader used to render fbx meshes
     */
-
-
     GetShader("Fbx")->bind();
 
 
@@ -168,7 +166,6 @@ void FbxRenderer::Render(QObject *parent)
     /**
      *If GameObject is in the right location, get a reference to it
      */
-
     GameObject * game_object = se->findChild<GameObject*>("GameObject");
 
 
@@ -194,8 +191,6 @@ void FbxRenderer::Render(QObject *parent)
     /**
     *If there are no components to render, return
     */
-
-
     if (components.isEmpty())
         return;
 
@@ -292,8 +287,6 @@ void FbxRenderer::Render(QObject *parent)
         *At last, load model matrix to the mesh then render it using the fbx
         *render shader
         */
-
-
         current_mesh_component->SetGlobalTransform(transform);
         current_mesh_component->Draw(*GetShader("Fbx"));
 

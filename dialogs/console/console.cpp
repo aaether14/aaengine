@@ -35,7 +35,7 @@ Console::Console(QWidget *parent) :
     /**
     *Start redirecting the console output to in-game console
     */
-    Logger::Instance()->setTextEdit(ui->console_output);
+    Logger::Instance()->SetConsoleOutputPointer(ui->console_output);
 #endif
 
 

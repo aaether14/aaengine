@@ -3,13 +3,17 @@
 
 
 
+#include <aae_defines.hpp>
+
+
 
 #include <QTextEdit>
 #include <QSharedPointer>
-#include <QOpenGLDebugLogger>
 #include <QSemaphore>
 #include <QPointer>
-
+#ifdef AAE_USING_OPENGL_DEBUG
+#include <QOpenGLDebugLogger>
+#endif
 
 
 
@@ -53,18 +57,20 @@ public:
 
 
     /**
-     * @brief setTextEdit will set the text edit that this
-     * class will redirect the console output to
-     * @param p_textEdit is a pointer to the required text edit
+     * @brief SetConsoleOutputPointer will set the pointer to the console output QTextEdit
+     * where we will log the messages
+     * @param p_console_output is a pointer to the console output we want to log messages to
      */
-    void setTextEdit(QTextEdit * p_textEdit);
+    void SetConsoleOutputPointer(QTextEdit * p_console_output);
 
 
+#ifdef AAE_USING_OPENGL_DEBUG
     /**
      *@brief InitializeOpenGLLogger will initialize the logger that will listen
      *to opengl error server
      */
     void InitializeOpenGLLogger();
+#endif
 
 
     /**
@@ -82,7 +88,7 @@ private:
      *@brief Logger is set to private to ensure there will only be a single
      *instance of this singleton
      */
-    Logger() : m_opengl_debug_logger(NULL){}
+    Logger();
 
 
 
@@ -98,7 +104,7 @@ private:
      *@brief m_textEdit is a pointer to the text edit the console output will
      *redirected to
      */
-    static QPointer<QTextEdit> m_textEdit;
+    static QPointer<QTextEdit> m_console_output;
 
 
 
@@ -109,22 +115,29 @@ private:
     static QSemaphore m_message_counter;
 
 
+
+#ifdef AAE_USING_OPENGL_DEBUG
     /**
      *@brief m_opengl_debug_logger is a debug logger used to listen to opengl
      *error server
      */
     QOpenGLDebugLogger * m_opengl_debug_logger;
+#endif
 
 
 
 
 private slots:
 
+
+#ifdef AAE_USING_OPENGL_DEBUG
     /**
      * @brief HandleOpenGLDebugMessage will output a debug message from opengl error message
      * @param debugMessage is the error message
      */
     void HandleOpenGLDebugMessage(const QOpenGLDebugMessage &debugMessage);
+#endif
+
 
 
 

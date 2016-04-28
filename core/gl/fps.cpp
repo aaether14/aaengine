@@ -3,18 +3,26 @@
 
 
 
+quint64 FPS::m_total_time = 0;
+
+
+
 
 FPS::FPS(QObject *parent) : QObject(parent),
-    frame_counter(0),
-    fps(0),
-    r_delta(0.0),
-    total_time(0)
+    m_frame_counter(0),
+    m_fps(0),
+    m_delta(0.0)
 {
 
 
-
+    /**
+     *Set the name of the QObject
+     */
     setObjectName("gFPS");
-    elapsed_timer = new QTime();
+    /**
+    *Allocate memory for the timer that will measure time between frames
+    */
+    m_elapsed_timer = new QTime();
 
 
 
@@ -26,7 +34,10 @@ FPS::FPS(QObject *parent) : QObject(parent),
 FPS::~FPS()
 {
 
-    delete elapsed_timer;
+    /**
+    *Delete the timer
+    */
+    delete m_elapsed_timer;
 
 }
 
@@ -40,28 +51,22 @@ void FPS::Update()
     /**
     *If the timer hasn't yet been turned on, go ahead and start it
     */
-
-
-    if (!elapsed_timer->isValid())
-        elapsed_timer->start();
+    if (!m_elapsed_timer->isValid())
+        m_elapsed_timer->start();
 
 
 
     /**
     *Increment the frame counter every frame
     */
-
-
-    frame_counter++;
+    m_frame_counter++;
 
 
 
     /**
     *Compute fps every fixed interval of time
     */
-
-
-    if (elapsed_timer->elapsed() > FPS_TIME_BETWEEN_COMPUTATIONS)
+    if (m_elapsed_timer->elapsed() > FPS_TIME_BETWEEN_COMPUTATIONS)
     {
 
 
@@ -69,26 +74,27 @@ void FPS::Update()
         *Compute fps and reset frame counter
         */
 
-        fps = (float)(frame_counter) / (float)(elapsed_timer->elapsed()) * 1000.0;
-        frame_counter = 0;
+        m_fps = (float)(m_frame_counter) / (float)(m_elapsed_timer->elapsed()) * 1000.0;
+        m_frame_counter = 0;
 
 
         /**
         *Compute the time elapsed between frames
         */
+        m_delta = 1.0 / (float)(m_fps);
 
-        r_delta = 1.0 / (float)(fps);
 
-
-        total_time += elapsed_timer->elapsed();
-        elapsed_timer->restart();
+        /**
+        *Add the time between frames and restart the timer
+        */
+        m_total_time += m_elapsed_timer->elapsed();
+        m_elapsed_timer->restart();
 
 
         /**
         *Emit a signal that the fps has been recomputed
         */
-
-        emit updatedFps(fps);
+        emit updatedFps(m_fps);
 
 
 
@@ -101,7 +107,10 @@ void FPS::Update()
 qint32 FPS::get()
 {
 
-    return fps;
+    /**
+    *Get the framerate of the game
+    */
+    return m_fps;
 
 }
 
@@ -111,18 +120,23 @@ qint32 FPS::get()
 float FPS::delta()
 {
 
-    return r_delta;
+    /**
+    *Get the time between frames
+    */
+    return m_delta;
 
 }
 
 
 
 
-long long FPS::totalTime()
+quint64 FPS::totalTime()
 {
 
-
-    return total_time;
+    /**
+    *Get total elapsed time from the start of the game (msecs)
+    */
+    return m_total_time;
 
 
 }

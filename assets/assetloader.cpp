@@ -8,6 +8,9 @@ void AssetLoader::AddLoader(const QString &loader_name,
 {
 
 
+    /**
+    *Add the provided loader to the hash
+    */
     loaders[loader_name] = loader;
 
 
@@ -21,6 +24,9 @@ void AssetLoader::LinkExtensionToLoader(const QString &loader_name,
 {
 
 
+    /**
+    *Link a certain extention to a loader that could load those kind of files
+    */
     extension_to_loader_map[extension] = loader_name;
 
 
@@ -36,6 +42,9 @@ BaseAsset *AssetLoader::AddAsset(const QString &asset_name,
 {
 
 
+    /**
+    *Add the asset to the library and also return a reference of it
+    */
     assets[asset_name] = new_asset;
     return new_asset;
 
@@ -52,11 +61,20 @@ AssetLoader::AssetLoader(QObject *parent) : QObject(parent),
 
 
 
-
+    /**
+     *Set the name of the QObject
+     */
     setObjectName("AssetLoader");
+    /**
+     *Add the loaders that will be used to load certain assets to the library
+     */
     AddLoader("FbxLoader", new FBXManager());
 
 
+
+    /**
+*Link certain extensions to the matching loaders
+*/
 #ifdef AAE_USING_FBX
     LinkExtensionToLoader("FbxLoader", "fbx");
 #endif
@@ -76,11 +94,17 @@ AssetLoader::~AssetLoader()
 
 
 
+    /**
+     *Delete the loaders and the assets
+     */
     qDeleteAll(loaders);
     qDeleteAll(assets);
 
 
 
+    /**
+    *Then clear the hash
+    */
     assets.clear();
     loaders.clear();
 
@@ -96,7 +120,9 @@ void AssetLoader::AddToLoadingStack(const QString &file_name,
                                     const QString &asset_name)
 {
 
-
+    /**
+    *Issue a command to load a certain asset when the opengl context is made current
+    */
     loading_stack.push(QPair<QString, QString>(file_name, asset_name));
 
 
@@ -113,7 +139,9 @@ void AssetLoader::LoadStack()
 
 
 
-
+    /**
+    *If the asset deletion has been requested, do so now that opengl context is current
+    */
     if (enque_asset_deletion)
     {
 
@@ -130,11 +158,16 @@ void AssetLoader::LoadStack()
 
 
 
-
+    /**
+    *While there are loading commands left...
+    */
     while (!loading_stack.isEmpty())
     {
 
 
+        /**
+         *Get a loading command
+         */
         QPair<QString, QString> new_asset = loading_stack.pop();
 
 
@@ -143,13 +176,17 @@ void AssetLoader::LoadStack()
         try
         {
 
-
+            /**
+             *Try to load requested asset
+             */
             LoadStackInstance(new_asset);
 
 
         }
 
-
+        /**
+        *And catch errors to output their message
+        */
         catch(aae::AError &error)
         {
 
@@ -184,8 +221,6 @@ void AssetLoader::LoadStackInstance(const QPair<QString, QString> &instance)
     /**
     First check whether of not the asset is already in the library
     */
-
-
     if (assets.contains(instance.second))
     {
 
@@ -201,9 +236,6 @@ void AssetLoader::LoadStackInstance(const QPair<QString, QString> &instance)
     /**
     Also check if the file we are trying to load even exists
     */
-
-
-
     if (!QFileInfo(instance.first).exists())
     {
 
@@ -215,11 +247,9 @@ void AssetLoader::LoadStackInstance(const QPair<QString, QString> &instance)
 
 
     /**
-     *@brief suffix is the suffix of the file we are trying to load, it is
+     *Get the suffix of the file we are trying to load, it is
      *useful because we will direct the file towards coresponding loader
      */
-
-
     QString suffix = QFileInfo(instance.first).suffix();
 
 
@@ -228,8 +258,6 @@ void AssetLoader::LoadStackInstance(const QPair<QString, QString> &instance)
     /**
     Check whether of not there is any loader that can load this extension
     */
-
-
     if (!extension_to_loader_map.contains(suffix))
     {
         QString msg = "No " + suffix + " loader available!";
@@ -248,8 +276,6 @@ void AssetLoader::LoadStackInstance(const QPair<QString, QString> &instance)
     /**
     Check if for some reason the desired load is not in the loader library
     */
-
-
     if (!loaders.contains(loader_name))
     {
         QString msg = loader_name + " was not found in the expected location!";
@@ -264,8 +290,6 @@ void AssetLoader::LoadStackInstance(const QPair<QString, QString> &instance)
      *If everything went well go ahead and load the asset using the right
      *loader
      */
-
-
     BaseAssetLoader * loader = loaders[loader_name];
     loader->Load(instance.first,
                  AddAsset(instance.second, loader->CreateAsset()));
@@ -282,6 +306,9 @@ void AssetLoader::LoadStackInstance(const QPair<QString, QString> &instance)
 BaseAsset *AssetLoader::GetAsset(const QString &asset_name)
 {
 
+    /**
+    *Get a certain assrt from the library
+    */
     return assets[asset_name];
 
 }
@@ -293,6 +320,9 @@ bool AssetLoader::HasAsset(const QString &asset_name)
 {
 
 
+    /**
+    *Tell if a certain asset exists in the library
+    */
     return assets.contains(asset_name);
 
 
@@ -305,6 +335,9 @@ BaseAssetLoader *AssetLoader::GetLoader(const QString &extension)
 {
 
 
+    /**
+    *Get a certain loader from the library
+    */
     return loaders[extension_to_loader_map[extension]];
 
 
@@ -316,7 +349,9 @@ BaseAssetLoader *AssetLoader::GetLoader(const QString &extension)
 bool AssetLoader::HasLoader(const QString &extension)
 {
 
-
+    /**
+    *Tell if a certain loader exists in the library
+    */
     return loaders.contains(extension_to_loader_map[extension]);
 
 
@@ -329,6 +364,9 @@ void AssetLoader::UnloadAssets()
 {
 
 
+    /**
+    *Enque a deletion of the assets in the library
+    */
     enque_asset_deletion = true;
 
 
@@ -341,6 +379,9 @@ bool AssetLoader::SanityCheck()
 {
 
 
+    /**
+    *Check if all assets are loaded correctly
+    */
     foreach(auto it, assets)
     {
         if (!it->isLoaded())
@@ -361,6 +402,9 @@ void AssetLoader::loadAsset(const QString &file_name,
                             const QString &asset_name)
 {
 
+    /**
+     *Issue a loading command to load a certain asset
+     */
     AddToLoadingStack(file_name, asset_name);
 
 }
@@ -371,7 +415,9 @@ void AssetLoader::loadAsset(const QString &file_name,
 void AssetLoader::logAssetInfo()
 {
 
-
+    /**
+    *Log the assets in the library
+    */
     qDebug() << assets;
 
 

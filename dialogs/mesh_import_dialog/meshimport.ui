@@ -39,7 +39,7 @@
     <string>Convert Scale</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit">
+  <widget class="QLineEdit" name="file_name_textbox">
    <property name="geometry">
     <rect>
      <x>20</x>
@@ -49,7 +49,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="browse_button">
    <property name="geometry">
     <rect>
      <x>270</x>
@@ -88,7 +88,7 @@
     <string>Generate Tangents</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_2">
+  <widget class="QPushButton" name="convert_button">
    <property name="geometry">
     <rect>
      <x>160</x>
@@ -142,15 +142,15 @@
   </widget>
  </widget>
  <tabstops>
-  <tabstop>lineEdit</tabstop>
+  <tabstop>file_name_textbox</tabstop>
   <tabstop>checkBox_convert_axis</tabstop>
   <tabstop>checkBox_convert_scale</tabstop>
   <tabstop>checkBox_split_points</tabstop>
   <tabstop>checkBox_generate_tangents</tabstop>
   <tabstop>checkBox_triangulate</tabstop>
   <tabstop>checkBox_convert_textures</tabstop>
-  <tabstop>pushButton</tabstop>
-  <tabstop>pushButton_2</tabstop>
+  <tabstop>browse_button</tabstop>
+  <tabstop>convert_button</tabstop>
  </tabstops>
  <resources/>
  <connections/>

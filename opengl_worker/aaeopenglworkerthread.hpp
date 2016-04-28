@@ -28,7 +28,7 @@ class AAEOpenGLWorkerThread
      *@brief AAEOpenGLWorkerThread is set to private to ensure there will only be a single
      *instance of this singleton
      */
-    AAEOpenGLWorkerThread() {}
+    AAEOpenGLWorkerThread() : m_context(NULL), m_offscreen_surface(NULL) {}
     Q_DISABLE_COPY(AAEOpenGLWorkerThread)
 
 
@@ -66,7 +66,7 @@ public:
 
 
     /**
-    *@brief ~AAEOpenGLWorkerThread is a basic destructor
+    *@brief ~AAEOpenGLWorkerThread is a nothing destructor
     */
     ~AAEOpenGLWorkerThread();
 

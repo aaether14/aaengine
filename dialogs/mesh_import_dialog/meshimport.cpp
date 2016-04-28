@@ -12,6 +12,9 @@ MeshImport::MeshImport(QWidget *parent) :
 {
 
 
+    /**
+    *Setput the ui layout of the dialog
+    */
     ui->setupUi(this);
 
 
@@ -24,6 +27,9 @@ MeshImport::~MeshImport()
 {
 
 
+    /**
+    *Just delete ui
+    */
     delete ui;
 
 
@@ -51,7 +57,10 @@ void MeshImport::Reset()
 
 
 
-    ui->lineEdit->clear();
+    /**
+    *Clear the text in the textbox
+    */
+    ui->file_name_textbox->clear();
 
 
 }
@@ -62,10 +71,39 @@ void MeshImport::Reset()
 
 
 
-void MeshImport::on_pushButton_2_clicked()
+
+void MeshImport::on_browse_button_clicked()
 {
 
 
+    /**
+    * Check if you can find the GL Controller
+    */
+
+
+    if (!parent()->findChild<GLController*>("GL"))
+    {
+        qDebug() << "MeshImport: No GL controller detected!";
+        return;
+    }
+
+
+    /**
+    If GL controller exists, use OpenFileDialog to set the file name for
+    further importing
+    */
+    ui->file_name_textbox->setText(parent()->findChild<GLController*>("GL")->OpenFileDialog("MeshImport", "*.fbx"));
+
+
+
+}
+
+
+
+
+
+void MeshImport::on_convert_button_clicked()
+{
 
 
 
@@ -75,7 +113,7 @@ void MeshImport::on_pushButton_2_clicked()
     */
 
 
-    if (!ui->lineEdit->text().size())
+    if (!ui->file_name_textbox->text().size())
         return;
 
 
@@ -117,21 +155,22 @@ void MeshImport::on_pushButton_2_clicked()
     /**
      *Get a reference to the loader and create a dummy_mesh
      */
-
-
-
-
     FBXManager * fm = static_cast<FBXManager*>(al->GetLoader("fbx"));
     Mesh * dummy_mesh = new Mesh();
 
 
 
 
-    if(fm->ImportScene(dummy_mesh, ui->lineEdit->text()))
+    /**
+    *Attempt to import the scene specified in the textbox to the dummy_mesh
+    */
+    if(fm->ImportScene(dummy_mesh, ui->file_name_textbox->text()))
     {
 
 
-
+        /**
+        *Normalize the scene acording to user settings
+        */
         dummy_mesh->NormalizeScene(fm->GetManager(),
                                    ui->checkBox_convert_axis,
                                    ui->checkBox_convert_scale,
@@ -142,30 +181,48 @@ void MeshImport::on_pushButton_2_clicked()
 
 
 
-
-        fm->ExportScene(dummy_mesh, ui->lineEdit->text());
+        /**
+        *Export the normalized scene
+        */
+        fm->ExportScene(dummy_mesh, ui->file_name_textbox->text());
+        /**
+        *Release memory occupied by scene
+        */
         dummy_mesh->ReleaseFbxScene();
 
 
 
-
+        /**
+        *If the user specified that an aaem file should be created
+        */
         if (ui->checkBox_create_aaem->isChecked())
         {
 
 
-            if (fm->ImportScene(dummy_mesh, ui->lineEdit->text()))
+            /**
+            *Reimport the normalized scene
+            */
+            if (fm->ImportScene(dummy_mesh, ui->file_name_textbox->text()))
             {
 
 
-                dummy_mesh->LoadFromFbxFile(ui->lineEdit->text());
+                /**
+                *Load the fbx file
+                */
+                dummy_mesh->LoadFromFbxFile(ui->file_name_textbox->text());
 
 
 
-                QFileInfo fbx_file_info(ui->lineEdit->text());
+                /**
+                 *Compute the name of the aaem file then serialize the aaem file
+                 */
+                QFileInfo fbx_file_info(ui->file_name_textbox->text());
                 dummy_mesh->SerializeAAEM(fbx_file_info.path() + "/" + fbx_file_info.baseName() + ".aaem");
 
 
-
+                /**
+                *Release cache
+                */
                 dummy_mesh->ReleaseFbxScene();
                 dummy_mesh->ClearGeometryData();
 
@@ -203,55 +260,3 @@ void MeshImport::on_pushButton_2_clicked()
 
 
 }
-
-
-
-
-
-
-void MeshImport::on_pushButton_clicked()
-{
-
-
-
-    /**
-    * Check if you can find the GL Controller
-    */
-
-
-    if (!parent()->findChild<GLController*>("GL"))
-    {
-        qDebug() << "MeshImport: No GL controller detected!";
-        return;
-    }
-
-
-    /**
-    If GL controller exists, use OpenFileDialog to set the file name for
-    further importing
-    */
-
-
-    ui->lineEdit->setText(parent()->findChild<GLController*>("GL")->OpenFileDialog("MeshImport", "*.fbx"));
-
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

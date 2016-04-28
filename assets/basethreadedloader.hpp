@@ -13,13 +13,13 @@ public:
 
 
     /**
-     * @brief BaseThreadedLoader is a basic constructor
+     * @brief BaseThreadedLoader is a nothing constructor
      */
     BaseThreadedLoader();
 
 
     /**
-     * @brief ~BaseThreadedLoader is a basic destructor
+     * @brief ~BaseThreadedLoader is a nothing destructor
      */
     virtual ~BaseThreadedLoader();
 

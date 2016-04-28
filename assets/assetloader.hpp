@@ -182,11 +182,19 @@ public:
 
 
 
+    /**
+    *@brief loadAsset will load a certain asset to the library
+    *@param file_name is the name of the file to load
+    *@param asset_name is the name by which the asset will be identified in the scene
+    */
     Q_INVOKABLE void loadAsset(const QString &file_name,
                                const QString &asset_name);
 
 
 
+    /**
+    *@brief logAssetInfo will log to the console the assets in the library
+    */
     Q_INVOKABLE void logAssetInfo();
 
 

@@ -36,7 +36,7 @@ class ScriptEngine : public QQmlEngine
      *@brief timer is a pointer to the timer that is used to update the scene,
      *it will be used to also update the script modules
      */
-    QPointer<QTimer> timer;
+    QPointer<QTimer> m_timer;
 
 
 
@@ -71,29 +71,56 @@ public:
 
 
 
+    /**
+     * @brief ResetGameObject will reset the game object of the engine
+     */
+    void ResetGameObject();
 
-    Q_INVOKABLE void addQMLScript(QString path);
+
+
+    /**
+    *@brief addQMLScript will add a certain QML script to the GameObject
+    *@param path is the path of the script to add
+    */
+    Q_INVOKABLE void addQMLScript(const QString &path);
 
 
 
+    /**
+    *@brief forceUpdate will call a certain function each time the m_timer ticks
+    *@param value is the function called
+    */
     Q_INVOKABLE void forceUpdate(QJSValue value);
 
 
+    /**
+    *@brief setWindowProperty will set a certain property of the window
+    *@param property_name is the name of property to be changed
+    *@param new_property is the value that will update the chosen property
+    */
+    Q_INVOKABLE void setWindowProperty(const QString &property_name,
+                                       QVariant new_property);
 
-    Q_INVOKABLE void setWindowProperty(QString property_name, QVariant new_property);
 
-
-
+    /**
+    *@brief closeWindow will close the MainController window
+    */
     Q_INVOKABLE void closeWindow();
 
 
-
-    Q_INVOKABLE QVariant getWindowProperty(QString property_name);
+    /**
+    *@brief getWindowProperty will return a property of the main window requested with
+    * the property_name key
+    *@param property_name is the name of the requested property
+    */
+    Q_INVOKABLE QVariant getWindowProperty(const QString &property_name);
 
 
 
 
 signals:
+
+
 
 
 public slots:
@@ -103,7 +130,7 @@ public slots:
      * @brief RunScriptFromString will call evaluate function from Settings object
      * @param script_code is the code to be run
      */
-    void RunScriptFromString(QString script_code);
+    void RunScriptFromString(const QString &script_code);
 
 
     /**
@@ -118,7 +145,7 @@ public slots:
      * @param project_name is the name of the project to be loaded
      * @return will return true if it succefully loaded the project
      */
-    bool LoadProject(QString project_name);
+    bool LoadProject(const QString &project_name);
 
 
 

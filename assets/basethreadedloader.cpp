@@ -6,11 +6,24 @@
 BaseThreadedLoader::BaseThreadedLoader()
 {
 
+    /**
+    *The glorious nothing...
+    */
+
+
+
 }
 
 
 
 BaseThreadedLoader::~BaseThreadedLoader()
 {
+
+
+    /**
+    *The glorious nothing...
+    */
+
+
 
 }

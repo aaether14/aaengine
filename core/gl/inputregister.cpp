@@ -2,18 +2,26 @@
 
 
 
+
+
 InputRegister::InputRegister(QObject *parent) : QObject(parent)
 {
 
 
+    /**
+     *Set the name of the QObject
+     */
     setObjectName("gInput");
 
 
 
+    /**
+    *Clear the key and button arrays
+    */
     for (qint32 i = 0; i < 512; i++)
-        keys[i] = 0;
+        m_keys[i] = 0;
     for (qint32 i = 0; i < 8; i++)
-        buttons[i] = 0;
+        m_buttons[i] = 0;
 
 
 }
@@ -23,6 +31,11 @@ InputRegister::InputRegister(QObject *parent) : QObject(parent)
 void InputRegister::RegisterKeyPress(QKeyEvent *e)
 {
 
+
+
+    /**
+     *Register a keypress in the key array
+     */
     qint32 key;
     if (e->key() > 512)
         key = (((quint64) e->key()) & 0x000000FF) + 256;
@@ -30,7 +43,7 @@ void InputRegister::RegisterKeyPress(QKeyEvent *e)
         key = e->key();
 
 
-    keys[key]++;
+    m_keys[key]++;
 
 
 }
@@ -41,6 +54,9 @@ void InputRegister::RegisterKeyPress(QKeyEvent *e)
 void InputRegister::RegisterKeyRelease(QKeyEvent *e)
 {
 
+    /**
+     *Register a key release in the key array
+     */
     qint32 key;
     if (e->key() > 512)
         key = (((quint64) e->key()) & 0x000000FF) + 256;
@@ -48,7 +64,7 @@ void InputRegister::RegisterKeyRelease(QKeyEvent *e)
         key = e->key();
 
 
-    keys[key] = 0;
+    m_keys[key] = 0;
 
 }
 
@@ -57,8 +73,12 @@ void InputRegister::RegisterKeyRelease(QKeyEvent *e)
 void InputRegister::RegisterMousePress(QMouseEvent *e)
 {
 
+
+    /**
+    *Register a mouse press in the mouse button array
+    */
     if ((qint32)(e->button()) < 8)
-        buttons[(qint32)(e->button())]++;
+        m_buttons[(qint32)(e->button())]++;
 
 
 }
@@ -69,8 +89,11 @@ void InputRegister::RegisterMousePress(QMouseEvent *e)
 void InputRegister::RegisterMouseRelease(QMouseEvent *e)
 {
 
+    /**
+    *Register a mouse release in the mouse button array
+    */
     if ((qint32)(e->button()) < 8)
-        buttons[(qint32)(e->button())] = 0;
+        m_buttons[(qint32)(e->button())] = 0;
 
 }
 
@@ -79,8 +102,10 @@ void InputRegister::RegisterMouseRelease(QMouseEvent *e)
 void InputRegister::RegisterMouseMovement(QMouseEvent *e)
 {
 
-
-    mouse_position = QVector2D(e->pos());
+    /**
+    *Register the mouse movement
+    */
+    m_mouse_position = QVector2D(e->pos());
 
 
 }
@@ -90,8 +115,12 @@ void InputRegister::RegisterMouseMovement(QMouseEvent *e)
 bool InputRegister::getKey(const qint32 &key)
 {
 
+
+    /**
+    *Query a certain key's activity
+    */
     if (key < 512)
-        return keys[key] > 0;
+        return m_keys[key] > 0;
     else
         return false;
 
@@ -102,8 +131,11 @@ bool InputRegister::getKey(const qint32 &key)
 bool InputRegister::getButton(const qint32 &button)
 {
 
+    /**
+    *Query a certain button's activity
+    */
     if (button < 8)
-        return buttons[button] > 0;
+        return m_buttons[button] > 0;
     else return false;
 
 }
@@ -113,7 +145,10 @@ bool InputRegister::getButton(const qint32 &button)
 QVector2D InputRegister::getMousePosition()
 {
 
-    return mouse_position;
+    /**
+    *Get the position of the cursor relative to the QOpenGLWidget
+    */
+    return m_mouse_position;
 
 }
 
@@ -123,6 +158,11 @@ QVector2D InputRegister::getMousePosition()
 
 InputRegister::~InputRegister()
 {
+
+
+    /**
+    *The glorious nothing...
+    */
 
 
 

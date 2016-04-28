@@ -17,6 +17,9 @@ void WorkerThread::run()
 
 
 
+    /**
+    *Make the context current to the offscreen surface then run the queued function
+    */
     m_context->makeCurrent(m_offscreen_surface);
     m_function();
     m_context->doneCurrent();

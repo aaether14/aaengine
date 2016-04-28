@@ -17,7 +17,6 @@ GLController::GLController(QWidget *parent)
     /**
      *Initialize default timer
      */
-
     QTimer * timer = new QTimer(this);
     timer->setObjectName("gTimer");
     timer->setInterval(0);
@@ -28,7 +27,6 @@ GLController::GLController(QWidget *parent)
      *Initialize backup timer that will only be active when the default timer
      *is paused
      */
-
     QTimer * backup_timer = new QTimer(this);
     backup_timer->setObjectName("gBackupTimer");
     backup_timer->setInterval(0);
@@ -42,6 +40,9 @@ GLController::GLController(QWidget *parent)
 
 
 
+    /**
+     *Create the fps counter the input manager and the asset loader
+     */
     FPS * fps = new FPS(this);
     InputRegister * input = new InputRegister(this);
     AssetLoader * asset_loader = new AssetLoader(this);
@@ -53,15 +54,22 @@ GLController::GLController(QWidget *parent)
 
 
 
-
+    /**
+     *Connect the fps computations and the rendering to gTimer's update
+     */
     connect(timer, &QTimer::timeout, fps, &FPS::Update);
     connect(timer, &QTimer::timeout, this, &GLController::Update);
     connect(backup_timer, &QTimer::timeout, fps, &FPS::Update);
 
 
 
-
+    /**
+     *Make mouse focus for QOpenGLWidget persistent in relation to other widgets
+     */
     setFocusPolicy(Qt::StrongFocus);
+    /**
+     *Enable mouse tracking
+     */
     setMouseTracking(true);
 
 
@@ -80,6 +88,11 @@ GLController::~GLController()
 {
 
 
+    /**
+     *Almost nothing
+     */
+
+
     makeCurrent();
     doneCurrent();
 
@@ -95,6 +108,10 @@ void GLController::initializeGL()
 {
 
 
+
+    /**
+     *Set base screen color and enable depth test and face culling
+     */
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
     f->glClearColor(0.0, 0.0, 0.0, 1.0);
     f->glEnable(GL_DEPTH_TEST);
@@ -102,7 +119,9 @@ void GLController::initializeGL()
 
 
 
-
+    /**
+     *Initialize the rendering pipeline
+     */
     Pipeline * pipeline = new Pipeline(this);
     Q_UNUSED(pipeline)
 
@@ -141,18 +160,25 @@ void GLController::paintGL()
 
 
 
+    /**
+     *First clear the screen to the base color
+     */
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
     f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
 
-
+    /**
+    *If the asset loader exists, append loading operations
+    */
     if (findChild<AssetLoader*>("AssetLoader"))
         findChild<AssetLoader*>("AssetLoader")->LoadStack();
 
 
 
-
+    /**
+    *If the pipeline exist, append rendering operations
+    */
     if (findChild<Pipeline*>("Pipeline"))
         findChild<Pipeline*>("Pipeline")->Render();
 
@@ -185,29 +211,40 @@ QString GLController::OpenFileDialog(const QString &file_dialog_name,
 
 
 
-
+    /**
+     *Query whether the game was playing or not before dialog opening
+     */
     bool was_playing = IsPlaying() == true;
 
 
 
-
+    /**
+    *If the game was playing, pause it
+    */
     if (was_playing)
         Pause();
 
 
 
+    /**
+     *Get the name of the file chosen in the dialog
+     */
+    QString file_name = QFileDialog::getOpenFileName(this, file_dialog_name, QString(), suffix_to_look_for);
 
-    QString project_name = QFileDialog::getOpenFileName(this, file_dialog_name, QString(), suffix_to_look_for);
 
 
-
-
+    /**
+    *If the game was playing, now unpause it
+    */
     if (was_playing)
         Unpause();
 
 
 
-    return project_name;
+    /**
+    *Return chosen file's name
+    */
+    return file_name;
 
 
 

@@ -6,8 +6,10 @@
 #include <aae_defines.hpp>
 
 
+
 #include <QDebug>
 #include <QFileDialog>
+
 
 
 #include <dialogs/base_dialog.hpp>
@@ -38,14 +40,14 @@ public:
 
 
     /**
-     * @brief MeshImport - basic constructor
-     * @param parent
+     * @brief MeshImport is a basic constructor
+     * @param parent is the parent of the QObject
      */
     explicit MeshImport(QWidget *parent = 0);
 
 
     /**
-    * @brief ~MeshImport - basic destructor
+    * @brief ~MeshImport is a basic destructor
     */
     ~MeshImport();
 
@@ -66,21 +68,26 @@ public:
 private slots:
 
 
-    /**
-     *@brief on_pushButton_2_clicked will import the mesh with the provided
-     *settings
-     */
-    void on_pushButton_2_clicked();
 
     /**
-     *@brief on_pushButton_clicked will browse for the file you want to import
+     * @brief on_browse_button_clicked will browse for the file you want to import
      */
-    void on_pushButton_clicked();
+    void on_browse_button_clicked();
+
+    /**
+     * @brief on_convert_button_clicked will import the mesh with the provided
+     *settings
+     */
+    void on_convert_button_clicked();
+
+
 
 private:
 
 
-
+    /**
+     * @brief ui is the ui layout of the dialog
+     */
     Ui::MeshImport *ui;
 
 

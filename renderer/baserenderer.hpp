@@ -31,7 +31,7 @@ public:
 
 
     /**
-     * @brief BaseRenderer
+     * @brief BaseRenderer is a nothing constructor
      */
     BaseRenderer();
     /**
@@ -55,7 +55,8 @@ protected:
      * @param shader_name is a key for the shader to be added
      * @param shader will be initialized before being added to the library
      */
-    virtual void AddShader(QString shader_name, QOpenGLShaderProgram *shader);
+    virtual void AddShader(const QString &shader_name,
+                           QOpenGLShaderProgram *shader);
 
 
     /**
@@ -64,7 +65,7 @@ protected:
      * @param shader_name is the key under which the shader is stored
      * @return
      */
-    virtual QOpenGLShaderProgram * GetShader(QString shader_name);
+    virtual QOpenGLShaderProgram * GetShader(const QString &shader_name);
 
 
 };

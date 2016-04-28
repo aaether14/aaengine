@@ -29,30 +29,30 @@ class FPS : public QObject
 
 
     /**
-     *@brief elapsed_timer is used to measure timer delta and compute fps from
+     *@brief m_elapsed_timer is used to measure timer delta and compute fps from
      *it
      */
-    QTime * elapsed_timer;
+    QTime * m_elapsed_timer;
     /**
-     *@brief frame_counter counts the number of frames that have passed from
+     *@brief m_frame_counter counts the number of frames that have passed from
      *the list timer rest
      */
-    qint32 frame_counter;
+    qint32 m_frame_counter;
     /**
      * @brief fps is the final result
      */
-    qint32 fps;
+    qint32 m_fps;
     /**
-     * @brief r_delta is the amount of msecs in a frame
+     * @brief m_delta is the amount of msecs in a frame
      */
-    float r_delta;
+    float m_delta;
 
 
 
     /**
-     *@brief total_time is the time that has passed since the engine started (msecs)
+     *@brief m_total_time is the time that has passed since the engine started (msecs)
      */
-    long long total_time;
+    static quint64 m_total_time;
 
 
 
@@ -63,7 +63,7 @@ public:
 
     /**
      * @brief FPS will initialize timer
-     * @param parent
+     * @param parent is the parent of the QObject
      */
     explicit FPS(QObject *parent = 0);
     /**
@@ -98,23 +98,33 @@ public:
 
 
     /**
+     * @brief GetTotalTime will return staticaly the the elapsed since game started in msecs
+     * @return m_total_time
+     */
+    static inline quint64 GetTotalTime(){
+        return m_total_time;
+    }
+
+
+
+    /**
      * @brief get will return fps
-     * @return fps
+     * @return m_fps
      */
     Q_INVOKABLE qint32 get();
 
     /**
      * @brief delta will return r_delta
-     * @return r_delta
+     * @return m_delta
      */
     Q_INVOKABLE float delta();
 
 
     /**
-    * @brief totalTime will return total_time
-    * @return total_time
+    * @brief totalTime will return time elapsed since game started in msecs
+    * @return m_total_time
     */
-    Q_INVOKABLE long long totalTime();
+    Q_INVOKABLE quint64 totalTime();
 
 
 

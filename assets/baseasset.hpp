@@ -15,11 +15,11 @@ class BaseAsset
 public:
 
     /**
-     * @brief BaseAsset - basic constructor
+     * @brief BaseAsset is a nothing constructor
      */
     BaseAsset();
     /**
-     * @brief ~BaseAsset - basic virtual destructor
+     * @brief ~BaseAsset is a nothing destructor
      */
     virtual ~BaseAsset() {}
 

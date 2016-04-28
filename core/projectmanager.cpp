@@ -147,28 +147,31 @@ void ProjectManager::UnloadProject()
 
 
     /**
-    *If there is any ScriptEngine in the hierarchy tree delete it before
-    *creating a new one
+    *If there is no ScriptEngine, create one, it it does, reset it's game
+    *object
     */
-    if (parent()->findChild<ScriptEngine*>("ScriptEngine"))
-        delete parent()->findChild<ScriptEngine*>("ScriptEngine");
+    if (!parent()->findChild<ScriptEngine*>("ScriptEngine"))
+    {
 
 
 
-    /**
+     /**
      *Create the new ScriptEngine
      */
-    ScriptEngine * script_engine = new ScriptEngine(parent());
+        ScriptEngine * script_engine = new ScriptEngine(parent());
 
 
     /**
     *Add required objects to QML context
     */
-    script_engine->ConnectToTimer(parent()->findChild<QTimer*>("gTimer"));
-    script_engine->RegisterQObject(parent()->findChild<FPS*>("gFPS"));
-    script_engine->RegisterQObject(parent()->findChild<InputRegister*>("gInput"));
-    script_engine->RegisterQObject(parent()->findChild<AssetLoader*>("AssetLoader"));
-    script_engine->RegisterQObject(new aae::Math(script_engine));
+        script_engine->ConnectToTimer(parent()->findChild<QTimer*>("gTimer"));
+        script_engine->RegisterQObject(parent()->findChild<FPS*>("gFPS"));
+        script_engine->RegisterQObject(parent()->findChild<InputRegister*>("gInput"));
+        script_engine->RegisterQObject(parent()->findChild<AssetLoader*>("AssetLoader"));
+        script_engine->RegisterQObject(new aae::Math(script_engine));
+    }
+    else
+        parent()->findChild<ScriptEngine*>("ScriptEngine")->ResetGameObject();
 
 
 
