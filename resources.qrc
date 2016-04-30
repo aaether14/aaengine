@@ -13,4 +13,7 @@
         <file>__data/shaders/fbx_render.frag</file>
         <file>__data/shaders/fbx_render.vert</file>
     </qresource>
+    <qresource prefix="/meshes">
+        <file>__data/meshes/box.aaem</file>
+    </qresource>
 </RCC>

@@ -7,6 +7,9 @@ void FbxRenderer::HandleLights(const QVariantMap &light_map)
 {
 
 
+    /**
+     *Extract the light information from the game object
+     */
     QVector<light> scene_lights;
 
 
@@ -35,6 +38,9 @@ void FbxRenderer::HandleLights(const QVariantMap &light_map)
 
 
 
+    /**
+     *Encapsulate the light information into a shader storage buffer object
+     */
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
     f->glBindBuffer(GL_SHADER_STORAGE_BUFFER, light_ssbo);
     f->glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(light) * scene_lights.size(), &scene_lights[0], GL_STATIC_DRAW);
@@ -56,19 +62,27 @@ FbxRenderer::FbxRenderer() : light_ssbo(0)
 
 
 
-
+    /**
+     *Create and add the shader that will be used to render fbx objects
+     */
     QOpenGLShaderProgram * fbx_shader = new QOpenGLShaderProgram();
     fbx_shader->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/__data/shaders/fbx_render.vert");
     fbx_shader->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/__data/shaders/fbx_render.frag");
     fbx_shader->link();
 
 
-
     AddShader("Fbx", fbx_shader);
 
+    /**
+     *------------------------------------------------------------------------
+     */
 
 
 
+
+    /**
+     *Create the block containing light information about the scene
+     */
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
     f->glGenBuffers(1, &light_ssbo);
 
@@ -86,6 +100,9 @@ FbxRenderer::~FbxRenderer()
 
 
 
+    /**
+     *Delete the block containing light information about the scene
+     */
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
     if (light_ssbo)
         f->glDeleteBuffers(1, &light_ssbo);

@@ -11,12 +11,6 @@
 
 
 
-#define FPS_TIME_BETWEEN_COMPUTATIONS 100
-
-
-
-
-
 /**
  * @brief The FPS class is a basic fps computer
  */
@@ -34,6 +28,10 @@ class FPS : public QObject
      */
     QTime * m_elapsed_timer;
     /**
+     * @brief m_last_recorded_time is the last time recorded by the fps counter
+     */
+    qint32 m_last_recorded_time;
+    /**
      *@brief m_frame_counter counts the number of frames that have passed from
      *the list timer rest
      */
@@ -46,13 +44,6 @@ class FPS : public QObject
      * @brief m_delta is the amount of msecs in a frame
      */
     float m_delta;
-
-
-
-    /**
-     *@brief m_total_time is the time that has passed since the engine started (msecs)
-     */
-    static quint64 m_total_time;
 
 
 
@@ -71,6 +62,10 @@ public:
     */
     ~FPS();
 
+    /**
+     * @brief compute will compute fps
+     */
+    void Compute();
 
 
 
@@ -82,28 +77,10 @@ signals:
     void updatedFps(qint32);
 
 
-public slots:
-
-
-
-    /**
-     * @brief Update will compute fps
-     */
-    void Update();
-
 
 
 public:
 
-
-
-    /**
-     * @brief GetTotalTime will return staticaly the the elapsed since game started in msecs
-     * @return m_total_time
-     */
-    static inline quint64 GetTotalTime(){
-        return m_total_time;
-    }
 
 
 

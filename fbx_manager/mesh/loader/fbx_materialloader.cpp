@@ -31,6 +31,9 @@ void MaterialLoader::Load()
 
 
 
+    /**
+    *Clear existing materials
+    */
     m_materials.clear();
 
 
@@ -44,17 +47,14 @@ void MaterialLoader::Load()
         /**
         *If material pointer is null, then continue
         */
-
-
         if (!m_scene->GetMaterial(i))
             continue;
+
 
 
         /**
         If material has already been loaded in the library, continue
         */
-
-
         if (m_materials.contains(m_scene->GetMaterial(i)->GetName()))
             continue;
 
@@ -63,7 +63,6 @@ void MaterialLoader::Load()
         /**
          *Get a pointer to the current material
          */
-
         FbxSurfaceMaterial * material = m_scene->GetMaterial(i);
 
 
@@ -72,11 +71,42 @@ void MaterialLoader::Load()
          *Create a new material and add properties to it
          */
         Material new_mat;
-        new_mat.AddProperty(material->FindProperty(FbxSurfaceMaterial::sDiffuse));
-        new_mat.AddProperty(material->FindProperty(FbxSurfaceMaterial::sNormalMap));
+
+
+        /**
+        *Add diffuse property
+        */
+        new_mat.AddProperty(material->FindProperty(FbxSurfaceMaterial::sDiffuse),
+                            material->FindProperty(FbxSurfaceMaterial::sDiffuseFactor));
+
+
+        /**
+        *Add normal property
+        */
+        new_mat.AddProperty(material->FindProperty(FbxSurfaceMaterial::sNormalMap),
+                            material->FindProperty(FbxSurfaceMaterial::sNormalMap));
 
 
 
+        /**
+        *Add specular property
+        */
+        new_mat.AddProperty(material->FindProperty(FbxSurfaceMaterial::sSpecular),
+                            material->FindProperty(FbxSurfaceMaterial::sSpecularFactor));
+
+
+
+        /**
+        *Add specular hardness property
+        */
+        new_mat.AddProperty(material->FindProperty(FbxSurfaceMaterial::sShininess),
+                            material->FindProperty(FbxSurfaceMaterial::sShininess));
+
+
+
+        /**
+        *Add the material to the library
+        */
         m_materials[material->GetName()] = new_mat;
 
 

@@ -64,9 +64,9 @@ class WorkerThread : public QThread
 
 private slots:
     /**
-     * @brief work will run the next function in the stack
+     * @brief tryWork will try to run the next function in the stack
      */
-    void work();
+    void tryWork();
 
 
 

@@ -38,10 +38,34 @@ class Material
 
 
     /**
-     *@brief diffuse_color is the diffuse component of the material
+     *@brief diffuse_color is the diffuse color of the material
      */
     QVector3D m_diffuse_color;
 
+
+    /**
+     * @brief m_diffuse_intensity is the diffuse intensity of the material
+     */
+    float m_diffuse_intensity;
+
+
+
+    /**
+     * @brief m_specular_color is the specular color of the material
+     */
+    QVector3D m_specular_color;
+
+
+    /**
+     * @brief m_specular_intensity is the specular intensity of the material
+     */
+    float m_specular_intensity;
+
+
+    /**
+     * @brief m_specular_hardness is the specular hardness of the material
+     */
+    float m_specular_hardness;
 
 
 
@@ -72,7 +96,7 @@ public:
 
 
     /**
-     * @brief Material - basic constructor
+     * @brief Material is a nothing constructor
      */
     Material();
 
@@ -90,14 +114,13 @@ public:
 
 
 #ifdef AAE_USING_FBX
-
-
     /**
      * @brief AddProperty will add a certain property to the material
      * @param property is the property to be added
+     * @param factor_property is the factor property to be added (i.e intensity)
      */
-    void AddProperty(const FbxProperty &property);
-
+    void AddProperty(const FbxProperty &property,
+                     const FbxProperty &factor_property);
 #endif
 
 
@@ -110,6 +133,43 @@ public:
         return m_diffuse_color;
     }
 
+
+    /**
+     * @brief GetDiffuseIntensity will get the diffuse intensity of the material
+     * @return m_diffuse_intensity
+     */
+    inline const float &GetDiffuseIntensity() const{
+        return m_diffuse_intensity;
+    }
+
+
+
+    /**
+     * @brief GetSpecularColor will get the specular color of the material
+     * @return m_specular_color
+     */
+    inline const QVector3D & GetSpecularColor() const{
+        return m_specular_color;
+    }
+
+
+    /**
+     * @brief GetSpecularIntensity will get the specular intensity of the material
+     * @return m_specular_intensity
+     */
+    inline const float & GetSpecularIntensity() const{
+        return m_specular_intensity;
+    }
+
+
+
+    /**
+     * @brief GetSpecularHardness will get the specular hardness of the material
+     * @return m_specular_hardness
+     */
+    inline const float & GetSpecularHardness() const{
+        return m_specular_hardness;
+    }
 
 
     /**
@@ -126,8 +186,46 @@ public:
      * @brief SetDiffuseColor will set the diffuse color of the material
      * @param diffuse_color is the color to update diffuse color
      */
-    inline void SetDiffuseColor(const QVector3D & diffuse_color){
+    inline void SetDiffuseColor(const QVector3D &diffuse_color){
         m_diffuse_color = diffuse_color;
+    }
+
+
+    /**
+     * @brief SetDiffuseIntensity will set the diffuse intensity of the material
+     * @param diffuse_intensity is the new diffuse intensity
+     */
+    inline void SetDiffuseIntensity(const float &diffuse_intensity){
+        m_diffuse_intensity = diffuse_intensity;
+    }
+
+
+
+    /**
+     * @brief SetSpecularColor will set the specular color of the material
+     * @param specular_color is the new specular color
+     */
+    inline void SetSpecularColor(const QVector3D &specular_color){
+        m_specular_color = specular_color;
+    }
+
+
+    /**
+     * @brief SetSpecularIntensity will set the specular intensity of the material
+     * @param specular_intensity is the new specular intensity
+     */
+    inline void SetSpecularIntensity(const float &specular_intensity){
+        m_specular_intensity = specular_intensity;
+    }
+
+
+
+    /**
+     * @brief SetSpecularHardness will set the specular hardness of the material
+     * @param specular_hardness is the new specular hardness
+     */
+    inline void SetSpecularHardness(const float &specular_hardness){
+        m_specular_hardness = specular_hardness;
     }
 
 

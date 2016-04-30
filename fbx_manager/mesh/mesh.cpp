@@ -98,10 +98,10 @@ void Mesh::LoadFromFbxFile(const QString &fbx_file_name)
     PassTextureDataToOpenGL();
 
 
+
     /**
-   *Clear cache and signal successful loading
-   */
-    ClearGeometryData();
+    *Signal successful loading
+    */
     m_loaded_semaphore.release();
 
 
@@ -219,12 +219,11 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
+
     /**
      *get the current context function and bind the vertex array object of the
      *mesh
      */
-
-
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
     f->glBindVertexArray(m_gpu.vao);
 
@@ -235,10 +234,6 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
     *For each material, depending on the draw method selected by the mesh,
     attempt to draw the model
     */
-
-
-
-
     foreach(auto it, m_materials.keys())
     {
 
@@ -247,9 +242,6 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
         /**
         *Send material information to shader
         */
-
-
-
         m_materials[it].SendToShader(shader);
 
 
@@ -302,7 +294,6 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
     /**
     *Unbind the vertex array object
     */
-
     f->glBindVertexArray(0);
 
 

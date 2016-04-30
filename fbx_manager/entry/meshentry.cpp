@@ -9,6 +9,10 @@ MeshEntry::MeshEntry() : m_local_transform(QMatrix4x4())
 {
 
 
+    /**
+    *The glorious nothing...
+    */
+
 
 }
 
@@ -19,6 +23,9 @@ MeshEntry::~MeshEntry()
 {
 
 
+    /**
+    *Clear the commands hash
+    */
     m_commands.clear();
 
 
@@ -53,12 +60,18 @@ void MeshEntry::LoadMesh(FbxMesh * mesh,
 
 
 
+    /**
+     *Load vertices and indices of the mesh entry
+     */
     LoadIndices(mesh, master_indices, current_polygon_offset, current_control_point_offset);
     LoadVertices(mesh, master_vertices, current_control_point_offset);
 
 
 
 
+    /**
+    *Load the entry's layers
+    */
     if (load_normals)
         LoadNormals(mesh, master_normals);
 
@@ -72,7 +85,9 @@ void MeshEntry::LoadMesh(FbxMesh * mesh,
 
 
 
-
+    /**
+     *Compute the transform and bounding box and load them
+     */
     LoadTransform(mesh);
     LoadBoundingBox(mesh);
 
@@ -166,7 +181,7 @@ void MeshEntry::LoadIndices(FbxMesh *mesh,
         c.baseVertex = current_control_point_offset;
         c.firstIndex = current_polygon_offset;
         c.vertexCount = material_mapped_indices[it].size();
-        m_commands[QString(mesh->GetNode()->GetMaterial(it)->GetName())] = c;
+        m_commands.insert(QString(mesh->GetNode()->GetMaterial(it)->GetName()), c);
         current_polygon_offset += c.vertexCount;
 
 
@@ -217,18 +232,24 @@ void MeshEntry::LoadBoundingBox(FbxMesh *mesh)
 {
 
 
+
     /**
-
-    mesh->ComputeBBox();
-    BBMin = QVector3D(mesh->BBoxMin.Get().mData[0], mesh->BBoxMin.Get().mData[1], mesh->BBoxMin.Get().mData[2]);
-    BBMax = QVector3D(mesh->BBoxMax.Get().mData[0], mesh->BBoxMax.Get().mData[1], mesh->BBoxMax.Get().mData[2]);
-
-
+    *First compute the bounding box
     */
+    mesh->ComputeBBox();
 
 
+    /**
+     *Then extract the data
+     */
+    QVector3D BBMin = QVector3D(mesh->BBoxMin.Get().mData[0], mesh->BBoxMin.Get().mData[1], mesh->BBoxMin.Get().mData[2]);
+    QVector3D BBMax = QVector3D(mesh->BBoxMax.Get().mData[0], mesh->BBoxMax.Get().mData[1], mesh->BBoxMax.Get().mData[2]);
 
-    Q_UNUSED(mesh)
+
+    /**
+   *Create the entry's bounding box
+   */
+    m_bbox = aae::bounding_box3d(BBMin, BBMax);
 
 
 
@@ -245,10 +266,11 @@ void MeshEntry::LoadBoundingBox(FbxMesh *mesh)
 QDataStream &operator <<(QDataStream &out, const MeshEntry &entry)
 {
 
-    out << entry.GetLocalTransform() << entry.GetDrawCommands();
+    out << entry.GetLocalTransform() << entry.GetDrawCommands() << entry.GetBoundingBox();
     return out;
 
 }
+
 
 
 QDataStream &operator >>(QDataStream &in, MeshEntry &entry)
@@ -257,12 +279,17 @@ QDataStream &operator >>(QDataStream &in, MeshEntry &entry)
 
     QMatrix4x4 local_transform;
     QHash<QString, DrawElementsCommand> commands;
-    in >> local_transform >> commands;
+    aae::bounding_box3d bbox;
+
+
+
+    in >> local_transform >> commands >> bbox;
 
 
 
     entry.SetLocalTransform(local_transform);
     entry.SetDrawCommands(commands);
+    entry.SetBoundingBox(bbox);
     return in;
 
 }

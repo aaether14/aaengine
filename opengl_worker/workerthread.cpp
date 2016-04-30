@@ -31,8 +31,16 @@ void WorkerThread::run()
 
 
 
-void WorkerThread::work()
+void WorkerThread::tryWork()
 {
+
+
+
+    /**
+    *If there's another job going on, come back later
+    */
+    if (isRunning())
+        return;
 
 
 
@@ -71,7 +79,7 @@ WorkerThread::WorkerThread(QOpenGLContext *context,
      *Make it so each time a thread finished a job it checks if there's another
      *one available
      */
-    connect(this, &QThread::finished, this, &WorkerThread::work);
+    connect(this, &QThread::finished, this, &WorkerThread::tryWork);
 
 
 
@@ -92,17 +100,11 @@ void WorkerThread::enque_work(const std::function<void ()> &function)
     m_functions_stack.push(function);
 
 
-    /**
-    *Thread is already doing something
-    */
-    if (isRunning())
-        return;
-
 
     /**
-     *If the thread does nothing ATM give it a job
+     *Try to work something
      */
-    work();
+    tryWork();
 
 
 

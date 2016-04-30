@@ -3,12 +3,10 @@
 
 
 
-quint64 FPS::m_total_time = 0;
-
-
 
 
 FPS::FPS(QObject *parent) : QObject(parent),
+    m_last_recorded_time(0.0),
     m_frame_counter(0),
     m_fps(0),
     m_delta(0.0)
@@ -24,6 +22,13 @@ FPS::FPS(QObject *parent) : QObject(parent),
     */
     m_elapsed_timer = new QTime();
 
+
+
+    /**
+    *If the timer hasn't yet been turned on, go ahead and start it
+    */
+    if (!m_elapsed_timer->isValid())
+        m_elapsed_timer->start();
 
 
 
@@ -43,16 +48,11 @@ FPS::~FPS()
 
 
 
-void FPS::Update()
+void FPS::Compute()
 {
 
 
 
-    /**
-    *If the timer hasn't yet been turned on, go ahead and start it
-    */
-    if (!m_elapsed_timer->isValid())
-        m_elapsed_timer->start();
 
 
 
@@ -66,7 +66,7 @@ void FPS::Update()
     /**
     *Compute fps every fixed interval of time
     */
-    if (m_elapsed_timer->elapsed() > FPS_TIME_BETWEEN_COMPUTATIONS)
+    if (m_elapsed_timer->elapsed() - m_last_recorded_time > 1000.0)
     {
 
 
@@ -74,7 +74,7 @@ void FPS::Update()
         *Compute fps and reset frame counter
         */
 
-        m_fps = (float)(m_frame_counter) / (float)(m_elapsed_timer->elapsed()) * 1000.0;
+        m_fps = m_frame_counter;
         m_frame_counter = 0;
 
 
@@ -87,8 +87,7 @@ void FPS::Update()
         /**
         *Add the time between frames and restart the timer
         */
-        m_total_time += m_elapsed_timer->elapsed();
-        m_elapsed_timer->restart();
+        m_last_recorded_time = m_elapsed_timer->elapsed();
 
 
         /**
@@ -136,7 +135,7 @@ quint64 FPS::totalTime()
     /**
     *Get total elapsed time from the start of the game (msecs)
     */
-    return m_total_time;
+    return m_elapsed_timer->elapsed();
 
 
 }

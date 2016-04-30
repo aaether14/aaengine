@@ -24,7 +24,7 @@
 
 
 #include <fbx_manager/material/fbx_material.hpp>
-
+#include <utils/bounding_box.hpp>
 
 
 
@@ -36,6 +36,11 @@
 class MeshEntry
 {
 
+
+    /**
+     * @brief m_bbox is the bounding box of the mesh entry
+     */
+    aae::bounding_box3d m_bbox;
 
 
     /**
@@ -54,9 +59,6 @@ class MeshEntry
 
 
 #ifdef AAE_USING_FBX
-
-
-
     /**
      * @brief LoadVertices will load the vertices of the mesh entry
      * @param mesh is the mesh node to be handled by this mesh entry
@@ -135,11 +137,11 @@ public:
 
 
     /**
-     * @brief MeshEntry - basic constructor
+     * @brief MeshEntry is a basic constructor
      */
     MeshEntry();
     /**
-      @brief ~MeshEntry - basic destructor
+      @brief ~MeshEntry is a basic destructor
     */
     ~MeshEntry();
 
@@ -246,6 +248,26 @@ public:
      */
     inline void SetLocalTransform(const QMatrix4x4 &local_transform){
         m_local_transform = local_transform;
+    }
+
+
+
+    /**
+     * @brief GetBoundingBox will get the bounding box of the mesh entry
+     * @return m_bbox;
+     */
+    inline const aae::bounding_box3d &GetBoundingBox() const{
+        return m_bbox;
+    }
+
+
+
+    /**
+     * @brief SetBoundingBox will set the bounding box of the mesh entry
+     * @param bbox is the new bounding box
+     */
+    inline void SetBoundingBox(const aae::bounding_box3d &bbox){
+        m_bbox = bbox;
     }
 
 

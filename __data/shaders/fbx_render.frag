@@ -22,10 +22,18 @@ in vec2 interpolated_uv;
 *Material Information
 */
 uniform vec3 diffuse_color;
+uniform float diffuse_intensity;
 uniform bool use_diffuse_texture;
+uniform vec3 specular_color;
+uniform float specular_intensity;
+uniform float specular_hardness;
 
 
 
+
+/**
+*Texture samplers
+*/
 uniform sampler2D diffuse_texture;
 uniform sampler2D normal_map;
 
@@ -124,10 +132,9 @@ vec4 ComputeLightColor()
             /**
             *Directional ligtht
             */
-
-
-            color += (lights[i].diffuse_color * max(0.0, dot(vec3(lights[i].position), normal)) +
-                      lights[i].ambient_color);
+            vec4 l_diffuse_color = lights[i].diffuse_color * max(0.0, dot(vec3(lights[i].position), normal));
+            vec4 l_ambient_color = lights[i].ambient_color;
+            color += (l_diffuse_color + l_ambient_color);
 
 
 
@@ -162,7 +169,7 @@ vec4 ComputeMaterialColor()
     }
     else
     {
-        color = vec4(diffuse_color, 1.0);
+        color = vec4(diffuse_color * diffuse_intensity, 1.0);
     }
 
 
