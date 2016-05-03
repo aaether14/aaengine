@@ -5,6 +5,7 @@
 BaseAsset::BaseAsset()
 {
 
+
     /**
     *The glorious nothing...
     */

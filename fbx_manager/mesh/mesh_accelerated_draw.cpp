@@ -10,7 +10,9 @@ void Mesh::AcceleratedDraw(const QString &material_name)
 
 
 
-
+    /**
+     *Get opengl 4.3 functions from current context
+     */
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
 
 
@@ -22,7 +24,9 @@ void Mesh::AcceleratedDraw(const QString &material_name)
 
 
 
-
+    /**
+     *Get draw commands of current material
+     */
     CacheDrawCommands(m_mesh_entries,
                       draw_commands,
                       per_object_index,
@@ -33,7 +37,9 @@ void Mesh::AcceleratedDraw(const QString &material_name)
 
 
 
-
+    /**
+    *Upload data to draw commands buffer
+    */
     f->glBindBuffer( GL_DRAW_INDIRECT_BUFFER, m_gpu.indirect_buffer);
     f->glBufferData( GL_DRAW_INDIRECT_BUFFER, sizeof(DrawElementsCommand) * draw_commands.size(), &draw_commands[0], GL_STATIC_DRAW );
 
@@ -41,7 +47,9 @@ void Mesh::AcceleratedDraw(const QString &material_name)
 
 
 
-
+    /**
+    *Workaround to know shader-side which draw call we're appending
+    */
     f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.per_object_buffer);
     f->glBufferData(GL_ARRAY_BUFFER, sizeof(quint32) * per_object_index.size(), &per_object_index[0], GL_STATIC_DRAW);
     f->glEnableVertexAttribArray(MESH_PER_OBJECT_ATTRIBUTE_POINTER);
@@ -51,12 +59,17 @@ void Mesh::AcceleratedDraw(const QString &material_name)
 
 
 
-
+    /**
+    *Draw mesh component
+    */
     f->glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, draw_commands.size(), 0);
 
 
 
 
+    /**
+    *Clear some cache
+    */
     draw_commands.clear();
     per_object_index.clear();
 
@@ -75,7 +88,9 @@ void Mesh::SendModelMatrixToShader()
 {
 
 
-
+    /**
+     *Get opengl 4.3 functions from current context
+     */
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
 
 
@@ -88,6 +103,9 @@ void Mesh::SendModelMatrixToShader()
 
 
 
+    /**
+    *Constrcut the model matrices vector
+    */
     foreach(auto it, m_mesh_entries)
         model_matrix << aae::mesh_util::toFloat16((m_global_transform * it.GetLocalTransform()).constData());
 
@@ -97,9 +115,6 @@ void Mesh::SendModelMatrixToShader()
     /**
     *Send the model matrices to the shader via ssbo binding
     */
-
-
-
     f->glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_gpu.ssbo);
     f->glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(aae::mesh_util::float16) * model_matrix.size(), &model_matrix[0], GL_STATIC_DRAW);
     f->glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_gpu.ssbo);
@@ -107,6 +122,9 @@ void Mesh::SendModelMatrixToShader()
 
 
 
+    /**
+    *Clear some cache
+    */
     model_matrix.clear();
 
 

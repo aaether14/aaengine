@@ -120,7 +120,9 @@ void MeshEntry::LoadVertices(FbxMesh * mesh,
     }
 
 
-
+    /**
+    *Advance current position in the vertex buffers
+    */
     current_control_point_offset += mesh->GetControlPointsCount();
 
 
@@ -146,13 +148,17 @@ void MeshEntry::LoadIndices(FbxMesh *mesh,
 
 
 
-
+    /**
+     *We need to map indices per material
+     */
     QHash<qint32, QVector<quint32> > material_mapped_indices;
     FbxLayerElementArrayTemplate<qint32> *material_indices;
 
 
 
-
+    /**
+    *Extract information from fbx mesh
+    */
     mesh->GetMaterialIndices(&material_indices);
 
 
@@ -167,7 +173,9 @@ void MeshEntry::LoadIndices(FbxMesh *mesh,
 
 
 
-
+    /**
+    *Create draw commands
+    */
     foreach(auto it, material_mapped_indices.keys())
     {
 
@@ -266,6 +274,9 @@ void MeshEntry::LoadBoundingBox(FbxMesh *mesh)
 QDataStream &operator <<(QDataStream &out, const MeshEntry &entry)
 {
 
+    /**
+    *Output to datastream all entry's information
+    */
     out << entry.GetLocalTransform() << entry.GetDrawCommands() << entry.GetBoundingBox();
     return out;
 
@@ -277,6 +288,9 @@ QDataStream &operator >>(QDataStream &in, MeshEntry &entry)
 {
 
 
+    /**
+     *Extract from datastream all entry's information
+     */
     QMatrix4x4 local_transform;
     QHash<QString, DrawElementsCommand> commands;
     aae::bounding_box3d bbox;
@@ -284,7 +298,6 @@ QDataStream &operator >>(QDataStream &in, MeshEntry &entry)
 
 
     in >> local_transform >> commands >> bbox;
-
 
 
     entry.SetLocalTransform(local_transform);

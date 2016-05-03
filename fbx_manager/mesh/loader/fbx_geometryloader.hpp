@@ -9,7 +9,6 @@
 
 
 #include <fbx_manager/entry/meshentry.hpp>
-#include <assets/basethreadedloader.hpp>
 
 
 
@@ -18,7 +17,7 @@
  *@brief The GeometryLoader class has the purpose of loading the geometry data
  *of a 3d model
  */
-class GeometryLoader : public BaseThreadedLoader
+class GeometryLoader
 {
 
 

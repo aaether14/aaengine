@@ -126,8 +126,6 @@ void Pipeline::Render()
             /**
             *Catch any error and output the issue
             */
-
-
             qDebug() << "Pipeline: " << it << " failed!";
             qDebug() << error.what();
 

@@ -85,10 +85,6 @@ void AAEOpenGLWorkerThread::CreateContext(QOpenGLContext *share_context)
                                                 m_offscreen_surface));
 
 
-    /**
-    *Move the context to the worker thread
-    */
-    m_context->moveToThread(m_worker_thread.data());
 
 
 

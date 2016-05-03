@@ -3,6 +3,7 @@
 
 
 
+
 void AssetLoader::AddLoader(const QString &loader_name,
                             BaseAssetLoader *loader)
 {
@@ -11,7 +12,7 @@ void AssetLoader::AddLoader(const QString &loader_name,
     /**
     *Add the provided loader to the hash
     */
-    loaders[loader_name] = loader;
+    loaders.insert(loader_name, loader);
 
 
 }
@@ -27,7 +28,7 @@ void AssetLoader::LinkExtensionToLoader(const QString &loader_name,
     /**
     *Link a certain extention to a loader that could load those kind of files
     */
-    extension_to_loader_map[extension] = loader_name;
+    extension_to_loader_map.insert(extension, loader_name);
 
 
 }
@@ -45,7 +46,7 @@ BaseAsset *AssetLoader::AddAsset(const QString &asset_name,
     /**
     *Add the asset to the library and also return a reference of it
     */
-    assets[asset_name] = new_asset;
+    assets.insert(asset_name, new_asset);
     return new_asset;
 
 
@@ -72,10 +73,12 @@ AssetLoader::AssetLoader(QObject *parent) : QObject(parent),
 
 
 
-    /**
+
+
+#ifdef AAE_USING_FBX
+/**
 *Link certain extensions to the matching loaders
 */
-#ifdef AAE_USING_FBX
     LinkExtensionToLoader("FbxLoader", "fbx");
 #endif
     LinkExtensionToLoader("FbxLoader", "aaem");
@@ -269,7 +272,7 @@ void AssetLoader::LoadStackInstance(const QPair<QString, QString> &instance)
     /**
      * @brief loader_name is the name of the loader we are trying to use in order to load the new asset
      */
-    QString loader_name = extension_to_loader_map[suffix];
+    QString loader_name = extension_to_loader_map.value(suffix);
 
 
 
@@ -290,7 +293,7 @@ void AssetLoader::LoadStackInstance(const QPair<QString, QString> &instance)
      *If everything went well go ahead and load the asset using the right
      *loader
      */
-    BaseAssetLoader * loader = loaders[loader_name];
+    BaseAssetLoader * loader = loaders.value(loader_name);
     loader->Load(instance.first,
                  AddAsset(instance.second, loader->CreateAsset()));
 
@@ -309,7 +312,7 @@ BaseAsset *AssetLoader::GetAsset(const QString &asset_name)
     /**
     *Get a certain assrt from the library
     */
-    return assets[asset_name];
+    return assets.value(asset_name);
 
 }
 
@@ -338,7 +341,7 @@ BaseAssetLoader *AssetLoader::GetLoader(const QString &extension)
     /**
     *Get a certain loader from the library
     */
-    return loaders[extension_to_loader_map[extension]];
+    return loaders.value(extension_to_loader_map.value(extension));
 
 
 }
@@ -352,7 +355,7 @@ bool AssetLoader::HasLoader(const QString &extension)
     /**
     *Tell if a certain loader exists in the library
     */
-    return loaders.contains(extension_to_loader_map[extension]);
+    return loaders.contains(extension_to_loader_map.value(extension));
 
 
 }

@@ -12,5 +12,4 @@ BaseAssetLoader::BaseAssetLoader()
     */
 
 
-
 }

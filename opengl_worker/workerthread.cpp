@@ -12,52 +12,6 @@ namespace aae
 
 
 
-void WorkerThread::run()
-{
-
-
-
-    /**
-    *Make the context current to the offscreen surface then run the queued function
-    */
-    m_context->makeCurrent(m_offscreen_surface);
-    m_function();
-    m_context->doneCurrent();
-
-
-
-}
-
-
-
-
-void WorkerThread::tryWork()
-{
-
-
-
-    /**
-    *If there's another job going on, come back later
-    */
-    if (isRunning())
-        return;
-
-
-
-    /**
-    *If there are available jobs append one
-    */
-    if (!m_functions_stack.isEmpty())
-    {
-        m_function = m_functions_stack.pop();
-        start();
-    }
-
-
-
-}
-
-
 
 
 
@@ -76,14 +30,78 @@ WorkerThread::WorkerThread(QOpenGLContext *context,
 
 
     /**
-     *Make it so each time a thread finished a job it checks if there's another
-     *one available
+     *Create the thread
      */
-    connect(this, &QThread::finished, this, &WorkerThread::tryWork);
+    QThread * thread = new QThread();
+
+
+    /**
+    *Use provided context on this thread
+    */
+    m_context->moveToThread(thread);
+
+
+
+
+    /**
+     *Move the worker to thread
+     */
+    moveToThread(thread);
+
+
+
+
+
+    /**
+     *Every time a job is available, try to do it
+     */
+    connect(this, &WorkerThread::check_for_work, this, [=](){
+
+
+        /**
+        *Make the context current against offscreen surface
+        */
+        m_context->makeCurrent(m_offscreen_surface);
+
+
+        /**
+        *If there is any job try it
+        */
+        if (!m_functions_stack.isEmpty())
+            m_functions_stack.pop()();
+
+
+        /**
+        *Release context
+        */
+        m_context->doneCurrent();
+
+
+
+    });
+    /**
+    *If the thread was requested to close do so
+    */
+    connect(this, &WorkerThread::should_close, this, [=](){
+        thread->quit();
+        thread->deleteLater();
+    });
+
+
+
+
+
+    /**
+    *Start the thread
+    */
+    thread->start();
+
 
 
 
 }
+
+
 
 
 
@@ -102,9 +120,10 @@ void WorkerThread::enque_work(const std::function<void ()> &function)
 
 
     /**
-     *Try to work something
-     */
-    tryWork();
+    *Issue a new job
+    */
+    emit check_for_work();
+
 
 
 

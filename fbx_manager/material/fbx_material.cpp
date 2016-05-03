@@ -130,13 +130,17 @@ void Material::AddProperty(const FbxProperty &property,
             return;
 
 
-
+        /**
+         *Get the texture handler
+         */
         FbxFileTexture * texture = property.GetSrcObject<FbxFileTexture>();
         if (!texture)
             return;
 
 
-
+        /**
+        *Set normal map texture of the material
+        */
         m_textures[normal] = texture->GetFileName();
 
 

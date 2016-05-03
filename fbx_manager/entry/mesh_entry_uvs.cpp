@@ -18,36 +18,38 @@ void MeshEntry::LoadUVs(FbxMesh *mesh, QVector<float> &master_uvs)
      *should_fill_with_0 will be true if we've met an invalid data scenario and
      *we have to fill the vbos with 0's
      */
-
     bool should_fill_with_0 = false;
+
 
 
 
     /**
     *If the mesh has no uv information we should attempt to fill with 0's
     */
-
     if (mesh->GetElementUVCount() < 1)
         should_fill_with_0 = true;
 
 
 
+
+    /**
+    *If there is uv information
+    */
     if (!should_fill_with_0)
     {
 
 
-        /**
+
+
+     /**
      * First we get the vertex uv information for the mesh
      */
-
         FbxGeometryElementUV* vertex_uv = mesh->GetElementUV(0);
 
 
-        /**
+    /**
     *We first check the mapping mode of the normals
     */
-
-
         if(vertex_uv->GetMappingMode() == FbxGeometryElement::eByControlPoint)
         {
 
@@ -56,11 +58,6 @@ void MeshEntry::LoadUVs(FbxMesh *mesh, QVector<float> &master_uvs)
 
             switch(vertex_uv->GetReferenceMode())
             {
-
-
-
-
-
             case FbxGeometryElement::eDirect:
             {
 
@@ -80,11 +77,6 @@ void MeshEntry::LoadUVs(FbxMesh *mesh, QVector<float> &master_uvs)
 
 
             }break;
-
-
-
-
-
             case FbxGeometryElement::eIndexToDirect:
             {
 
@@ -101,15 +93,15 @@ void MeshEntry::LoadUVs(FbxMesh *mesh, QVector<float> &master_uvs)
 
 
                 }
+            }break;
+            default:{
 
-
+                /**
+                *If other cases are encountered then fill information with 0's
+                */
+                should_fill_with_0 = true;
 
             }break;
-
-
-
-
-
             }
 
 
@@ -122,11 +114,12 @@ void MeshEntry::LoadUVs(FbxMesh *mesh, QVector<float> &master_uvs)
     }
 
 
+
+
     /**
     *If we came across abnormal information we should output an error then go
     *ahead and fill with 0's
     */
-
     if (should_fill_with_0)
     {
 

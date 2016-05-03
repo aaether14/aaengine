@@ -53,10 +53,8 @@ void Mesh::PassGeometryDataToOpenGL()
 
 
     /**
-     * get opengl functions from context
+     * get opengl 4.3 functions from context
      */
-
-
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
 
 

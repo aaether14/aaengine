@@ -55,7 +55,6 @@ SOURCES += main.cpp\
     fbx_manager/mesh_util.cpp \
     fbx_manager/mesh/mesh_accelerated_draw.cpp \
     fbx_manager/mesh/mesh_material_loader.cpp \
-    assets/basethreadedloader.cpp \
     fbx_manager/mesh/loader/fbx_geometryloader.cpp \
     fbx_manager/mesh/loader/fbx_materialloader.cpp \
     fbx_manager/material/fbx_material.cpp \
@@ -94,7 +93,6 @@ HEADERS  += \
     dialogs/base_dialog.hpp \
     fbx_manager/mesh/mesh_gpu_memory.h \
     fbx_manager/mesh_util.hpp \
-    assets/basethreadedloader.hpp \
     fbx_manager/mesh/loader/fbx_materialloader.hpp \
     fbx_manager/mesh/loader/fbx_geometryloader.hpp \
     fbx_manager/material/fbx_material.hpp \
@@ -122,6 +120,7 @@ CONFIG += c++11
 
 RESOURCES += \
     resources.qrc
+
 
 
 

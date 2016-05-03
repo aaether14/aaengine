@@ -36,7 +36,6 @@ void Mesh::PassTextureDataToOpenGL()
 
 
 
-
     /**
     *Load textures into opengl memory
     */
@@ -46,10 +45,15 @@ void Mesh::PassTextureDataToOpenGL()
             {
 
 
+                /**
+                 *Get the path of the required texture
+                 */
                 QString texture_index = aae::mesh_util::ComputeTextureFilename(current_texture, GetFileName());
 
 
-
+                /**
+                *If texture does not exist, go on
+                */
                 if (!QFileInfo(texture_index).exists())
                 {
                     qDebug() << "Could not find texture:" << current_texture << "!";
@@ -58,7 +62,10 @@ void Mesh::PassTextureDataToOpenGL()
 
 
 
-                m_textures[current_texture] = new QOpenGLTexture(QImage(texture_index).mirrored());
+                /**
+                *Add the new texture to the library
+                */
+                m_textures.insert(current_texture, new QOpenGLTexture(QImage(texture_index).mirrored()));
 
             }
 

@@ -220,6 +220,12 @@ void Controller::closeEvent(QCloseEvent *event)
 
 
 
+
+    AAEOpenGLWorkerThread::Instance()->GetThread()->CloseThread();
+
+
+
+
 }
 
 

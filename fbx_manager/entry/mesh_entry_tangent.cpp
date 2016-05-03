@@ -16,8 +16,9 @@ void MeshEntry::LoadTangents(FbxMesh *mesh,
      *should_fill_with_0 will be true if we've met an invalid data scenario and
      *we have to fill the vbos with 0's
      */
-
     bool should_fill_with_0 = false;
+
+
 
 
 
@@ -30,22 +31,27 @@ void MeshEntry::LoadTangents(FbxMesh *mesh,
 
 
 
+
+    /**
+    *If the mesh has tangent information
+    */
     if (!should_fill_with_0)
     {
 
 
-        /**
+
+
+     /**
      * First we get the vertex tangent information for the mesh
      */
-
         FbxGeometryElementTangent* vertex_tangent = mesh->GetElementTangent(0);
 
 
-        /**
+
+
+    /**
     *We first check the mapping mode of the tangents
     */
-
-
         if(vertex_tangent->GetMappingMode() == FbxGeometryElement::eByControlPoint)
         {
 
@@ -54,11 +60,6 @@ void MeshEntry::LoadTangents(FbxMesh *mesh,
 
             switch(vertex_tangent->GetReferenceMode())
             {
-
-
-
-
-
             case FbxGeometryElement::eDirect:
             {
 
@@ -80,11 +81,6 @@ void MeshEntry::LoadTangents(FbxMesh *mesh,
 
 
             }break;
-
-
-
-
-
             case FbxGeometryElement::eIndexToDirect:
             {
 
@@ -105,15 +101,15 @@ void MeshEntry::LoadTangents(FbxMesh *mesh,
 
 
                 }
+            }break;
+            default:{
 
-
+                /**
+                *If other cases are encountered then fill information with 0's
+                */
+                should_fill_with_0 = true;
 
             }break;
-
-
-
-
-
             }
 
 
@@ -126,11 +122,13 @@ void MeshEntry::LoadTangents(FbxMesh *mesh,
     }
 
 
+
+
+
     /**
     *If we came across abnormal information we should output an error then go
     *ahead and fill with 0's
     */
-
     if (should_fill_with_0)
     {
 

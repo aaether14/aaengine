@@ -23,13 +23,14 @@ Mesh::Mesh():
     m_loaded_semaphore(0),
 
 
-
     m_file_name(""),
     m_draw_method("cached")
 {
 
 
-
+    /**
+     *Reset gpu pointers
+     */
     ResetGPUMemory(m_gpu);
 
 
@@ -47,19 +48,21 @@ Mesh::~Mesh()
     /**
      *Release gpu memory
      */
-
-
-
     ClearGPUMemory(m_gpu, QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>());
 
 
 
-
+    /**
+     *Delete textures
+     */
     qDeleteAll(m_textures);
     m_textures.clear();
 
 
 
+    /**
+    *Delete mesh entries and materials
+    */
     m_mesh_entries.clear();
     m_materials.clear();
 
@@ -78,13 +81,16 @@ void Mesh::LoadFromFbxFile(const QString &fbx_file_name)
 
 
 
+    /**
+    *Set the name of the mesh
+    */
     m_file_name = fbx_file_name;
+
 
 
     /**
      *Load materials and buffer objects
      */
-
     FBX_CommandLoadingBufferObjects();
     FBX_CommandLoadingMaterials();
 
@@ -120,7 +126,11 @@ void Mesh::LoadFromAAEMFile(const QString &aaem_file_name)
 
 
 
+    /**
+    *Set the name of the mesh
+    */
     m_file_name = aaem_file_name;
+
 
 
     /**
@@ -151,6 +161,7 @@ void Mesh::LoadFromAAEMFile(const QString &aaem_file_name)
 
 
 
+
             });
 
 
@@ -176,12 +187,12 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
+
     /**
     *If the mesh has not yet been loaded, no point in trying to render
     */
     if (!IsLoaded())
         return;
-
 
 
 
@@ -195,17 +206,17 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
     /**
-     *First send model matrices to shader
-     */
+         *First send model matrices to shader
+         */
     SendModelMatrixToShader();
 
 
 
 
     /**
-    Set the texture sampler for diffuse texture and also if the mesh is using
-    tangents or not
-    */
+        Set the texture sampler for diffuse texture and also if the mesh is using
+        tangents or not
+        */
 
     shader.setUniformValue("diffuse_texture", 0);
     shader.setUniformValue("normal_map", 1);
@@ -215,15 +226,15 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
     /**
-     * -----------------------------------------------------------------*/
+         * -----------------------------------------------------------------*/
 
 
 
 
     /**
-     *get the current context function and bind the vertex array object of the
-     *mesh
-     */
+         *get the current context function and bind the vertex array object of the
+         *mesh
+         */
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
     f->glBindVertexArray(m_gpu.vao);
 
@@ -231,17 +242,17 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
     /**
-    *For each material, depending on the draw method selected by the mesh,
-    attempt to draw the model
-    */
+        *For each material, depending on the draw method selected by the mesh,
+        attempt to draw the model
+        */
     foreach(auto it, m_materials.keys())
     {
 
 
 
         /**
-        *Send material information to shader
-        */
+            *Send material information to shader
+            */
         m_materials[it].SendToShader(shader);
 
 
@@ -256,25 +267,12 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
-        if (m_draw_method == "cached")
-        {
-
-            CachedDraw(it);
-
-        }
-        else if (m_draw_method == "accelerated")
+        if (m_draw_method == "accelerated")
         {
 
             AcceleratedDraw(it);
 
         }
-        else
-        {
-
-            qDebug() << "Invalid draw method!";
-
-        }
-
 
 
 
@@ -292,8 +290,8 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
     /**
-    *Unbind the vertex array object
-    */
+        *Unbind the vertex array object
+        */
     f->glBindVertexArray(0);
 
 

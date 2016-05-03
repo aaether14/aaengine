@@ -6,7 +6,8 @@
 
 
 FPS::FPS(QObject *parent) : QObject(parent),
-    m_last_recorded_time(0.0),
+    m_delta_computation_last_recorded_time(0),
+    m_last_recorded_time(0),
     m_frame_counter(0),
     m_fps(0),
     m_delta(0.0)
@@ -24,15 +25,9 @@ FPS::FPS(QObject *parent) : QObject(parent),
 
 
 
-    /**
-    *If the timer hasn't yet been turned on, go ahead and start it
-    */
-    if (!m_elapsed_timer->isValid())
-        m_elapsed_timer->start();
-
-
-
 }
+
+
 
 
 
@@ -48,10 +43,29 @@ FPS::~FPS()
 
 
 
+
+
 void FPS::Compute()
 {
 
 
+
+
+
+    /**
+    *If the timer hasn't yet been turned on, go ahead and start it
+    */
+    if (!m_elapsed_timer->isValid())
+        m_elapsed_timer->start();
+
+
+
+
+    /**
+    *Compute delta
+    */
+    m_delta = (float)(m_elapsed_timer->elapsed() - m_delta_computation_last_recorded_time) / 1000.0;
+    m_delta_computation_last_recorded_time = m_elapsed_timer->elapsed();
 
 
 
@@ -73,15 +87,9 @@ void FPS::Compute()
         /**
         *Compute fps and reset frame counter
         */
-
         m_fps = m_frame_counter;
         m_frame_counter = 0;
 
-
-        /**
-        *Compute the time elapsed between frames
-        */
-        m_delta = 1.0 / (float)(m_fps);
 
 
         /**
@@ -100,6 +108,7 @@ void FPS::Compute()
     }
 
 }
+
 
 
 

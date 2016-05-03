@@ -70,7 +70,6 @@ void ProjectManager::LoadProject()
 
 
 
-
     if (!parent()->findChild<ScriptEngine*>("ScriptEngine"))
     {
         qDebug() << "ProjectManager: Could not find the ScriptEngine!";

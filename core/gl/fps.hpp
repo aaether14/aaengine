@@ -18,7 +18,6 @@ class FPS : public QObject
 {
 
 
-
     Q_OBJECT
 
 
@@ -28,9 +27,13 @@ class FPS : public QObject
      */
     QTime * m_elapsed_timer;
     /**
+     * @brief m_delta_computation_last_recorded_time will record last time for m_delta computations
+     */
+    qint64 m_delta_computation_last_recorded_time;
+    /**
      * @brief m_last_recorded_time is the last time recorded by the fps counter
      */
-    qint32 m_last_recorded_time;
+    qint64 m_last_recorded_time;
     /**
      *@brief m_frame_counter counts the number of frames that have passed from
      *the list timer rest
@@ -62,26 +65,6 @@ public:
     */
     ~FPS();
 
-    /**
-     * @brief compute will compute fps
-     */
-    void Compute();
-
-
-
-signals:
-
-    /**
-     *@brief updatedFps sends the current fps
-     */
-    void updatedFps(qint32);
-
-
-
-
-public:
-
-
 
 
     /**
@@ -102,6 +85,28 @@ public:
     * @return m_total_time
     */
     Q_INVOKABLE quint64 totalTime();
+
+
+
+public slots:
+
+
+    /**
+     * @brief Compute will compute fps
+     */
+    void Compute();
+
+
+
+signals:
+
+
+    /**
+     *@brief updatedFps sends the current fps
+     */
+    void updatedFps(qint32);
+
+
 
 
 

@@ -23,20 +23,6 @@ GLController::GLController(QWidget *parent)
 
 
 
-    /**
-     *Initialize backup timer that will only be active when the default timer
-     *is paused
-     */
-    QTimer * backup_timer = new QTimer(this);
-    backup_timer->setObjectName("gBackupTimer");
-    backup_timer->setInterval(0);
-    /**
-     *--------------------------------------------------------------------------**
-    */
-
-
-
-
 
     /**
      *Create the fps counter the input manager and the asset loader
@@ -47,9 +33,13 @@ GLController::GLController(QWidget *parent)
 
 
 
-    Q_UNUSED(fps)
+
+    /**
+    *Mark unused parameters
+    */
     Q_UNUSED(input)
     Q_UNUSED(asset_loader)
+
 
 
 
@@ -57,6 +47,7 @@ GLController::GLController(QWidget *parent)
      *Connect the rendering to gTimer's update
      */
     connect(timer, &QTimer::timeout, this, &GLController::Update);
+    connect(timer, &QTimer::timeout, fps, &FPS::Compute);
 
 
 
@@ -86,12 +77,8 @@ GLController::~GLController()
 
 
     /**
-     *Almost nothing...
+     *The glorious nothing...
      */
-
-
-    makeCurrent();
-    doneCurrent();
 
 
 }
@@ -164,13 +151,6 @@ void GLController::paintGL()
     f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-
-
-    /**
-    *If fps counter exits, compute fps
-    */
-    if (findChild<FPS*>("gFPS"))
-        findChild<FPS*>("gFPS")->Compute();
 
 
 

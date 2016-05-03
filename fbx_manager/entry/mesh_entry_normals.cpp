@@ -12,13 +12,12 @@ void MeshEntry::LoadNormals(FbxMesh * mesh,
 
 
 
-
     /**
      *should_fill_with_0 will be true if we've met an invalid data scenario and
      *we have to fill the vbos with 0's
      */
-
     bool should_fill_with_0 = false;
+
 
 
 
@@ -31,35 +30,34 @@ void MeshEntry::LoadNormals(FbxMesh * mesh,
 
 
 
+
+
+    /**
+    *If the mesh has normal information
+    */
     if (!should_fill_with_0)
     {
 
 
-        /**
+
+     /**
      * First we get the vertex normal information for the mesh
      */
-
         FbxGeometryElementNormal* vertex_normal = mesh->GetElementNormal(0);
 
 
-        /**
+
+
+     /**
     *We first check the mapping mode of the normals
     */
-
-
         if(vertex_normal->GetMappingMode() == FbxGeometryElement::eByControlPoint)
         {
 
 
 
-
             switch(vertex_normal->GetReferenceMode())
             {
-
-
-
-
-
             case FbxGeometryElement::eDirect:
             {
 
@@ -80,11 +78,6 @@ void MeshEntry::LoadNormals(FbxMesh * mesh,
 
 
             }break;
-
-
-
-
-
             case FbxGeometryElement::eIndexToDirect:
             {
 
@@ -106,11 +99,14 @@ void MeshEntry::LoadNormals(FbxMesh * mesh,
 
 
             }break;
+            default:{
 
+                /**
+                *If other cases are encountered then fill information with 0's
+                */
+                should_fill_with_0 = true;
 
-
-
-
+            }break;
             }
 
 
@@ -123,11 +119,13 @@ void MeshEntry::LoadNormals(FbxMesh * mesh,
     }
 
 
+
+
+
     /**
     *If we came across abnormal information we should output an error then go
     *ahead and fill with 0's
     */
-
     if (should_fill_with_0)
     {
 

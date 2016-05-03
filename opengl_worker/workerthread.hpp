@@ -14,6 +14,7 @@
 
 
 
+
 namespace aae
 {
 
@@ -23,14 +24,11 @@ namespace aae
  *@brief The WorkerThread class will provide functionality to run a certain
  *function inside a certain thread
  */
-class WorkerThread : public QThread
+class WorkerThread : public QObject
 {
 
 
-    /**
-     * @brief m_function is the function to be run by this thread
-     */
-    std::function<void()> m_function;
+    Q_OBJECT
 
 
     /**
@@ -54,19 +52,22 @@ class WorkerThread : public QThread
 
 
 
+
+
+signals:
+
+
     /**
-     * @brief will call the internal function pointer
+     * @brief check_for_work will signal that thread should check for a job
      */
-    void run();
+    void check_for_work();
 
 
 
-
-private slots:
     /**
-     * @brief tryWork will try to run the next function in the stack
+     * @brief should_close will singal when the thread should close
      */
-    void tryWork();
+    void should_close();
 
 
 
@@ -84,11 +85,23 @@ public:
 
 
 
+
+
     /**
      * @brief enque_work will enque a function to be run on the thread
      * @param function is the function to be run
      */
     void enque_work(const std::function<void()> & function);
+
+
+
+
+    /**
+     * @brief CloseThread will attempt to close the thread
+     */
+    inline void CloseThread(){
+        emit should_close();
+    }
 
 
 

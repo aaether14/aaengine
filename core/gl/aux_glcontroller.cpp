@@ -100,14 +100,6 @@ void GLController::Pause()
 
 
 
-    /**
-    *And start the backup timer
-    */
-    if (findChild<QTimer*>("gBackupTimer"))
-        findChild<QTimer*>("gBackupTimer")->start();
-
-
-
 
     /**
     *Mark that the game is paused
@@ -130,14 +122,6 @@ void GLController::Unpause()
     */
     if (findChild<QTimer*>("gTimer"))
         findChild<QTimer*>("gTimer")->start();
-
-
-
-    /**
-    *And pause the backup timer
-    */
-    if (findChild<QTimer*>("gBackupTimer"))
-        findChild<QTimer*>("gBackupTimer")->stop();
 
 
 

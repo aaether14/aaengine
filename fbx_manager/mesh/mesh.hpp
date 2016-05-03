@@ -150,7 +150,6 @@ class Mesh
     QSemaphore m_loaded_semaphore;
 
 
-
     /**
      *@brief m_file_name will store the name of the file from which we loaded
      *the mesh

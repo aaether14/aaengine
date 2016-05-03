@@ -8,15 +8,13 @@
 
 #ifdef AAE_USING_FBX
 #include <fbx_manager/material/fbx_material.hpp>
-#include <assets/basethreadedloader.hpp>
 
 
 
 /**
- *@brief The MaterialLoader class will handle material loading in a separate
- *thread
+ *@brief The MaterialLoader class will handle material loading of the 3d mesh
  */
-class MaterialLoader : public BaseThreadedLoader
+class MaterialLoader
 {
 
 
