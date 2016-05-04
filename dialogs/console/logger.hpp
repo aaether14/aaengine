@@ -70,6 +70,10 @@ public:
      *to opengl error server
      */
     void InitializeOpenGLLogger();
+    /**
+     * @brief CloseOpenGLLogging will stop opengl debug logging to ensure safe deletion
+     */
+    void CloseOpenGLLogging();
 #endif
 
 

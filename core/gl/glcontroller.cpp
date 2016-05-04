@@ -76,9 +76,12 @@ GLController::~GLController()
 {
 
 
+#ifdef AAE_USING_OPENGL_DEBUG
     /**
-     *The glorious nothing...
-     */
+    *Before deleting opengl context we need to stop debug logging
+    */
+    Logger::Instance()->CloseOpenGLLogging();
+#endif
 
 
 }

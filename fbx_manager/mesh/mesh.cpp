@@ -257,6 +257,10 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
+
+        /**
+        *Bind material textures
+        */
         for (qint32 i = 0; i < Material::number_of_texture_types; i++)
             if (m_materials[it].GetTextures().contains(i))
                 if (m_textures[m_materials[it].GetTextures()[i]])
@@ -266,16 +270,33 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
 
+        /**
+        *Render material component in the manner user specified
+        */
+        if (m_draw_method == "cached")
+        {
 
-        if (m_draw_method == "accelerated")
+            CachedDraw(it);
+
+        }
+        else if (m_draw_method == "accelerated")
         {
 
             AcceleratedDraw(it);
 
         }
+        else
+        {
+
+            qDebug() << GetFileName() << "has invalid draw method!";
+
+        }
 
 
 
+        /**
+        *Release material textures
+        */
         for (qint32 i = 0; i < Material::number_of_texture_types; i++)
             if (m_materials[it].GetTextures().contains(i))
                 if (m_textures[m_materials[it].GetTextures()[i]])
@@ -290,8 +311,8 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
     /**
-        *Unbind the vertex array object
-        */
+    *Unbind the vertex array object
+    */
     f->glBindVertexArray(0);
 
 

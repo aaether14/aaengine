@@ -91,10 +91,23 @@ void Logger::SetConsoleOutputPointer(QTextEdit *p_console_output)
 
 
 
-
-
-
 #ifdef AAE_USING_OPENGL_DEBUG
+void Logger::CloseOpenGLLogging()
+{
+
+
+    /**
+    *If opengl debug logger exists, stop logging
+    */
+    if (m_opengl_debug_logger)
+        m_opengl_debug_logger->stopLogging();
+
+
+
+}
+
+
+
 void Logger::InitializeOpenGLLogger()
 {
 
@@ -119,6 +132,19 @@ void Logger::InitializeOpenGLLogger()
     *Start logging process
     */
     m_opengl_debug_logger->startLogging();
+
+
+}
+
+
+
+void Logger::HandleOpenGLDebugMessage(const QOpenGLDebugMessage &debugMessage)
+{
+
+    /**
+    *Print the message
+    */
+    qDebug() << debugMessage;
 
 
 }
@@ -153,22 +179,6 @@ Logger::Logger()
 
 }
 
-
-
-
-
-#ifdef AAE_USING_OPENGL_DEBUG
-void Logger::HandleOpenGLDebugMessage(const QOpenGLDebugMessage &debugMessage)
-{
-
-    /**
-    *Print the message
-    */
-    qDebug() << debugMessage;
-
-
-}
-#endif
 
 
 

@@ -75,6 +75,8 @@ void Console::on_run_script_button_clicked()
     */
     if (parent()->findChild<ScriptEngine*>("ScriptEngine"))
         parent()->findChild<ScriptEngine*>("ScriptEngine")->RunScriptFromString(ui->console_input->toPlainText());
+    else
+        qDebug() << "Console: Could not find ScriptEngine in order to run input script!";
 
 
     /**

@@ -63,7 +63,6 @@ void Mesh::PassGeometryDataToOpenGL()
     /**
     *Generate buffers for ssbo, command buffer and per object buffer
     */
-
     f->glGenBuffers(1, &m_gpu.ssbo);
     f->glGenBuffers(1, &m_gpu.indirect_buffer);
     f->glGenBuffers(1, &m_gpu.per_object_buffer);
@@ -75,7 +74,6 @@ void Mesh::PassGeometryDataToOpenGL()
     /**
     *Load the indicies
     */
-
     f->glGenBuffers(1, &m_gpu.master_ibo);
     f->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_gpu.master_ibo);
     f->glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(quint32) * d_master_indices.size(), &d_master_indices[0], GL_STATIC_DRAW);
@@ -95,8 +93,6 @@ void Mesh::PassGeometryDataToOpenGL()
     /**
     *If the mesh has normals, load them
     */
-
-
     if (is_using_normals)
     {
 
@@ -113,8 +109,6 @@ void Mesh::PassGeometryDataToOpenGL()
     /**
     *If the mesh has uvs, load them
     */
-
-
     if (is_using_uvs)
     {
 
@@ -132,8 +126,6 @@ void Mesh::PassGeometryDataToOpenGL()
     /**
     *If the mesh has tangents, load them
     */
-
-
     if (is_using_tangents)
     {
 
@@ -146,6 +138,88 @@ void Mesh::PassGeometryDataToOpenGL()
 
 
     }
+
+
+
+
+
+
+
+    /**
+     * Handle command caching
+     */
+    QVector<DrawElementsCommand> cached_commands;
+    QVector<quint32> cached_per_object_index;
+
+
+
+
+
+
+    foreach(auto it, m_materials.keys())
+    {
+
+
+
+
+        QVector<DrawElementsCommand> commands;
+        QVector<quint32> per_object_index;
+
+
+
+
+        CacheDrawCommands(m_mesh_entries,
+                          commands,
+                          per_object_index,
+                          it);
+
+
+
+
+        m_gpu.indirect_buffer_stride_cache[it] = cached_commands.size();
+        m_gpu.indirect_buffer_size_cache[it] = commands.size();
+        m_gpu.per_object_buffer_stride_cache[it] = cached_per_object_index.size();
+
+
+
+
+        cached_commands << commands;
+        cached_per_object_index << per_object_index;
+
+
+
+
+
+    }
+
+
+
+
+
+    f->glGenBuffers(1, &m_gpu.cached_indirect_buffer);
+    f->glBindBuffer(GL_DRAW_INDIRECT_BUFFER, m_gpu.cached_indirect_buffer);
+    f->glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(DrawElementsCommand) * cached_commands.size(), &cached_commands[0], GL_STATIC_DRAW);
+
+
+
+
+
+    f->glGenBuffers(1, &m_gpu.cached_per_object_buffer);
+    f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.cached_per_object_buffer);
+    f->glBufferData(GL_ARRAY_BUFFER, sizeof(quint32) * cached_per_object_index.size(), &cached_per_object_index[0], GL_STATIC_DRAW);
+
+
+
+
+
+    /**
+    *Clear some cache
+    */
+    cached_commands.clear();
+    cached_per_object_index.clear();
+
+
+
 
 
 
