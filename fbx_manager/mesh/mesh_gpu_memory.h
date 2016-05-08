@@ -163,12 +163,22 @@ inline void ResetGPUMemory(MeshGPUMemory & m_gpu)
  * @param m_gpu is the gpu memory struct
  * @param f is a pointer to opengl 4.3 functions
  */
-inline void ClearGPUMemory(MeshGPUMemory & m_gpu,
-                           QOpenGLFunctions_4_3_Core * f)
+inline void ClearGPUMemory(MeshGPUMemory & m_gpu)
 {
 
 
 
+    /**
+     * get opengl 4.3 functions from context
+     */
+    QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
+
+
+
+
+    /**
+    *Delete vertex array object and model matrix ssbo
+    */
     if (m_gpu.vao)
         f->glDeleteVertexArrays(1, &m_gpu.vao);
     if (m_gpu.ssbo)
@@ -176,6 +186,9 @@ inline void ClearGPUMemory(MeshGPUMemory & m_gpu,
 
 
 
+    /**
+    *Delete command buffer
+    */
     if (m_gpu.indirect_buffer)
         f->glDeleteBuffers(1, &m_gpu.indirect_buffer);
     if(m_gpu.per_object_buffer)
@@ -184,6 +197,9 @@ inline void ClearGPUMemory(MeshGPUMemory & m_gpu,
 
 
 
+    /**
+    *Delete cached buffers
+    */
     if (m_gpu.cached_indirect_buffer)
         f->glDeleteBuffers(1, &m_gpu.cached_indirect_buffer);
     if (m_gpu.cached_per_object_buffer)
@@ -191,7 +207,9 @@ inline void ClearGPUMemory(MeshGPUMemory & m_gpu,
 
 
 
-
+    /**
+    *Delete vertex buffers
+    */
     if (m_gpu.master_vbo)
         f->glDeleteBuffers(1, &m_gpu.master_vbo);
     if (m_gpu.master_ibo)
@@ -205,9 +223,13 @@ inline void ClearGPUMemory(MeshGPUMemory & m_gpu,
 
 
 
+    /**
+    *Clear some cache
+    */
     m_gpu.indirect_buffer_stride_cache.clear();
     m_gpu.indirect_buffer_size_cache.clear();
     m_gpu.per_object_buffer_stride_cache.clear();
+
 
 
 
@@ -222,9 +244,15 @@ inline void ClearGPUMemory(MeshGPUMemory & m_gpu,
  * @param m_gpu is the gpu memory struct
  * @param f is a pointer to opengl 4.3 functinos
  */
-inline void CreateVAO(MeshGPUMemory & m_gpu,
-                      QOpenGLFunctions_4_3_Core * f)
+inline void CreateVAO(MeshGPUMemory & m_gpu)
 {
+
+
+
+    /**
+     * get opengl 4.3 functions from context
+     */
+    QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
 
 
 
@@ -290,6 +318,9 @@ inline void CreateVAO(MeshGPUMemory & m_gpu,
 
 
 
+    /**
+    *Release vertex array object
+    */
     f->glBindVertexArray(0);
 
 

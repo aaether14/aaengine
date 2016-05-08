@@ -141,6 +141,17 @@ void Logger::InitializeOpenGLLogger()
 void Logger::HandleOpenGLDebugMessage(const QOpenGLDebugMessage &debugMessage)
 {
 
+
+
+#ifdef AAE_BAN_NOTIFICATION_SEVERITY
+    /**
+    *Ban low severity notifications
+    */
+    if (debugMessage.severity() == QOpenGLDebugMessage::NotificationSeverity)
+        return;
+#endif
+
+
     /**
     *Print the message
     */

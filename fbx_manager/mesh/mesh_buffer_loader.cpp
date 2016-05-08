@@ -153,9 +153,9 @@ void Mesh::PassGeometryDataToOpenGL()
 
 
 
-
-
-
+    /**
+    *Loop through materials and get draw commands
+    */
     foreach(auto it, m_materials.keys())
     {
 
@@ -225,7 +225,6 @@ void Mesh::PassGeometryDataToOpenGL()
 
 
 
-
 }
 
 
@@ -241,6 +240,7 @@ void Mesh::ClearGeometryData()
     d_master_normals.clear();
     d_master_uvs.clear();
     d_master_tangents.clear();
+    d_images.clear();
 
 
 

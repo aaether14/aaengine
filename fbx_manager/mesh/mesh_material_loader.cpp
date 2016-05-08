@@ -29,19 +29,16 @@ void Mesh::FBX_CommandLoadingMaterials()
 
 
 
-void Mesh::PassTextureDataToOpenGL()
+void Mesh::LoadTextures()
 {
 
 
 
 
 
-    /**
-    *Load textures into opengl memory
-    */
     foreach(auto current_material, m_materials)
         foreach(auto current_texture, current_material.GetTextures().values())
-            if (!m_textures.contains(current_texture))
+            if (!d_images.contains(current_texture))
             {
 
 
@@ -65,9 +62,82 @@ void Mesh::PassTextureDataToOpenGL()
                 /**
                 *Add the new texture to the library
                 */
-                m_textures.insert(current_texture, new QOpenGLTexture(QImage(texture_index).mirrored()));
+                d_images.insert(current_texture, QImage(texture_index).mirrored());
 
             }
+
+
+
+
+
+}
+
+
+
+
+
+void Mesh::PassTextureDataToOpenGL()
+{
+
+
+
+    /**
+     * get opengl 4.3 functions from context
+     */
+    QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
+
+
+
+    /**
+    *Load textures into opengl memory
+    */
+    foreach(auto image_key, d_images.keys())
+    {
+
+
+        /**
+         *Get the current image to be added as a texture
+         */
+        const QImage & current_image = d_images.value(image_key);
+
+
+
+        /**
+         *Generate texture and add data to it
+         */
+        GLuint new_texture_id;
+        f->glGenTextures(1, &new_texture_id);
+        f->glBindTexture(GL_TEXTURE_2D, new_texture_id);
+        f->glTexImage2D(GL_TEXTURE_2D,
+                        0,
+                        GL_RGBA,
+                        current_image.width(),
+                        current_image.height(),
+                         0,
+                        GL_BGRA,
+                        GL_UNSIGNED_BYTE,
+                        current_image.constBits());
+
+
+
+        /**
+        *Generate mipmaps
+        */
+        f->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        f->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        f->glGenerateMipmap(GL_TEXTURE_2D);
+
+
+
+        /**
+        *Add texture to texture library
+        */
+        m_textures.insert(image_key, new_texture_id);
+
+
+
+    }
+
 
 
 

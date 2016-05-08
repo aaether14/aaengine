@@ -160,11 +160,19 @@ bool Mesh::DeserializeAAEM(const QString &file_name)
 
 
     in >> m_materials >> m_mesh_entries;
-
-
-
     file.close();
+
+
+
+    /**
+    *Load textures indicated by materials
+    */
+    LoadTextures();
+
+
+
     return true;
+
 
 
 

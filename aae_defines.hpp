@@ -9,8 +9,29 @@
 
 
 
+/**
+*Defining this will compile against fbx sdk allowing user to load fbx models
+*and convert them to aaem
+*/
 //#define AAE_USING_FBX
+
+
+/**
+*Defining this will allow user to read what opengl error server issues
+*/
 //#define AAE_USING_OPENGL_DEBUG
+#ifdef AAE_USING_OPENGL_DEBUG
+/**
+*Defining this will ban opengl notifications of low severity
+*/
+#define AAE_BAN_NOTIFICATION_SEVERITY
+#endif
+
+
+
+/**
+*Defining this will redirect all console messages to in-game console
+*/
 #define AAE_REDIRECT_MESSAGES_TO_INGAME_CONSOLE
 
 

@@ -3,7 +3,6 @@
 
 
 
-
 namespace aae
 {
 
@@ -75,7 +74,6 @@ WorkerThread::WorkerThread(QOpenGLContext *context,
         *Release context
         */
         m_context->doneCurrent();
-
 
 
     });

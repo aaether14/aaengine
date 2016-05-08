@@ -8,7 +8,6 @@
 
 
 #include <QDebug>
-#include <QOpenGLTexture>
 #include <QSemaphore>
 
 
@@ -57,7 +56,7 @@ class Mesh
     /**
      * @brief textures stores the textures used by the mesh using their name as a key
      */
-    QHash<QString, QOpenGLTexture*> m_textures;
+    QHash<QString, GLuint> m_textures;
     /**
      * @brief materials stores the materials used by the mesh using their name as a key
      */
@@ -105,6 +104,12 @@ class Mesh
      */
     void PassTextureDataToOpenGL();
 
+
+
+    /**
+     *Will load the textures specified by materials
+     */
+    void LoadTextures();
 
 
 
@@ -234,6 +239,10 @@ class Mesh
      * @brief master_tangents is the tangent array of the mesh
      */
     QVector<float> d_master_tangents;
+    /**
+     * @brief d_images is a hash containing mesh texture images
+     */
+    QHash<QString, QImage> d_images;
 
 
 

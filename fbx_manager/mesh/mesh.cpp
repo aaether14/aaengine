@@ -44,18 +44,24 @@ Mesh::~Mesh()
 {
 
 
+    /**
+     * get opengl 4.3 functions from context
+     */
+    QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
+
+
 
     /**
      *Release gpu memory
      */
-    ClearGPUMemory(m_gpu, QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>());
+    ClearGPUMemory(m_gpu);
 
 
 
     /**
      *Delete textures
      */
-    qDeleteAll(m_textures);
+    foreach(auto texture, m_textures.values()) f->glDeleteTextures(1, &texture);
     m_textures.clear();
 
 
@@ -93,7 +99,7 @@ void Mesh::LoadFromFbxFile(const QString &fbx_file_name)
      */
     FBX_CommandLoadingBufferObjects();
     FBX_CommandLoadingMaterials();
-
+    LoadTextures();
 
 
 
@@ -152,7 +158,6 @@ void Mesh::LoadFromAAEMFile(const QString &aaem_file_name)
                 PassGeometryDataToOpenGL();
                 PassTextureDataToOpenGL();
 
-
              /**
              *Clear cache and signal successful loading
              */
@@ -200,24 +205,23 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
     *If the vertex array object has not yet been created, go ahead and do it
     */
     if (!m_gpu.vao)
-        CreateVAO(m_gpu, QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>());
+        CreateVAO(m_gpu);
 
 
 
 
     /**
-         *First send model matrices to shader
-         */
+    *First send model matrices to shader
+    */
     SendModelMatrixToShader();
 
 
 
 
     /**
-        Set the texture sampler for diffuse texture and also if the mesh is using
-        tangents or not
-        */
-
+    Set the texture sampler for diffuse texture and also if the mesh is using
+    tangents or not
+    */
     shader.setUniformValue("diffuse_texture", 0);
     shader.setUniformValue("normal_map", 1);
     shader.setUniformValue("is_using_tangents", is_using_tangents);
@@ -226,15 +230,15 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
     /**
-         * -----------------------------------------------------------------*/
+    * -----------------------------------------------------------------*/
 
 
 
 
     /**
-         *get the current context function and bind the vertex array object of the
-         *mesh
-         */
+    *get the current context functions and bind the vertex array object of the
+    *mesh
+    */
     QOpenGLFunctions_4_3_Core * f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
     f->glBindVertexArray(m_gpu.vao);
 
@@ -242,17 +246,17 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
 
 
     /**
-        *For each material, depending on the draw method selected by the mesh,
-        attempt to draw the model
-        */
+    *For each material, depending on the draw method selected by the mesh,
+    attempt to draw the model
+    */
     foreach(auto it, m_materials.keys())
     {
 
 
 
         /**
-            *Send material information to shader
-            */
+        *Send material information to shader
+        */
         m_materials[it].SendToShader(shader);
 
 
@@ -264,7 +268,10 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
         for (qint32 i = 0; i < Material::number_of_texture_types; i++)
             if (m_materials[it].GetTextures().contains(i))
                 if (m_textures[m_materials[it].GetTextures()[i]])
-                    m_textures[m_materials[it].GetTextures()[i]]->bind(i);
+                {
+                    f->glActiveTexture(GL_TEXTURE0 + i);
+                    f->glBindTexture(GL_TEXTURE_2D, m_textures[m_materials[it].GetTextures()[i]]);
+                }
 
 
 
@@ -300,12 +307,14 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
         for (qint32 i = 0; i < Material::number_of_texture_types; i++)
             if (m_materials[it].GetTextures().contains(i))
                 if (m_textures[m_materials[it].GetTextures()[i]])
-                    m_textures[m_materials[it].GetTextures()[i]]->release(i);
+                {
+                    f->glActiveTexture(GL_TEXTURE0 + i);
+                    f->glBindTexture(GL_TEXTURE_2D, 0);
+                }
 
 
 
     }
-
 
 
 
