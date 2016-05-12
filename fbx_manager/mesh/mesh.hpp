@@ -20,6 +20,7 @@
 
 #include <fbx_manager/mesh/mesh_gpu_memory.h>
 #include <fbx_manager/entry/meshentry.hpp>
+#include <utils/gl_util.hpp>
 
 
 

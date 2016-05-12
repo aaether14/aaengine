@@ -4,7 +4,6 @@
 
 
 
-
 #ifdef AAE_USING_FBX
 void Mesh::FBX_CommandLoadingMaterials()
 {
@@ -95,10 +94,19 @@ void Mesh::PassTextureDataToOpenGL()
     {
 
 
+
+
         /**
          *Get the current image to be added as a texture
          */
         const QImage & current_image = d_images.value(image_key);
+
+
+
+        /**
+         *Sync object will be used to avoid stuttering
+         */
+        GLsync sync_obj;
 
 
 
@@ -113,25 +121,97 @@ void Mesh::PassTextureDataToOpenGL()
                         GL_RGBA,
                         current_image.width(),
                         current_image.height(),
-                         0,
+                        0,
                         GL_BGRA,
                         GL_UNSIGNED_BYTE,
-                        current_image.constBits());
-
+                        0);
 
 
         /**
-        *Generate mipmaps
+        *Min, mag filters
         */
-        f->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        f->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         f->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        f->glGenerateMipmap(GL_TEXTURE_2D);
+
+
 
 
 
         /**
-        *Add texture to texture library
+         *Create pbo and load pixel data into it
+         */
+        GLuint pbo;
+        f->glGenBuffers(1, &pbo);
+        f->glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
+        f->glBufferData(GL_PIXEL_UNPACK_BUFFER, current_image.byteCount(), 0, GL_STREAM_DRAW);
+        f->glBindTexture(GL_TEXTURE_2D, new_texture_id);
+
+
+
+
+
+        const int line_height = 128;
+        for (int i = 0; i < current_image.height() / line_height; i++)
+        {
+
+
+
+
+            /**
+            *Update device buffer with new data
+            */
+            f->glBufferSubData(GL_PIXEL_UNPACK_BUFFER,
+                               i * line_height * current_image.bytesPerLine(),
+                               current_image.bytesPerLine() * line_height,
+                               current_image.scanLine(i * line_height));
+
+
+
+            /**
+            *Update texture with new data in buffer
+            */
+            f->glTexSubImage2D(GL_TEXTURE_2D,
+                               0,
+                               0, i * line_height,
+                               current_image.width(), line_height,
+                               GL_BGRA, GL_UNSIGNED_BYTE,
+                               BUFFER_OFFSET(current_image.bytesPerLine() * line_height * i));
+
+
+
+
+            /**
+             *Force gpu sync with this thread
+             */
+            aae::glForceSync(sync_obj, 1e9);
+
+
+
+
+        }
+
+
+
+
+        /**
+        *Unbind and delete pbo
         */
+        f->glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+        f->glDeleteBuffers(1, &pbo);
+
+
+
+        /**
+         *Force gpu sync with this thread
+         */
+        aae::glForceSync(sync_obj, 1e9);
+
+
+
+        /**
+        *Unbind and add texture to texture library
+        */
+        f->glBindTexture(GL_TEXTURE_2D, 0);
         m_textures.insert(image_key, new_texture_id);
 
 

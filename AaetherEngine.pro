@@ -99,7 +99,8 @@ HEADERS  += \
     aae_defines.hpp \
     opengl_worker/aaeopenglworkerthread.hpp \
     opengl_worker/workerthread.hpp \
-    utils/bounding_box.hpp
+    utils/bounding_box.hpp \
+    utils/gl_util.hpp
 
 
 
