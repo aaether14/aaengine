@@ -5,7 +5,8 @@
 
 
 
-#define AAEM_SERIALIZER_VERSION 0xffff01
+#define AAEM_SERIALIZER_VERSION 0xffff02
+#define AAEM_DESERIALIZER_VERSION 0xffff02
 
 
 
@@ -18,7 +19,9 @@ void Mesh::SerializeAAEM(const QString &file_name)
 
 
 
-
+    /**
+     *Open the file to serialize to
+     */
     QFile file(file_name);
     if (!file.open(QIODevice::WriteOnly))
     {
@@ -28,13 +31,17 @@ void Mesh::SerializeAAEM(const QString &file_name)
 
 
 
-
+    /**
+     *Provide with qt serializer version
+     */
     QDataStream out(&file);
     out.setVersion(QDataStream::Qt_5_6);
 
 
 
-
+    /**
+     *Provide with aaem serializer version
+     */
     qint32 aaem_version = AAEM_SERIALIZER_VERSION;
     out << aaem_version;
 
@@ -50,11 +57,12 @@ void Mesh::SerializeAAEM(const QString &file_name)
     /**
     *Save the geometry
     */
-
-
     out << d_master_vertices << d_master_indices;
 
 
+    /**
+    *Save additional geometry layers
+    */
     if (is_using_normals)
         out << d_master_normals;
     if (is_using_uvs)
@@ -63,11 +71,22 @@ void Mesh::SerializeAAEM(const QString &file_name)
         out << d_master_tangents;
 
 
-
+    /**
+    *Save material data and mesh entries
+    */
     out << m_materials << m_mesh_entries;
 
 
+    /**
+    *Pack texture data
+    */
+    out << d_images;
 
+
+
+    /**
+    *Now that we're done, close the file
+    */
     file.close();
 
 
@@ -91,14 +110,18 @@ bool Mesh::DeserializeAAEM(const QString &file_name)
 
 
 
-
+    /**
+    *Clear and entry or material information before loading new one
+    */
     m_mesh_entries.clear();
     m_materials.clear();
 
 
 
 
-
+    /**
+    *Check if the file has right extension
+    */
     if (QFileInfo(file_name).suffix() != "aaem")
     {
         qDebug() << file_name << "is not the right type of file! (.aaem)";
@@ -107,7 +130,9 @@ bool Mesh::DeserializeAAEM(const QString &file_name)
 
 
 
-
+    /**
+     *Open the file to be deserialized
+     */
     QFile file(file_name);
     if (!file.open(QIODevice::ReadOnly))
     {
@@ -117,18 +142,26 @@ bool Mesh::DeserializeAAEM(const QString &file_name)
 
 
 
+    /**
+     *Set qt deserializer version
+     */
     QDataStream in(&file);
     in.setVersion(QDataStream::Qt_5_6);
 
 
 
-
+    /**
+     *Get aaem serializer version
+     */
     qint32 aaem_version;
     in >> aaem_version;
 
 
 
-    if (aaem_version != AAEM_SERIALIZER_VERSION)
+    /**
+    *Check if the file has a compatible serializer version
+    */
+    if (aaem_version != AAEM_DESERIALIZER_VERSION)
     {
 
         qDebug() << file_name << "has an unsupported file version!";
@@ -145,11 +178,15 @@ bool Mesh::DeserializeAAEM(const QString &file_name)
     in >> is_using_normals >> is_using_uvs >> is_using_tangents;
 
 
-
+    /**
+    *Get base geometry
+    */
     in >> d_master_vertices >> d_master_indices;
 
 
-
+    /**
+    *Get additional geometry layers
+    */
     if (is_using_normals)
         in >> d_master_normals;
     if (is_using_uvs)
@@ -158,19 +195,23 @@ bool Mesh::DeserializeAAEM(const QString &file_name)
         in >> d_master_tangents;
 
 
-
+    /**
+    *Get materials, mesh entries and load images used by materials
+    */
     in >> m_materials >> m_mesh_entries;
+    in >> d_images;
+
+
+    /**
+    *Now that we're done deserializing, close the file
+    */
     file.close();
 
 
 
     /**
-    *Load textures indicated by materials
+    *Everything went well, signal successful load
     */
-    LoadTextures();
-
-
-
     return true;
 
 

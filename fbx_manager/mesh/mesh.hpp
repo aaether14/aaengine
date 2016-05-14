@@ -122,7 +122,7 @@ class Mesh
      * @param key is the material key
      */
     void CacheDrawCommands(QList<MeshEntry> &mesh_entries,
-                           QVector<DrawElementsCommand> & draw_commands,
+                           QVector<aae::DrawElementsCommand> & draw_commands,
                            QVector<quint32> &per_object_index,
                            const QString &key);
 

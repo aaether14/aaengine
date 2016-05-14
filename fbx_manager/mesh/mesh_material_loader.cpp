@@ -36,7 +36,7 @@ void Mesh::LoadTextures()
 
 
     foreach(auto current_material, m_materials)
-        foreach(auto current_texture, current_material.GetTextures().values())
+        foreach(auto current_texture, current_material.GetTextures())
             if (!d_images.contains(current_texture))
             {
 
@@ -149,11 +149,25 @@ void Mesh::PassTextureDataToOpenGL()
 
 
 
+        const int line_height = 256;
+        int current_loaded_lines = 0;
+        qint64 current_loaded_bits = 0;
 
-        const int line_height = 128;
-        for (int i = 0; i < current_image.height() / line_height; i++)
+
+
+
+        while (current_loaded_bits < current_image.byteCount())
         {
 
+
+
+            /**
+             *It may be that the texture has not got line_height lines to load
+             */
+            qint64 bits_it_can_still_load = qMin(current_image.byteCount() - current_loaded_bits,
+                                                 qint64(current_image.bytesPerLine() * line_height));
+            int lines_it_can_still_load = qMin(current_image.height() - current_loaded_lines,
+                                                  line_height);
 
 
 
@@ -161,21 +175,9 @@ void Mesh::PassTextureDataToOpenGL()
             *Update device buffer with new data
             */
             f->glBufferSubData(GL_PIXEL_UNPACK_BUFFER,
-                               i * line_height * current_image.bytesPerLine(),
-                               current_image.bytesPerLine() * line_height,
-                               current_image.scanLine(i * line_height));
-
-
-
-            /**
-            *Update texture with new data in buffer
-            */
-            f->glTexSubImage2D(GL_TEXTURE_2D,
-                               0,
-                               0, i * line_height,
-                               current_image.width(), line_height,
-                               GL_BGRA, GL_UNSIGNED_BYTE,
-                               BUFFER_OFFSET(current_image.bytesPerLine() * line_height * i));
+                               current_loaded_bits,
+                               bits_it_can_still_load,
+                               current_image.scanLine(current_loaded_lines));
 
 
 
@@ -185,6 +187,33 @@ void Mesh::PassTextureDataToOpenGL()
              */
             aae::glForceSync(sync_obj, 1e9);
 
+
+
+            /**
+            *Update texture with new data in buffer
+            */
+            f->glTexSubImage2D(GL_TEXTURE_2D,
+                               0,
+                               0, current_loaded_lines,
+                               current_image.width(), lines_it_can_still_load,
+                               GL_BGRA, GL_UNSIGNED_BYTE,
+                               BUFFER_OFFSET(current_loaded_bits));
+
+
+
+
+            /**
+             *Force gpu sync with this thread
+             */
+            aae::glForceSync(sync_obj, 1e9);
+
+
+
+            /**
+            *Mark that new bits have been loaded
+            */
+            current_loaded_lines += line_height;
+            current_loaded_bits += line_height * current_image.bytesPerLine();
 
 
 

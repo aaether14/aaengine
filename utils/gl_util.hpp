@@ -4,7 +4,7 @@
 
 
 #include <QOpenGLFunctions_4_3_Core>
-
+#include <QDataStream>
 
 
 
@@ -61,7 +61,56 @@ inline void glForceSync(GLsync &sync_obj, GLuint64 timeout){
 
 
 
+
+/**
+ *@brief The DrawElementsCommand struct holdes information for a single draw
+ *command
+ */
+struct DrawElementsCommand
+{
+    quint32 vertexCount;
+    quint32 instanceCount;
+    quint32 firstIndex;
+    quint32 baseVertex;
+    quint32 baseInstance;
+};
+
+
+
+
+inline QDataStream &operator <<(QDataStream &out, const DrawElementsCommand &command)
+{
+
+
+    out << command.baseInstance << command.baseVertex << command.firstIndex;
+    out << command.instanceCount << command.vertexCount;
+    return out;
+
+
 }
+
+
+
+inline QDataStream &operator >>(QDataStream &in, DrawElementsCommand &command)
+{
+
+
+    in >> command.baseInstance >> command.baseVertex >> command.firstIndex;
+    in >> command.instanceCount >> command.vertexCount;
+    return in;
+
+
+}
+
+
+
+
+
+}
+
+
+
+
 
 
 

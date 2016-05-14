@@ -148,7 +148,7 @@ void Mesh::PassGeometryDataToOpenGL()
     /**
      * Handle command caching
      */
-    QVector<DrawElementsCommand> cached_commands;
+    QVector<aae::DrawElementsCommand> cached_commands;
     QVector<quint32> cached_per_object_index;
 
 
@@ -162,7 +162,7 @@ void Mesh::PassGeometryDataToOpenGL()
 
 
 
-        QVector<DrawElementsCommand> commands;
+        QVector<aae::DrawElementsCommand> commands;
         QVector<quint32> per_object_index;
 
 
@@ -195,15 +195,19 @@ void Mesh::PassGeometryDataToOpenGL()
 
 
 
-
+    /**
+    *Upload cached commands to gpu memory
+    */
     f->glGenBuffers(1, &m_gpu.cached_indirect_buffer);
     f->glBindBuffer(GL_DRAW_INDIRECT_BUFFER, m_gpu.cached_indirect_buffer);
-    f->glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(DrawElementsCommand) * cached_commands.size(), &cached_commands[0], GL_STATIC_DRAW);
+    f->glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(aae::DrawElementsCommand) * cached_commands.size(), &cached_commands[0], GL_STATIC_DRAW);
 
 
 
 
-
+    /**
+    *Upload entry id buffer to gpu memory
+    */
     f->glGenBuffers(1, &m_gpu.cached_per_object_buffer);
     f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.cached_per_object_buffer);
     f->glBufferData(GL_ARRAY_BUFFER, sizeof(quint32) * cached_per_object_index.size(), &cached_per_object_index[0], GL_STATIC_DRAW);

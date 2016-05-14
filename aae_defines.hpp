@@ -19,7 +19,7 @@
 /**
 *Defining this will allow user to read what opengl error server issues
 */
-#define AAE_USING_OPENGL_DEBUG
+//#define AAE_USING_OPENGL_DEBUG
 #ifdef AAE_USING_OPENGL_DEBUG
 /**
 *Defining this will ban opengl notifications of low severity

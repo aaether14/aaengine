@@ -183,7 +183,7 @@ void MeshEntry::LoadIndices(FbxMesh *mesh,
         master_indices << material_mapped_indices[it];
 
 
-        DrawElementsCommand c;
+        aae::DrawElementsCommand c;
         c.baseInstance = 0;
         c.instanceCount = 1;
         c.baseVertex = current_control_point_offset;
@@ -292,7 +292,7 @@ QDataStream &operator >>(QDataStream &in, MeshEntry &entry)
      *Extract from datastream all entry's information
      */
     QMatrix4x4 local_transform;
-    QHash<QString, DrawElementsCommand> commands;
+    QHash<QString, aae::DrawElementsCommand> commands;
     aae::bounding_box3d bbox;
 
 

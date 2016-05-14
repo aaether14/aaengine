@@ -25,6 +25,7 @@
 
 #include <fbx_manager/material/fbx_material.hpp>
 #include <utils/bounding_box.hpp>
+#include <utils/gl_util.hpp>
 
 
 
@@ -53,7 +54,7 @@ class MeshEntry
      *@brief m_commands is the vector containing the draw commands sorted by
      *material of the mesh entry
      */
-    QHash<QString, DrawElementsCommand> m_commands;
+    QHash<QString, aae::DrawElementsCommand> m_commands;
 
 
 
@@ -198,7 +199,7 @@ public:
      * @param material_name
      * @return will return the draw command
      */
-    inline DrawElementsCommand GetDrawCommand(const QString &material_name){
+    inline aae::DrawElementsCommand GetDrawCommand(const QString &material_name){
         return m_commands.value(material_name);
     }
 
@@ -207,7 +208,7 @@ public:
      * @brief GetDrawCommandsm will return the draw commads of the mesh entry
      * @return
      */
-    inline const QHash<QString, DrawElementsCommand> &GetDrawCommands() const{
+    inline const QHash<QString, aae::DrawElementsCommand> &GetDrawCommands() const{
         return m_commands;
     }
 
@@ -217,7 +218,7 @@ public:
      * @brief SetDrawCommands will set the draw commands of the mesh entry
      * @param commands are the draw commands that will update the mesh
      */
-    inline void SetDrawCommands(const QHash<QString, DrawElementsCommand> &commands){
+    inline void SetDrawCommands(const QHash<QString, aae::DrawElementsCommand> &commands){
         m_commands = commands;
     }
 

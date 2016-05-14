@@ -13,8 +13,6 @@ void GeometryLoader::CheckLayersUsedByMesh()
     /**
     *Loop through the meshes and see if the have normals, uvs, or tangents
     */
-
-
     for (qint32 i = 0; i < m_scene->GetGeometryCount(); i++)
     {
 
@@ -53,7 +51,6 @@ void GeometryLoader::CheckLayersUsedByMesh()
     /**
     *If the mesh has uvs but no textures then we will not load the uv data
     */
-
     if (is_using_uvs && !m_scene->GetTextureCount() > 0)
         is_using_uvs = false;
 
@@ -62,8 +59,6 @@ void GeometryLoader::CheckLayersUsedByMesh()
     /**
     *If not even the tangent information is present on the mesh then exit
     */
-
-
     if (!is_using_tangents)
         return;
 
@@ -75,7 +70,6 @@ void GeometryLoader::CheckLayersUsedByMesh()
     /**
      *Otherwise, see if there are any bump maps inside the mesh
     */
-
     for (qint32 i = 0; i < m_scene->GetMaterialCount(); i++)
     {
 

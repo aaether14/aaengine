@@ -44,8 +44,9 @@ void Mesh::CachedDraw(const QString &material_name)
     /**
     *Proceed to cached rendering
     */
-    f->glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT,
-                                   (GLvoid*)(sizeof(DrawElementsCommand)*m_gpu.indirect_buffer_stride_cache.value(material_name)),
+    f->glMultiDrawElementsIndirect(GL_TRIANGLES,
+                                   GL_UNSIGNED_INT,
+                                   BUFFER_OFFSET(sizeof(aae::DrawElementsCommand)*m_gpu.indirect_buffer_stride_cache.value(material_name)),
                                    m_gpu.indirect_buffer_size_cache.value(material_name), 0);
 
 
@@ -64,7 +65,7 @@ void Mesh::CachedDraw(const QString &material_name)
 
 
 void Mesh::CacheDrawCommands(QList<MeshEntry> &mesh_entries,
-                             QVector<DrawElementsCommand> &draw_commands,
+                             QVector<aae::DrawElementsCommand> &draw_commands,
                              QVector<quint32> &per_object_index,
                              const QString &key)
 {
@@ -85,7 +86,7 @@ void Mesh::CacheDrawCommands(QList<MeshEntry> &mesh_entries,
 
 
 
-            DrawElementsCommand c;
+            aae::DrawElementsCommand c;
             c = mesh_entries[i].GetDrawCommand(key);
             c.baseInstance = draw_commands.size();
 

@@ -5,7 +5,6 @@
 
 
 #include <QJsonDocument>
-#include <QJsonObject>
 #include <QFile>
 #include <QDebug>
 
@@ -30,7 +29,7 @@ public:
 
 
     /**
-     * @brief Json is a basic constructor
+     * @brief Json is a nothing constructor
      */
     Json(){}
 

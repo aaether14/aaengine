@@ -61,7 +61,8 @@ SOURCES += main.cpp\
     fbx_manager/mesh/serialize_aaem.cpp \
     opengl_worker/aaeopenglworkerthread.cpp \
     opengl_worker/workerthread.cpp \
-    core/gl/aux_glcontroller.cpp
+    core/gl/aux_glcontroller.cpp \
+    material/material.cpp
 
 
 
@@ -100,7 +101,8 @@ HEADERS  += \
     opengl_worker/aaeopenglworkerthread.hpp \
     opengl_worker/workerthread.hpp \
     utils/bounding_box.hpp \
-    utils/gl_util.hpp
+    utils/gl_util.hpp \
+    material/material.hpp
 
 
 

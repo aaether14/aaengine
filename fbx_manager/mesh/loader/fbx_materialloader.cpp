@@ -70,7 +70,7 @@ void MaterialLoader::Load()
         /**
          *Create a new material and add properties to it
          */
-        Material new_mat;
+        FbxMaterial new_mat;
 
 
         /**

@@ -18,7 +18,7 @@ void Mesh::AcceleratedDraw(const QString &material_name)
 
 
 
-    QVector<DrawElementsCommand> draw_commands;
+    QVector<aae::DrawElementsCommand> draw_commands;
     QVector<quint32> per_object_index;
 
 
@@ -41,7 +41,7 @@ void Mesh::AcceleratedDraw(const QString &material_name)
     *Upload data to draw commands buffer
     */
     f->glBindBuffer( GL_DRAW_INDIRECT_BUFFER, m_gpu.indirect_buffer);
-    f->glBufferData( GL_DRAW_INDIRECT_BUFFER, sizeof(DrawElementsCommand) * draw_commands.size(), &draw_commands[0], GL_STATIC_DRAW );
+    f->glBufferData( GL_DRAW_INDIRECT_BUFFER, sizeof(aae::DrawElementsCommand) * draw_commands.size(), &draw_commands[0], GL_STATIC_DRAW);
 
 
 
@@ -53,7 +53,7 @@ void Mesh::AcceleratedDraw(const QString &material_name)
     f->glBindBuffer(GL_ARRAY_BUFFER, m_gpu.per_object_buffer);
     f->glBufferData(GL_ARRAY_BUFFER, sizeof(quint32) * per_object_index.size(), &per_object_index[0], GL_STATIC_DRAW);
     f->glEnableVertexAttribArray(MESH_PER_OBJECT_ATTRIBUTE_POINTER);
-    f->glVertexAttribIPointer(MESH_PER_OBJECT_ATTRIBUTE_POINTER, 1, GL_UNSIGNED_INT, sizeof(quint32), 0);
+    f->glVertexAttribIPointer(MESH_PER_OBJECT_ATTRIBUTE_POINTER, 1, GL_UNSIGNED_INT, sizeof(quint32), BUFFER_OFFSET(0));
     f->glVertexAttribDivisor(MESH_PER_OBJECT_ATTRIBUTE_POINTER, 1);
 
 
@@ -62,7 +62,11 @@ void Mesh::AcceleratedDraw(const QString &material_name)
     /**
     *Draw mesh component
     */
-    f->glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, draw_commands.size(), 0);
+    f->glMultiDrawElementsIndirect(GL_TRIANGLES,
+                                   GL_UNSIGNED_INT,
+                                   BUFFER_OFFSET(0),
+                                   draw_commands.size(),
+                                   0);
 
 
 
