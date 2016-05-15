@@ -5,7 +5,7 @@
 
 
 QSharedPointer<AAEOpenGLWorkerThread> AAEOpenGLWorkerThread::m_instance;
-QSharedPointer<aae::WorkerThread> AAEOpenGLWorkerThread::m_worker_thread;
+QSharedPointer<aae::BaseWorkerThread> AAEOpenGLWorkerThread::m_worker_thread;
 
 
 
@@ -21,7 +21,7 @@ AAEOpenGLWorkerThread::~AAEOpenGLWorkerThread()
     *Release resources used by offscreen surface
     */
     if (m_offscreen_surface)
-        m_offscreen_surface->destroy();
+        m_offscreen_surface->deleteLater();
 
 
 
@@ -79,11 +79,15 @@ void AAEOpenGLWorkerThread::CreateContext(QOpenGLContext *share_context)
 
 
     /**
-    *Create the worker thread
+    *Create the appropiate worker thread
     */
-    m_worker_thread.reset(new aae::WorkerThread(m_context,
+#ifdef AAE_USE_ALTERNATIVE_WORKER_THREAD
+    m_worker_thread.reset(new aae::WorkerThread2(m_context,
                                                 m_offscreen_surface));
-
+#else
+    m_worker_thread.reset(new aae::WorkerThread(m_context,
+                                                 m_offscreen_surface));
+#endif
 
 
 

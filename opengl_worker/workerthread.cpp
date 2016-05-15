@@ -9,11 +9,6 @@ namespace aae
 
 
 
-
-
-
-
-
 WorkerThread::WorkerThread(QOpenGLContext *context,
                            QOffscreenSurface *offscreen_surface)
 {
@@ -81,6 +76,13 @@ WorkerThread::WorkerThread(QOpenGLContext *context,
     *If the thread was requested to close do so
     */
     connect(this, &WorkerThread::should_close, this, [=](){
+        /**
+        *Delete opengl context
+        */
+        m_context->deleteLater();
+        /**
+        *close and delete thread
+        */
         thread->quit();
         thread->deleteLater();
     });
@@ -126,8 +128,6 @@ void WorkerThread::enque_work(const std::function<void ()> &function)
 
 
 }
-
-
 
 
 

@@ -1,6 +1,5 @@
-#ifndef WORKERTHREAD_H
-#define WORKERTHREAD_H
-
+#ifndef WORKERTHREAD2_H
+#define WORKERTHREAD2_H
 
 
 
@@ -13,16 +12,18 @@
 
 
 
+
 namespace aae
 {
 
 
 
 /**
- *@brief The WorkerThread class will provide functionality to run a certain
- *function inside a certain thread
+ *@brief The WorkerThread2 class will provide an alternative for WorkerThread.
+ *It may work slower in some cases but it should fix the stalls when using
+ *cached draw
  */
-class WorkerThread : public QObject, public aae::BaseWorkerThread
+class WorkerThread2 : public QThread, public aae::BaseWorkerThread
 {
 
 
@@ -50,27 +51,7 @@ class WorkerThread : public QObject, public aae::BaseWorkerThread
 
 
 
-
-
-signals:
-
-
-    /**
-     * @brief check_for_work will signal that thread should check for a job
-     */
-    void check_for_work();
-
-
-
-    /**
-     * @brief should_close will singal when the thread should close
-     */
-    void should_close();
-
-
-
 public:
-
 
 
     /**
@@ -78,10 +59,15 @@ public:
      * @param context is a pointer to an opengl context
      * @param offscreen_surface is an offscreen surface used to make opengl context current
      */
-    WorkerThread(QOpenGLContext * context,
+    WorkerThread2(QOpenGLContext * context,
                  QOffscreenSurface * offscreen_surface);
 
 
+
+    /**
+     *This will be the behaviour of the thread
+     */
+    void run();
 
 
 
@@ -93,13 +79,10 @@ public:
 
 
 
-
     /**
-     * @brief CloseThread will attempt to close the thread
+     * @brief close_thread will do nothing in this case
      */
-    inline void close_thread(){
-        emit should_close();
-    }
+    void close_thread(){}
 
 
 
@@ -107,8 +90,16 @@ public:
 
 
 
+
 }
 
 
+#endif // WORKERTHREAD2_H
 
-#endif // WORKERTHREAD_H
+
+
+
+
+
+
+

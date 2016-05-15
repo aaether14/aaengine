@@ -91,6 +91,8 @@ void Logger::SetConsoleOutputPointer(QTextEdit *p_console_output)
 
 
 
+
+
 #ifdef AAE_USING_OPENGL_DEBUG
 void Logger::CloseOpenGLLogging()
 {
@@ -183,9 +185,19 @@ Logger::Logger()
 {
 
 
+    /**
+     *Enable safe logging
+     */
+    connect(this, &Logger::safeLog, this, [=](const QString &msg){
+        m_console_output->append(msg);
+    });
+
+
+
 #ifdef AAE_USING_OPENGL_DEBUG
     m_opengl_debug_logger = NULL;
 #endif
+
 
 
 }

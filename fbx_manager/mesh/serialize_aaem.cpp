@@ -1,5 +1,5 @@
 #include <fbx_manager/mesh/mesh.hpp>
-
+#include <dialogs/console/logger.hpp>
 
 
 
@@ -25,7 +25,7 @@ void Mesh::SerializeAAEM(const QString &file_name)
     QFile file(file_name);
     if (!file.open(QIODevice::WriteOnly))
     {
-        qDebug() << "Could not write mesh information to " << file_name << "!";
+        Logger::Instance()->safeLog("Could not write mesh information to " + file_name + " !");
         return;
     }
 
@@ -124,7 +124,7 @@ bool Mesh::DeserializeAAEM(const QString &file_name)
     */
     if (QFileInfo(file_name).suffix() != "aaem")
     {
-        qDebug() << file_name << "is not the right type of file! (.aaem)";
+        Logger::Instance()->safeLog(file_name + " is not the right type of file! (.aaem)");
         return false;
     }
 
@@ -136,7 +136,7 @@ bool Mesh::DeserializeAAEM(const QString &file_name)
     QFile file(file_name);
     if (!file.open(QIODevice::ReadOnly))
     {
-        qDebug() << "Could not read mesh information from " << file_name << "!";
+        Logger::Instance()->safeLog("Could not read mesh information from " + file_name + " !");
         return false;
     }
 
@@ -164,7 +164,10 @@ bool Mesh::DeserializeAAEM(const QString &file_name)
     if (aaem_version != AAEM_DESERIALIZER_VERSION)
     {
 
-        qDebug() << file_name << "has an unsupported file version!";
+        Logger::Instance()->safeLog(file_name + " has an unsupported file version!");
+        /**
+        *Close the file and return
+        */
         file.close();
         return false;
 

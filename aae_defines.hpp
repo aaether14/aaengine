@@ -37,4 +37,11 @@
 
 
 
+/**
+*Defining this will use the alternative worker thread for parallel loading
+*/
+//#define AAE_USE_ALTERNATIVE_WORKER_THREAD
+
+
+
 #endif // AAE_DEFINES_HPP

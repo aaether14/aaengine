@@ -11,6 +11,8 @@
 
 
 #include <opengl_worker/workerthread.hpp>
+#include <opengl_worker/workerthread2.hpp>
+#include <aae_defines.hpp>
 
 
 
@@ -43,7 +45,7 @@ class AAEOpenGLWorkerThread
      *@brief m_worker_thread is the thread that will be used to upload opengl
      *data
      */
-    static QSharedPointer<aae::WorkerThread> m_worker_thread;
+    static QSharedPointer<aae::BaseWorkerThread> m_worker_thread;
 
 
     /**
@@ -84,7 +86,7 @@ public:
      * @brief GetThread will get the worker thread
      * @return m_worker_thread;
      */
-    inline aae::WorkerThread * GetThread(){
+    inline aae::BaseWorkerThread * GetThread(){
         return m_worker_thread.data();
     }
 

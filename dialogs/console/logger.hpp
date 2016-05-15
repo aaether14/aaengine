@@ -11,6 +11,9 @@
 #include <QSharedPointer>
 #include <QSemaphore>
 #include <QPointer>
+
+
+
 #ifdef AAE_USING_OPENGL_DEBUG
 #include <QOpenGLDebugLogger>
 #endif
@@ -48,10 +51,10 @@ public:
     static Logger* Instance();
 
     /**
-     * @brief customMessageHandler see class definition
-     * @param type
-     * @param context
-     * @param msg
+     * @brief customMessageHandler will redirect messages issued with QDebug to in-game console
+     * @param type is the type of the message
+     * @param context is the log context of the message
+     * @param msg is the message to be logged
      */
     static void customMessageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg);
 
@@ -62,6 +65,8 @@ public:
      * @param p_console_output is a pointer to the console output we want to log messages to
      */
     void SetConsoleOutputPointer(QTextEdit * p_console_output);
+
+
 
 
 #ifdef AAE_USING_OPENGL_DEBUG
@@ -83,6 +88,14 @@ public:
     ~Logger();
 
 
+
+signals:
+
+    /**
+     * @brief safeLog will thread safely log a message to the in-game console
+     * @param msg is the message to be logged
+     */
+    void safeLog(const QString &msg);
 
 
 private:
@@ -109,7 +122,6 @@ private:
      *redirected to
      */
     static QPointer<QTextEdit> m_console_output;
-
 
 
     /**

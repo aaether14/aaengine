@@ -223,7 +223,7 @@ void Controller::closeEvent(QCloseEvent *event)
     /**
     *Signal the opengl worker thread to close and delete
     */
-    AAEOpenGLWorkerThread::Instance()->GetThread()->CloseThread();
+    AAEOpenGLWorkerThread::Instance()->GetThread()->close_thread();
 
 
 

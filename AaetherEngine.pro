@@ -62,7 +62,9 @@ SOURCES += main.cpp\
     opengl_worker/aaeopenglworkerthread.cpp \
     opengl_worker/workerthread.cpp \
     core/gl/aux_glcontroller.cpp \
-    material/material.cpp
+    material/material.cpp \
+    opengl_worker/baseworkerthread.cpp \
+    opengl_worker/workerthread2.cpp
 
 
 
@@ -102,7 +104,9 @@ HEADERS  += \
     opengl_worker/workerthread.hpp \
     utils/bounding_box.hpp \
     utils/gl_util.hpp \
-    material/material.hpp
+    material/material.hpp \
+    opengl_worker/baseworkerthread.hpp \
+    opengl_worker/workerthread2.hpp
 
 
 

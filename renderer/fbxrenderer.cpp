@@ -273,13 +273,11 @@ void FbxRenderer::Render(QObject *parent)
         /**
          * If everything went well, get a pointer to the mesh of the MeshAsset
          */
-
         Mesh * current_mesh_component = static_cast<MeshAsset*>(al->GetAsset(asset_name))->GetMesh();
 
         /**
          *Extract the model matrix indicated by the Transform used by the mesh
          */
-
         QMatrix4x4 transform = components["Transform"].toMap()[mesh_component["transform"].toString()].toMap()["model"].value<QMatrix4x4>();
 
 
@@ -287,14 +285,12 @@ void FbxRenderer::Render(QObject *parent)
         /**
          *Get which draw method the mesh should use
          */
-
         QString draw_method = mesh_component["draw_method"].toString();
 
 
         /**
         *If the draw method is valid then set it for the mesh in cause
         */
-
         if (draw_method.size())
             current_mesh_component->SetDrawMethod(draw_method);
 
@@ -313,7 +309,9 @@ void FbxRenderer::Render(QObject *parent)
 
 
 
-
+    /**
+    *Release shader program
+    */
     GetShader("Fbx")->release();
 
 
