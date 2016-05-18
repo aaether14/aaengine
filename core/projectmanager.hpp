@@ -10,9 +10,9 @@
 
 
 
-#include <utils/json.hpp>
 #include <utils/math.hpp>
 #include <core/gl/fps.hpp>
+#include <core/globalsettings.hpp>
 #include <core/gl/inputregister.hpp>
 #include <script_module/scriptengine.hpp>
 #include <assets/assetloader.hpp>
@@ -36,12 +36,6 @@ class ProjectManager : public QObject
      *@brief m_loaded_sempahore knows whether or not a project has been loaded
      */
     QSemaphore m_loaded_semaphore;
-
-
-    /**
-     *@brief config_json will hold the information specified in the config.json
-     */
-    QJsonDocument m_config_json;
 
 
 

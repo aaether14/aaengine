@@ -35,9 +35,7 @@ SOURCES += main.cpp\
     renderer/baserenderer.cpp \
     renderer/pipeline.cpp \
     renderer/fbxrenderer.cpp \
-    assets/baseasset.cpp \
     assets/meshasset.cpp \
-    assets/baseassetloader.cpp \
     assets/assetloader.cpp \
     utils/math.cpp \
     core/projectmanager.cpp \
@@ -64,7 +62,8 @@ SOURCES += main.cpp\
     core/gl/aux_glcontroller.cpp \
     material/material.cpp \
     opengl_worker/baseworkerthread.cpp \
-    opengl_worker/workerthread2.cpp
+    opengl_worker/workerthread2.cpp \
+    core/globalsettings.cpp
 
 
 
@@ -106,7 +105,8 @@ HEADERS  += \
     utils/gl_util.hpp \
     material/material.hpp \
     opengl_worker/baseworkerthread.hpp \
-    opengl_worker/workerthread2.hpp
+    opengl_worker/workerthread2.hpp \
+    core/globalsettings.hpp
 
 
 

@@ -26,9 +26,6 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
     /**
      *Triangulate the scene in odrer to correctly send vertex data to shader
      */
-
-
-
     if (triangulate)
     {
 
@@ -47,8 +44,6 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
     /**
      *if the mesh is not in the OpenGL axis system format, convert it
      */
-
-
     if (convert_axis)
     {
 
@@ -67,8 +62,6 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
     /**
      *if the mesh is not in a resonable scale system, convert it
      */
-
-
     if (convert_scale)
     {
 
@@ -91,7 +84,6 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
     *Splitting points will attempt to convert from PerPolygon normals and uvs to
     *PerControlPoint ones
     */
-
     if (split_points)
     {
 
@@ -123,7 +115,6 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
     /**
     *Generate tangent data for all meshes in the scene
     */
-
     if (generate_tangents)
 
     {
@@ -136,7 +127,6 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
             /**
              *Skip through invalid meshes
              */
-
             FbxMesh * current_mesh = FbxCast<FbxMesh>(m_scene->GetGeometry(i));
             if (!current_mesh)
                 continue;
@@ -145,7 +135,6 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
             /**
             *Remove existing tangent data
             */
-
             for (qint32 i = 0; i < current_mesh->GetElementTangentCount(); i++)
                 current_mesh->RemoveElementTangent(current_mesh->GetElementTangent(i));
 
@@ -154,8 +143,6 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
             /**
             *Cant compute tangents without uvs and normals
             */
-
-
             if (current_mesh->GetElementUVCount() < 1 ||
                     current_mesh->GetElementNormalCount() < 1)
                 continue;
@@ -165,7 +152,6 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
             /**
             *We need per control point uvs and normals
             */
-
             if (current_mesh->GetElementUV(0)->GetMappingMode() != FbxGeometryElement::eByControlPoint ||
                     current_mesh->GetElementNormal(0)->GetMappingMode() != FbxGeometryElement::eByControlPoint)
                 continue;
@@ -175,7 +161,6 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
             /**
              *If everything is ok extract vertex uv and normal
              */
-
             FbxGeometryElementUV * vertex_uv = current_mesh->GetElementUV(0);
             FbxGeometryElementNormal * vertex_normal = current_mesh->GetElementNormal(0);
 
@@ -184,15 +169,15 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
             /**
              * Create the tangents array
              */
-
-
             FbxGeometryElementTangent * vertex_tangent = current_mesh->CreateElementTangent();
             vertex_tangent->SetMappingMode(FbxGeometryElement::eByControlPoint);
             vertex_tangent->SetReferenceMode(FbxGeometryElement::eDirect);
 
 
 
-
+            /**
+             *Here we will compute tangents and binormals
+             */
             QVector<QVector3D> tan1(current_mesh->GetControlPointsCount(), QVector3D(0.0, 0.0, 0.0));
             QVector<QVector3D> tan2(current_mesh->GetControlPointsCount(), QVector3D(0.0, 0.0, 0.0));
 
@@ -205,8 +190,6 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
                 /**
                  *First get the indices of the vertices in the triangle
                  */
-
-
                 qint32 i1 = current_mesh->GetPolygonVertex(j, 0);
                 qint32 i2 = current_mesh->GetPolygonVertex(j, 1);
                 qint32 i3 = current_mesh->GetPolygonVertex(j, 2);
@@ -215,7 +198,6 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
                 /**
                  * Get vertices of the triangle
                  */
-
                 FbxVector4 v1 = current_mesh->GetControlPointAt(i1);
                 FbxVector4 v2 = current_mesh->GetControlPointAt(i2);
                 FbxVector4 v3 = current_mesh->GetControlPointAt(i3);
@@ -226,8 +208,6 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
                 /**
                  * Get uvs of the triangle
                  */
-
-
                 FbxVector2 w1, w2, w3;
                 if (vertex_uv->GetReferenceMode() == FbxGeometryElement::eDirect)
                 {
@@ -247,8 +227,6 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
                 /**
                  * Compute intermediate tangents
                  */
-
-
                 float x1 = v2.mData[0] - v1.mData[0];
                 float x2 = v3.mData[0] - v1.mData[0];
                 float y1 = v2.mData[1] - v1.mData[1];
@@ -295,13 +273,13 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
             /**
             *Compute actual tangents
             */
-
-
             for (qint32 j = 0; j < current_mesh->GetControlPointsCount(); j++)
             {
 
 
-
+                /**
+                 *Normal and tangent
+                 */
                 QVector3D n, t;
 
 
@@ -347,8 +325,6 @@ void Mesh::NormalizeScene(FbxManager *fbx_manager,
     *Texture conversion might be necesary because on some platforms some
     *texture formats are not supported
     */
-
-
     if (convert_textures)
     {
 

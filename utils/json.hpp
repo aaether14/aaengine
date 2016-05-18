@@ -5,6 +5,7 @@
 
 
 #include <QJsonDocument>
+#include <QJsonObject>
 #include <QFile>
 #include <QDebug>
 
@@ -16,22 +17,8 @@ namespace aae
 
 
 
-
-
-/**
- * @brief The Json class will provide basic json loading functionality
- */
-class Json
+namespace json
 {
-
-
-public:
-
-
-    /**
-     * @brief Json is a nothing constructor
-     */
-    Json(){}
 
 
 
@@ -40,7 +27,7 @@ public:
      * @param file_name is the filename of the file to be read
      * @return will return the parsed QJsonDocument
      */
-    static QJsonDocument GetJsonFromFile(const QString &file_name);
+    QJsonDocument GetJsonFromFile(const QString &file_name);
 
 
 
@@ -49,13 +36,13 @@ public:
      * @param file_name is the name of the file where the json will be saved
      * @param json_doc is the json document that will be saved to the file
      */
-    static void SaveJsonToFile(const QString &file_name,
+     void SaveJsonToFile(const QString &file_name,
                                const QJsonDocument &json_doc);
 
 
 
 
-};
+}
 
 
 

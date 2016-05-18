@@ -25,22 +25,8 @@ namespace aae
 
 
 
-/**
- *@brief The mesh_util class is a helper to load fbx meshes
- */
-class mesh_util
+namespace mesh_util
 {
-
-
-public:
-
-
-
-    /**
-     * @brief mesh_util - basic constructor
-     */
-    mesh_util();
-
 
 
     /**
@@ -54,7 +40,7 @@ public:
      * @return will return the required texture filename to load the texture if
      * it can find the texture, otherwise null string
      */
-    static QString ComputeTextureFilename(QString texture_name, QString fbx_file_name);
+    QString ComputeTextureFilename(QString texture_name, QString fbx_file_name);
 
 
 
@@ -65,7 +51,7 @@ public:
      * @param vec is the vector to be converted
      * @return
      */
-    static QVector3D QVector3DFromFbxVector3D(FbxDouble3 vec);
+    QVector3D QVector3DFromFbxVector3D(FbxDouble3 vec);
 #endif
 
 
@@ -80,14 +66,14 @@ public:
      * @param arr is the float data
      * @return returns the float16 block
      */
-    static float16 toFloat16(const float* arr){float16 v; memcpy(&v, arr, sizeof(float16)); return v;}
+    inline float16 toFloat16(const float* arr){float16 v; memcpy(&v, arr, sizeof(float16)); return v;}
 
 
 
 
 
 
-};
+}
 
 
 

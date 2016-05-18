@@ -36,14 +36,11 @@ class GLController : public QOpenGLWidget
     Q_OBJECT
 
 
-
     /**
      *@brief is_playing will be true if the game is unpaused and false
      *otherwise
      */
     bool is_playing;
-
-
 
 
 public:

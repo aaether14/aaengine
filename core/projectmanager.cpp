@@ -55,14 +55,6 @@ void ProjectManager::LoadProject()
 
 
     /**
-    *If everything went well untill this point we need to read config.json in
-    *order to know which project to load
-    */
-    m_config_json = aae::Json::GetJsonFromFile("data/config.json");
-
-
-
-    /**
      *Before reloading, unload current project
      */
     UnloadProject();
@@ -79,13 +71,18 @@ void ProjectManager::LoadProject()
 
 
     /**
-     *Get the ScriptEngine to load the project
+    *Load global settings and extract project path
+    */
+    GlobalSettings::Instance()->Load("data/config.json");
+    QString project_path = GlobalSettings::Instance()->Get()["project"].toString();
+
+
+
+    /**
+     *Get the ScriptEngine to load the project specified in the config.json
      */
     ScriptEngine * script_engine = parent()->findChild<ScriptEngine*>("ScriptEngine");
-    /**
-     *Try to load the project specified in the config.json
-     */
-    SetProjectLoaded(script_engine->LoadProject(m_config_json.toVariant().toMap()["AaetherEngine"].toMap()["project"].toString()));
+    SetProjectLoaded(script_engine->LoadProject(project_path));
 
 
 
@@ -195,24 +192,10 @@ void ProjectManager::LoadProjectAndModifyConfig(const QString &project_path)
 
 
     /**
-     *Deserialize config.json
-     */
-    QJsonObject serialized_config_json = aae::Json::GetJsonFromFile("data/config.json").object();
-    QJsonObject serialized_engine_json = serialized_config_json["AaetherEngine"].toObject();
-
-
-    /**
-    *Add the path of the project to the deserialized object
+    *Set the project path and save global settings to config.json
     */
-    serialized_engine_json["project"] = QDir(".").relativeFilePath(project_path);
-    serialized_config_json["AaetherEngine"] = serialized_engine_json;
-
-
-    /**
-     *Save deserialized object back to config.json
-     */
-    aae::Json::SaveJsonToFile("data/config.json", QJsonDocument(serialized_config_json));
-
+    GlobalSettings::Instance()->Set("project", QDir(".").relativeFilePath(project_path));
+    GlobalSettings::Instance()->Save("data/config.json");
 
 
     /**

@@ -5,7 +5,6 @@
 
 
 #include <assets/baseasset.hpp>
-#include <QString>
 #include <QVariantMap>
 
 
@@ -23,13 +22,9 @@ public:
 
 
     /**
-     * @brief BaseAssetLoader - basic constructor
+     * @brief ~BaseAssetLoader is a default destructor
      */
-    BaseAssetLoader();
-    /**
-     * @brief ~BaseAssetLoader - basic destructor
-     */
-    virtual ~BaseAssetLoader() {}
+    virtual ~BaseAssetLoader() = default;
 
 
     /**

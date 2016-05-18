@@ -8,45 +8,39 @@ namespace aae
 
 
 
-
-mesh_util::mesh_util()
-{
-
-}
-
-
-
-
-
-QString mesh_util::ComputeTextureFilename(QString texture_name, QString fbx_file_name)
+namespace mesh_util
 {
 
 
 
+QString ComputeTextureFilename(QString texture_name, QString fbx_file_name)
+{
+
+
+
+    /**
+     *Here we will compute an eventual texture name required by the mesh
+     */
     QString texture_file_name;
 
 
     /**
-    *first put the name of the texture in a standard form, then get just from
-    *it
+    *First put the name of the texture in a standard form
     */
-
-
     texture_name.replace("\\", "/");
     texture_name = texture_name.mid(texture_name.lastIndexOf("/") + 1, texture_name.length());
 
 
-
-
+    /**
+     *We need the directory of the file
+     */
     QString directory;
 
 
 
     /**
-    *get the directory for the texture
+    *Get the directory for the texture
     */
-
-
     if (QString(fbx_file_name).lastIndexOf("/") > 0)
     {
         directory = QString(fbx_file_name).mid(0, QString(fbx_file_name).lastIndexOf("/"));
@@ -54,7 +48,9 @@ QString mesh_util::ComputeTextureFilename(QString texture_name, QString fbx_file
 
 
 
-
+    /**
+    *Compute the texture file name with repsect to the directory of the file
+    */
     if (directory.length() > 0)
     {
         texture_file_name = directory + "/" + texture_name;
@@ -75,11 +71,15 @@ QString mesh_util::ComputeTextureFilename(QString texture_name, QString fbx_file
     else
     {
 
-
+        /**
+        *Compute fbx texture name in the case it lies inside a .fbm folder
+        */
         texture_file_name = directory + "/" + QFileInfo(fbx_file_name).baseName() + ".fbm/" + texture_name;
 
 
-
+        /**
+        *If the texture exists return it's path, if not return empty string
+        */
         if (QFileInfo(texture_file_name).exists())
         {
             return texture_file_name;
@@ -101,7 +101,7 @@ QString mesh_util::ComputeTextureFilename(QString texture_name, QString fbx_file
 
 
 #ifdef AAE_USING_FBX
-QVector3D mesh_util::QVector3DFromFbxVector3D(FbxDouble3 vec)
+QVector3D QVector3DFromFbxVector3D(FbxDouble3 vec)
 {
 
 
@@ -111,6 +111,11 @@ QVector3D mesh_util::QVector3DFromFbxVector3D(FbxDouble3 vec)
 }
 #endif
 
+
+
+
+
+}
 
 
 

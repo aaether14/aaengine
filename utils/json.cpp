@@ -9,19 +9,27 @@ namespace aae
 
 
 
-
-
-QJsonDocument Json::GetJsonFromFile(const QString &file_name)
+namespace json
 {
 
 
 
+
+QJsonDocument GetJsonFromFile(const QString &file_name)
+{
+
+
+    /**
+     *File content container
+     */
     QString file_content;
     QFile file(file_name);
 
 
 
-
+    /**
+    *Open file for reading
+    */
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         qDebug() << "Could not open: " << file_name << " to load the json document!";
@@ -29,11 +37,16 @@ QJsonDocument Json::GetJsonFromFile(const QString &file_name)
     }
 
 
-
+    /**
+    *Read file content then close it
+    */
     file_content = file.readAll();
     file.close();
 
 
+    /**
+    *Return serialized json
+    */
     return QJsonDocument::fromJson(file_content.toUtf8());
 
 
@@ -43,8 +56,8 @@ QJsonDocument Json::GetJsonFromFile(const QString &file_name)
 
 
 
-void Json::SaveJsonToFile(const QString &file_name,
-                          const QJsonDocument &json_doc)
+void SaveJsonToFile(const QString &file_name,
+                    const QJsonDocument &json_doc)
 {
 
 
@@ -67,6 +80,11 @@ void Json::SaveJsonToFile(const QString &file_name,
 }
 
 
+
+
+
+
+}
 
 
 

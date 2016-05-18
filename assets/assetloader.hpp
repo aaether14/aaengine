@@ -9,11 +9,12 @@
 #include <QHash>
 #include <QStack>
 #include <QFileInfo>
+
+
+
+
 #include <assets/baseassetloader.hpp>
 #include <fbx_manager/fbxmanager.hpp>
-
-
-
 #include <aae_defines.hpp>
 #include <error/aerror.hpp>
 
@@ -96,6 +97,7 @@ class AssetLoader : public QObject
 
 
 public:
+
 
 
     /**
@@ -199,13 +201,6 @@ public:
     Q_INVOKABLE void logAssetInfo();
 
 
-
-
-signals:
-
-
-
-public slots:
 
 
 
