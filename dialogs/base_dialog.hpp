@@ -16,11 +16,7 @@
 class baseDialog : public QDialog
 {
 
-
-
     Q_OBJECT
-
-
 
 public:
 
@@ -33,9 +29,9 @@ public:
 
 
     /**
-     * @brief ~baseDialog is a nothing destructor
+     * @brief ~baseDialog is a default destructor
      */
-    virtual ~baseDialog();
+    virtual ~baseDialog() = default;
 
 
 

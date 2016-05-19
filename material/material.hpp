@@ -89,7 +89,7 @@ public:
      * @brief SendToShader will send the material data to the shader
      * @param shader is the shader the material will sent to by uniforms
      */
-    void SendToShader(QOpenGLShaderProgram &shader);
+    void SendUniformsToShader(QOpenGLShaderProgram &shader);
 
 
 
@@ -226,7 +226,9 @@ public:
 
 
 
-
+/**
+*Serialization and deserialization routines
+ */
 QDataStream &operator <<(QDataStream &out, const Material &material);
 QDataStream &operator >>(QDataStream &in, Material &material);
 

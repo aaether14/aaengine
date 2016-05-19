@@ -69,6 +69,16 @@ public:
 
 
     /**
+     * @brief GetValue will get a certain value associated with the key
+     * @param key is the key to get a value
+     * @return m_config
+     */
+    inline const QVariant GetValue(const QString &key){
+        return m_config.value(key);
+    }
+
+
+    /**
      * @brief Set will set a certain value in m_config
      * @param key is the key to be set
      * @param value is the value to be set

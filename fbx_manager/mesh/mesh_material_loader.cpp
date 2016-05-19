@@ -1,5 +1,4 @@
 #include <fbx_manager/mesh/mesh.hpp>
-#include <core/globalsettings.hpp>
 
 
 
@@ -152,7 +151,7 @@ void Mesh::PassTextureDataToOpenGL()
         /**
          *Set how many lines to load at once from config.json
          */
-        const qint32 line_height = GlobalSettings::Instance()->Get()["texture_lines_to_load"].toInt();
+        const qint32 line_height = 256;
         qint32 current_loaded_lines = 0;
         qint64 current_loaded_bits = 0;
 

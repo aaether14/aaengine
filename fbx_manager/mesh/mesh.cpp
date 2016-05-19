@@ -257,7 +257,7 @@ void Mesh::Draw(QOpenGLShaderProgram &shader)
         /**
         *Send material information to shader
         */
-        m_materials[it].SendToShader(shader);
+        m_materials[it].SendUniformsToShader(shader);
 
 
 

@@ -18,18 +18,6 @@ baseDialog::baseDialog(QWidget *parent) : QDialog(parent)
 
 
 
-baseDialog::~baseDialog()
-{
-
-    /**
-    *The glorious nothing...
-    */
-
-}
-
-
-
-
 
 void baseDialog::onAction()
 {

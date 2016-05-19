@@ -22,7 +22,7 @@ Material::Material() : m_diffuse_color(),
 
 
 
-void Material::SendToShader(QOpenGLShaderProgram &shader)
+void Material::SendUniformsToShader(QOpenGLShaderProgram &shader)
 {
 
 

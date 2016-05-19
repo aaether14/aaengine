@@ -18,6 +18,9 @@ void Mesh::AcceleratedDraw(const QString &material_name)
 
 
 
+    /**
+     *Will store draw commands here
+     */
     QVector<aae::DrawElementsCommand> draw_commands;
     QVector<quint32> per_object_index;
 
@@ -40,8 +43,8 @@ void Mesh::AcceleratedDraw(const QString &material_name)
     /**
     *Upload data to draw commands buffer
     */
-    f->glBindBuffer( GL_DRAW_INDIRECT_BUFFER, m_gpu.indirect_buffer);
-    f->glBufferData( GL_DRAW_INDIRECT_BUFFER, sizeof(aae::DrawElementsCommand) * draw_commands.size(), &draw_commands[0], GL_STATIC_DRAW);
+    f->glBindBuffer(GL_DRAW_INDIRECT_BUFFER, m_gpu.indirect_buffer);
+    f->glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(aae::DrawElementsCommand) * draw_commands.size(), &draw_commands[0], GL_STATIC_DRAW);
 
 
 

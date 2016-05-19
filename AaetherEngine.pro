@@ -63,7 +63,8 @@ SOURCES += main.cpp\
     material/material.cpp \
     opengl_worker/baseworkerthread.cpp \
     opengl_worker/workerthread2.cpp \
-    core/globalsettings.cpp
+    core/globalsettings.cpp \
+    texture/texture.cpp
 
 
 
@@ -106,7 +107,8 @@ HEADERS  += \
     material/material.hpp \
     opengl_worker/baseworkerthread.hpp \
     opengl_worker/workerthread2.hpp \
-    core/globalsettings.hpp
+    core/globalsettings.hpp \
+    texture/texture.hpp
 
 
 
